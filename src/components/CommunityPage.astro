@@ -58,12 +58,12 @@ const schema = {
 <style>
   .hero { background: var(--ink); color: var(--bone); padding: clamp(40px, 7vw, 96px) 0 clamp(56px, 8vw, 110px); }
   .hero .eyebrow, .hero em { color: var(--gold); }
-  .crumbs { color: #9d978a; font-size: .68rem; margin-bottom: 2.5rem; }
+  .crumbs { color: var(--on-dark-muted); font-size: .68rem; margin-bottom: 2.5rem; }
   .crumbs a { text-decoration: none; }
   .hero h1 { max-width: 16ch; }
   .lede { max-width: 56ch; font-size: 1.2rem; opacity: .9; }
   .points { list-style: none; padding: 0; margin: 2rem 0; display: flex; flex-wrap: wrap; gap: .6rem; }
-  .points li { border: 1px solid rgba(250,247,242,.25); padding: .5em 1em; font: .75rem var(--mono); letter-spacing: .06em; }
+  .points li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .5em 1em; font: .75rem var(--mono); letter-spacing: .06em; }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin-top: 2rem; }
   .inquire { background: var(--sand-2); }

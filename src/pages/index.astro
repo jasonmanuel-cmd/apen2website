@@ -6,9 +6,11 @@ import LeadForm from '../components/LeadForm.astro';
 import { site, plans, communities, heroes, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
 
 const hero = photos('tranquil-oasis')[0].src;
-const sunset = photos('sunset-retreat')[0].src;
-const kitchen = photos('sunset-retreat').find((p) => p.caption === 'Kitchen')!.src;
-const band = photos('enchanted-haven')[0].src;
+// Each section uses a different photo; exteriors already appear on the model cards.
+const pick = (folder: string, caption: string) => photos(folder).find((p) => p.caption === caption)!.src;
+const sunset = pick('sunset-retreat', 'Great room');
+const kitchen = pick('sunset-retreat', 'Kitchen');
+const band = pick('enchanted-haven', 'Living room');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
 
 const stats = [
@@ -48,14 +50,14 @@ const faqSchema = {
       <div class="copy">
         <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
         <h1 class="reveal" style="animation-delay:.1s">Brand-new homes <em>you help design.</em></h1>
-        <p class="lede reveal" style="animation-delay:.2s">Aspen II Homes is building the first two homes at {offer.community}. Reserve now, choose your model and customize the finishes, backed by builder incentives that make owning easier than you think.</p>
+        <p class="lede reveal" style="animation-delay:.2s">The first two homes at {offer.community} are reserving now. Choose your model, customize the finishes, and own with {offer.downPayment} down for first-time buyers.</p>
         <div class="ctas reveal" style="animation-delay:.3s">
           <a class="btn" href="/contact-us/?interest=reserve">Reserve & customize</a>
           <a class="btn btn-ghost" href="#plans">Explore the models</a>
         </div>
       </div>
       <a class="release-card reveal" style="animation-delay:.4s" href="/sunset-retreat/">
-        <Image src={sunset} alt="Sunset Retreat exterior" widths={[400, 700]} sizes="360px" />
+        <Image src={sunset} alt="Great room in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
         <div>
           <p class="mono k">First release · only 2 homes</p>
           <p class="name">{offer.community}</p>
@@ -106,7 +108,7 @@ const faqSchema = {
       </div>
       <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
       <details class="compare">
-        <summary class="mono">Compare all six models side by side</summary>
+        <summary class="mono"><span aria-hidden="true">⇄</span> Compare all six models side by side</summary>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Model</th><th>Sq ft</th><th>Beds</th><th>Baths</th><th>Stories</th><th>Price</th><th>Blueprint</th></tr></thead>
@@ -216,13 +218,14 @@ const faqSchema = {
   .hero { position: relative; min-height: min(90vh, 880px); display: flex; align-items: flex-end; color: var(--bone); overflow: hidden; }
   .hero :global(.hero-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: zoom 20s var(--ease) both; }
   @keyframes zoom { from { transform: scale(1.1); } }
-  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,23,18,.78), rgba(14,23,18,.15) 70%), linear-gradient(180deg, transparent 40%, rgba(14,23,18,.8)); }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(var(--ink-rgb) / .72), rgb(var(--ink-rgb) / .1) 70%), linear-gradient(180deg, transparent 45%, rgb(var(--ink-rgb) / .75)); }
   .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.5fr minmax(280px, 360px); gap: 3rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
   .hero .eyebrow, .hero em { color: var(--gold); }
-  .hero h1 { max-width: 13ch; }
+  .hero h1 { max-width: 15ch; font-size: clamp(2.8rem, 7vw, 6rem); }
+  .hero h1 em { display: block; }
   .lede { max-width: 50ch; font-size: 1.15rem; opacity: .92; }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
-  .release-card { display: block; background: rgba(14,23,18,.82); backdrop-filter: blur(10px); border: 1px solid rgba(250,247,242,.15); text-decoration: none; transition: transform .35s var(--ease); }
+  .release-card { display: block; background: rgb(var(--ink-rgb) / .96); border: 1px solid rgb(var(--bone-rgb) / .12); border-top: 3px solid var(--gold); box-shadow: 0 24px 60px rgb(0 0 0 / .3); text-decoration: none; transition: transform .35s var(--ease); }
   .release-card:hover { transform: translateY(-4px); }
   .release-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
   .release-card > div { padding: 1.2rem 1.4rem 1.4rem; }
@@ -231,14 +234,14 @@ const faqSchema = {
   .release-card .price { margin: 0 0 .8rem; font: .8rem var(--mono); }
   .release-card .price strong { font: 400 1.5rem var(--display); color: var(--gold); }
   .release-card ul { list-style: none; padding: 0; margin: 0; }
-  .release-card li { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px solid rgba(250,247,242,.12); font-size: .66rem; color: #b5ae9f; }
+  .release-card li { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px solid rgb(var(--bone-rgb) / .12); font-size: .66rem; color: var(--bone); }
   .live { color: var(--gold); } .live::before { content: "● "; animation: pulse 1.6s infinite; }
   @keyframes pulse { 50% { opacity: .3; } }
   @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .release-card { max-width: 420px; } }
 
-  .stats { background: var(--ink); color: var(--sand); padding: 40px 0; }
+  .stats { background: var(--ink-2); color: var(--sand); padding: 40px 0; }
   .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.5rem; }
-  .stats .mono { color: #9d978a; font-size: .64rem; margin: 0; }
+  .stats .mono { color: var(--on-dark-muted); font-size: .64rem; margin: 0; }
   .stat { font-family: var(--display); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1; margin: 0 0 .5rem; color: var(--gold); }
   @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
@@ -248,24 +251,26 @@ const faqSchema = {
   @media (max-width: 760px) { .head { flex-direction: column; align-items: start; } }
 
   .paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-  .path { position: relative; display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--line); background: var(--bone); }
+  .path { position: relative; display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 10px 30px rgb(var(--ink-rgb) / .07); }
   .path.featured { background: var(--ink); color: var(--bone); border-color: var(--ink); }
   .path .n { color: var(--clay); font-size: .64rem; margin: 0 0 1.5rem; }
   .path.featured .n { color: var(--gold); }
   .path .meta { font-size: .66rem; color: var(--muted); margin: -.2rem 0 1rem; }
-  .path.featured .meta { color: #9d978a; }
+  .path.featured .meta { color: var(--on-dark-muted); }
   .p-price { font: 1.6rem var(--display); margin: auto 0 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
-  .path.featured .p-price { color: var(--gold); border-color: rgba(250,247,242,.15); }
+  .path.featured .p-price { color: var(--gold); border-color: rgb(var(--bone-rgb) / .15); }
   .path .btn { align-self: start; }
   .path:not(.featured) .btn { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
   .path:not(.featured) .btn:hover { background: var(--ink); color: var(--bone); }
-  .badge { position: absolute; top: -10px; right: 1.5rem; background: var(--clay); color: var(--bone); font-size: .6rem; padding: .35em .8em; }
+  .badge { position: absolute; top: -10px; right: 1.5rem; background: var(--gold); color: var(--ink); font-size: .6rem; padding: .35em .8em; }
   @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
 
   .plans-sec { background: var(--sand-2); }
   .plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1.25rem; }
   .compare { margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
-  .compare summary { cursor: pointer; color: var(--clay); }
+  .compare { border-top: 0; padding-top: 0; }
+  .compare summary { display: inline-flex; gap: .6em; cursor: pointer; list-style: none; color: var(--clay); border: 1px solid var(--ink); padding: .8em 1.1em; font-size: .7rem; }
+  .compare summary::-webkit-details-marker { display: none; }
   .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
   table { width: 100%; border-collapse: collapse; min-width: 620px; }
   th, td { text-align: left; padding: .9rem 1rem .9rem 0; border-bottom: 1px solid var(--line); }
@@ -283,14 +288,14 @@ const faqSchema = {
   @media (max-width: 1000px) { .split { grid-template-columns: 1fr; } }
   @media (max-width: 520px) { .why { grid-template-columns: 1fr; } }
 
-  .incentives { background: var(--ink); color: var(--bone); }
+  .incentives { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--bone); }
   .incentives em, .incentives .eyebrow { color: var(--gold); }
   .inc-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
   .programs { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .programs li { border: 1px solid rgba(250,247,242,.25); padding: .45em .9em; font-size: .66rem; }
-  .big-nums > div { border-top: 1px solid rgba(250,247,242,.15); padding: 1.3rem 0; }
+  .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .66rem; }
+  .big-nums > div { border-top: 1px solid rgb(var(--bone-rgb) / .15); padding: 1.3rem 0; }
   .big-nums .n { font: clamp(2.6rem, 6vw, 4.4rem)/1 var(--display); color: var(--gold); margin: 0 0 .4rem; }
-  .big-nums .mono { margin: 0; color: #b5ae9f; font-size: .68rem; }
+  .big-nums .mono { margin: 0; color: var(--on-dark-muted); font-size: .68rem; }
   @media (max-width: 860px) { .inc-grid { grid-template-columns: 1fr; } }
 
   .steps { list-style: none; padding: 0; margin: 3rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
@@ -301,14 +306,14 @@ const faqSchema = {
 
   .communities { background: var(--sand-2); }
   .comm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 1.25rem; }
-  .comm { display: flex; flex-direction: column; padding: 1.8rem; background: var(--bone); border: 1px solid var(--line); text-decoration: none; transition: border-color .3s, transform .3s var(--ease); }
+  .comm { display: flex; flex-direction: column; padding: 1.8rem; background: var(--paper); border: 1px solid var(--line); text-decoration: none; transition: border-color .3s, transform .3s var(--ease); }
   .comm:hover { border-color: var(--clay); transform: translateY(-4px); }
   .comm h3 { font-size: 1.35rem; }
   .comm .mono { margin-top: auto; color: var(--clay); font-size: .7rem; }
 
   .band { position: relative; color: var(--bone); min-height: 70vh; display: flex; align-items: center; }
   .band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .band::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(14,23,18,.9), rgba(14,23,18,.25)); }
+  .band::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgb(var(--ink-rgb) / .9), rgb(var(--ink-rgb) / .25)); }
   .band-copy { position: relative; z-index: 2; width: 100%; }
   .band-copy h2 { max-width: 16ch; }
   .band-copy p:not(.eyebrow) { max-width: 46ch; }

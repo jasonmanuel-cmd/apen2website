@@ -71,7 +71,7 @@ const perks = [
 <style>
   .hero { position: relative; min-height: min(86vh, 820px); display: flex; align-items: flex-end; color: var(--bone); overflow: hidden; }
   .hero :global(.bg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,23,18,.85), rgba(14,23,18,.2) 75%), linear-gradient(180deg, transparent 50%, rgba(14,23,18,.7)); }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(var(--ink-rgb) / .85), rgb(var(--ink-rgb) / .2) 75%), linear-gradient(180deg, transparent 50%, rgb(var(--ink-rgb) / .7)); }
   .copy { position: relative; width: 100%; padding-bottom: clamp(48px, 9vh, 100px); }
   .hero .eyebrow, .hero em { color: var(--gold); }
   .hero h1 { max-width: 13ch; }
@@ -94,7 +94,7 @@ const perks = [
   .lender { background: var(--ink); color: var(--bone); padding: 1.6rem; }
   .lender .mono { color: var(--gold); font-size: .66rem; margin: 0; }
   .lender .name { font: 1.5rem var(--display); margin: .4rem 0 .2rem; }
-  .lender .muted { color: #9d978a; margin: 0 0 .8rem; font-size: .95rem; }
+  .lender .muted { color: var(--on-dark-muted); margin: 0 0 .8rem; font-size: .95rem; }
   .lender .links a { color: var(--bone); }
   .inquire { background: var(--ink); color: var(--bone); padding: clamp(64px, 9vw, 110px) 0; }
   .inquire .eyebrow, .inquire em { color: var(--gold); }

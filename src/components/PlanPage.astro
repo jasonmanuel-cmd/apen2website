@@ -126,10 +126,10 @@ const schema = {
   .top { display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: end; }
   .lede { font-size: 1.3rem; max-width: 40ch; color: var(--muted); margin: 0; }
   .price-box { background: var(--ink); color: var(--bone); padding: 2rem; display: flex; flex-direction: column; gap: .7rem; }
-  .price-box > .mono { color: #9d978a; margin: 0; font-size: .7rem; }
+  .price-box > .mono { color: var(--on-dark-muted); margin: 0; font-size: .7rem; }
   .big { font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3rem); line-height: 1; margin: 0 0 .6rem; color: var(--gold); }
-  .release { list-style: none; padding: 0; margin: 0 0 .8rem; border-top: 1px solid rgba(250,247,242,.12); }
-  .release li { display: flex; justify-content: space-between; padding: .55rem 0; border-bottom: 1px solid rgba(250,247,242,.12); font-size: .68rem; color: #b5ae9f; }
+  .release { list-style: none; padding: 0; margin: 0 0 .8rem; border-top: 1px solid rgb(var(--bone-rgb) / .12); }
+  .release li { display: flex; justify-content: space-between; padding: .55rem 0; border-bottom: 1px solid rgb(var(--bone-rgb) / .12); font-size: .68rem; color: var(--on-dark-muted); }
   .release .live { color: var(--gold); }
   .release .live::before { content: "● "; animation: pulse 1.6s infinite; }
   @keyframes pulse { 50% { opacity: .3; } }
@@ -150,7 +150,7 @@ const schema = {
   .blueprint { background: var(--sand-2); padding: clamp(64px, 9vw, 110px) 0; }
   .bp-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
   .bp-ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
-  .bp-img { display: block; background: #fff; padding: 1rem; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(14,23,18,.1); cursor: zoom-in; transition: transform .4s var(--ease); }
+  .bp-img { display: block; background: #fff; padding: 1rem; border: 1px solid var(--line); box-shadow: 0 20px 50px rgb(var(--ink-rgb) / .1); cursor: zoom-in; transition: transform .4s var(--ease); }
   .bp-img:hover { transform: translateY(-4px); }
   @media (max-width: 860px) { .bp-grid { grid-template-columns: 1fr; } }
   .inquire { background: var(--ink); color: var(--bone); padding: clamp(64px, 9vw, 110px) 0; }
