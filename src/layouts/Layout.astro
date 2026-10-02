@@ -1,0 +1,181 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.webp';
+import { site, plans, communities, offer, usd, disclaimer } from '../data/site';
+interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
+const { title, description, schema, image, noindex } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: site.name, url: site.url, telephone: site.phone, email: site.email,
+  address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
+  areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
+};
+const path = Astro.url.pathname;
+const nav = [
+  ['/#plans', 'Models'],
+  ['/financing/', 'Financing'],
+  ['/#communities', 'Communities'],
+  ['/heroes-of-the-nation/', 'Military'],
+  ['/contact-us/', 'Contact'],
+];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  {image && <meta property="og:image" content={new URL(image, site.url).href} />}
+  <meta name="theme-color" content="#0E1712" />
+  <link rel="icon" href="/favicon.webp" type="image/webp" />
+  <link rel="sitemap" href="/sitemap.xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <a class="promo" href="/financing/">
+    <strong>{offer.downPayment} down</strong> for first-time buyers <span aria-hidden="true">·</span> <strong>Save up to {usd(offer.earlyCredit)}</strong> early-buyer credit <span class="go">See details →</span>
+  </a>
+  <header class="nav">
+    <a href="/" class="logo" aria-label="Aspen II Homes, home"><Image src={logo} alt="" width={34} height={34} class="mark" loading="eager" />Aspen <em>II</em> Homes</a>
+    <nav aria-label="Main">
+      {nav.map(([href, label]) => <a href={href} aria-current={path === href ? 'page' : undefined}>{label}</a>)}
+    </nav>
+    <a class="btn btn-sm nav-call" href={site.phoneHref}>{site.phone}</a>
+    <details class="menu">
+      <summary class="mono" aria-label="Menu">Menu</summary>
+      <nav aria-label="Mobile">
+        {nav.map(([href, label]) => <a href={href}>{label}</a>)}
+        <a href={site.phoneHref}>Call {site.phone}</a>
+      </nav>
+    </details>
+  </header>
+
+  <main id="main"><slot /></main>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div>
+        <p class="logo">Aspen <em>II</em> Homes</p>
+        <p class="muted">{site.tagline}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
+        <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}</p>
+      </div>
+      <div>
+        <p class="mono head">Floor plans</p>
+        <ul>{plans.map((p) => <li><a href={`/${p.slug}/`}>{p.name}</a></li>)}</ul>
+      </div>
+      <div>
+        <p class="mono head">Communities</p>
+        <ul>{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
+        <p class="mono head" style="margin-top:1.5rem">Buying</p>
+        <ul><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li></ul>
+      </div>
+    </div>
+    <div class="wrap fine">
+      <p>{site.name} · {offer.community}, {offer.city} · New homes from {usd(offer.from)}{site.license && ` · ${site.license}`}</p>
+      <p>{disclaimer} 0% down and savings programs are subject to eligibility, lender approval, and program terms. This is not a commitment to lend and is not legal, tax, or financial advice.</p>
+      <p><span class="eho">Equal Housing Opportunity</span> © {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div class="mobile-bar" aria-label="Quick contact">
+    <a href={site.phoneHref}>Call</a>
+    <a href={site.sms()}>Text</a>
+    <a href="/contact-us/" class="primary">Schedule a tour</a>
+  </div>
+</body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #0E1712; --ink-2: #192720; --bone: #FAF7F2; --sand: #EAE3D5; --sand-2: #F3EEE5;
+    --clay: #B35B37; --clay-hover: #934626; --sage: #6E8263; --gold: #C09A4E; --muted: #6C665A;
+    --line: rgba(14,23,18,.12);
+    --display: "Gloock", serif; --serif: "Source Serif 4", Georgia, serif; --mono: "IBM Plex Mono", monospace;
+    --max: 1260px; --gutter: clamp(16px, 4vw, 36px); --ease: cubic-bezier(.2,.7,.35,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { margin: 0; background: var(--bone); color: var(--ink); font: 400 1.075rem/1.65 var(--serif); -webkit-font-smoothing: antialiased; }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.05; letter-spacing: -.01em; margin: 0 0 .4em; text-wrap: balance; }
+  h1 { font-size: clamp(2.6rem, 7vw, 5.4rem); }
+  h2 { font-size: clamp(2rem, 4.5vw, 3.2rem); }
+  h3 { font-size: 1.55rem; }
+  p { text-wrap: pretty; }
+  em { font-style: italic; color: var(--clay); }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+  .section { padding: clamp(64px, 10vw, 120px) 0; }
+  .eyebrow, .mono { font-family: var(--mono); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
+  .eyebrow { color: var(--clay); margin: 0 0 1rem; }
+  .muted { color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5em; background: var(--clay); color: var(--bone); text-decoration: none; border: 0; cursor: pointer;
+         font: 500 .82rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 1em 1.6em; border-radius: 2px;
+         transition: background .25s var(--ease), transform .25s var(--ease); }
+  .btn:hover { background: var(--clay-hover); transform: translateY(-2px); }
+  .btn-ghost { background: transparent; border: 1px solid currentColor; color: inherit; }
+  .btn-ghost:hover { background: rgba(127,127,127,.12); }
+  .btn-sm { padding: .7em 1.1em; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: var(--bone); padding: .6em 1em; z-index: 100; }
+  .skip:focus { left: 8px; }
+
+  .nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+         padding: .85rem var(--gutter); background: rgba(250,247,242,.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .nav nav { display: flex; gap: 1.8rem; }
+  .nav nav a { text-decoration: none; font: .74rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  .nav nav a:hover, .nav nav a[aria-current] { color: var(--clay); }
+  .logo { font-family: var(--display); font-size: 1.45rem; text-decoration: none; margin: 0; white-space: nowrap; display: inline-flex; align-items: center; gap: .55rem; }
+  .logo .mark { width: 34px; height: 34px; border-radius: 4px; }
+  .promo { display: block; background: var(--clay); color: var(--bone); text-align: center; text-decoration: none; padding: .55rem var(--gutter); font: .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .promo strong { font-weight: 500; }
+  .promo .go { margin-left: .8rem; border-bottom: 1px solid currentColor; }
+  .promo:hover { background: var(--clay-hover); }
+  @media (max-width: 600px) { .promo .go { display: none; } }
+  .fine p { margin: 0 0 .7rem; }
+  .eho { font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; border: 1px solid #8a8478; padding: .15em .5em; margin-right: .6rem; }
+  .menu { display: none; position: relative; }
+  .menu summary { list-style: none; cursor: pointer; border: 1px solid var(--ink); padding: .55em 1em; font-size: .72rem; }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu[open] summary { background: var(--ink); color: var(--bone); }
+  .nav .menu nav { display: flex; flex-direction: column; gap: 0; position: absolute; right: 0; top: calc(100% + 10px); min-width: 230px;
+                   background: var(--bone); border: 1px solid var(--line); box-shadow: 0 16px 40px rgba(14,23,18,.15); }
+  .nav .menu nav a { padding: 1rem 1.2rem; border-bottom: 1px solid var(--line); font-size: .78rem; }
+  @media (max-width: 900px) { .nav > nav { display: none; } .menu { display: block; } }
+  @media (max-width: 480px) { .nav-call { display: none; } }
+
+  .footer { background: var(--ink); color: var(--sand); padding: 72px 0 110px; }
+  .footer a { text-decoration: none; } .footer a:hover { color: var(--gold); }
+  .footer .muted { color: #9d978a; max-width: 38ch; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2.5rem; }
+  .footer ul { list-style: none; padding: 0; margin: 0; line-height: 2; }
+  .footer .head { color: var(--gold); font-size: .7rem; }
+  .fine { font-size: .78rem; color: #8a8478; margin-top: 3rem; border-top: 1px solid rgba(250,247,242,.1); padding-top: 1.5rem; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+
+  .mobile-bar { display: none; }
+  @media (max-width: 760px) {
+    .mobile-bar { display: grid; grid-template-columns: 1fr 1fr 1.6fr; position: fixed; inset: auto 0 0 0; z-index: 30;
+                  background: var(--ink); border-top: 1px solid rgba(250,247,242,.12); padding-bottom: env(safe-area-inset-bottom); }
+    .mobile-bar a { color: var(--bone); text-align: center; padding: 1rem .5rem; text-decoration: none; font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .mobile-bar a + a { border-left: 1px solid rgba(250,247,242,.12); }
+    .mobile-bar .primary { background: var(--clay); }
+  }
+
+  .reveal { animation: rise .9s var(--ease) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(24px); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style>

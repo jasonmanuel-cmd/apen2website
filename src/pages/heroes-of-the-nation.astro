@@ -1,0 +1,103 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site, heroes as h, photos, usd } from '../data/site';
+const img = photos('sunset-retreat')[0].src;
+const l = h.lender;
+const perks = [
+  [usd(h.cash), 'Hero Home Cash'],
+  ['10-Year', 'Builder warranty'],
+  ['20 min', 'From Edwards AFB'],
+  ['$1,000+', 'Move-in bonus'],
+];
+---
+<Layout
+  title={`Military & Veteran Homes from ${usd(h.price)} | ${site.name}`}
+  description={`A ${h.beds}-bed, ${h.sqft.toLocaleString()} sq ft new construction home for ${usd(h.price)}, plus ${usd(h.cash)} Hero Home Cash. For qualifying military near Edwards AFB. Use your BAH to buy.`}
+>
+  <section class="hero">
+    <Image src={img} alt="New construction single-story home with two-car garage" class="bg" loading="eager" widths={[800, 1536, 2560]} sizes="100vw" />
+    <div class="shade"></div>
+    <div class="wrap copy">
+      <p class="eyebrow reveal">Heroes of the Nation · Vets & military homes</p>
+      <h1 class="reveal" style="animation-delay:.1s">You served. <em>Now come home.</em></h1>
+      <p class="offer reveal" style="animation-delay:.2s"><strong>{usd(h.price)}</strong> {h.beds} beds · {h.baths} baths · {h.sqft.toLocaleString()} sq ft</p>
+      <div class="ctas reveal" style="animation-delay:.3s">
+        <a class="btn" href="#qualify">See if you qualify</a>
+        <a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="perks">
+    <div class="wrap perk-grid">{perks.map(([n, t]) => <div><p class="stat">{n}</p><p class="mono">{t}</p></div>)}</div>
+  </section>
+
+  <section class="section wrap cols">
+    <div>
+      <p class="eyebrow">Use your BAH</p>
+      <h2>Turn your housing allowance into <em>a home you own.</em></h2>
+      <p>We'll help you maximize your buying power and make homeownership a reality, with lower-than-average monthly payments on brand-new construction.</p>
+      <div class="guarantee">
+        <p class="mono">Our guarantee</p>
+        <p>100% money-back guarantee. And if you aren't completely satisfied with your consultation, we'll give you $100 for your time.</p>
+      </div>
+    </div>
+    <div>
+      <p class="eyebrow">Eligibility</p>
+      <ul class="elig">{h.eligibility.map((e) => <li>{e}</li>)}</ul>
+      <div class="lender">
+        <p class="mono">Program lender</p>
+        <p class="name">{l.name}</p>
+        <p class="muted">{l.title} · NMLS #{l.nmls}<br />{l.company}</p>
+        <p class="mono links"><a href={l.phoneHref}>{l.phone}</a> · <a href={`mailto:${l.email}`}>Email</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="inquire" id="qualify">
+    <div class="wrap inq-grid">
+      <div>
+        <p class="eyebrow">We'll pay you to move in</p>
+        <h2>See if you <em>qualify.</em></h2>
+        <p>Tell us your branch and rank in the notes and we'll confirm your eligibility within {site.followUp}.</p>
+      </div>
+      <LeadForm interest="military" source="Heroes of the Nation" dark />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero { position: relative; min-height: min(86vh, 820px); display: flex; align-items: flex-end; color: var(--bone); overflow: hidden; }
+  .hero :global(.bg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,23,18,.85), rgba(14,23,18,.2) 75%), linear-gradient(180deg, transparent 50%, rgba(14,23,18,.7)); }
+  .copy { position: relative; width: 100%; padding-bottom: clamp(48px, 9vh, 100px); }
+  .hero .eyebrow, .hero em { color: var(--gold); }
+  .hero h1 { max-width: 13ch; }
+  .offer { font: .9rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .offer strong { display: block; font: 400 clamp(2.4rem, 5vw, 3.6rem) var(--display); letter-spacing: 0; color: var(--gold); text-transform: none; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+  .perks { background: var(--clay); color: var(--bone); padding: 40px 0; }
+  .perk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+  .perks .stat { font: 400 clamp(1.8rem, 3.5vw, 2.6rem)/1 var(--display); margin: 0 0 .4rem; }
+  .perks .mono { margin: 0; font-size: .68rem; opacity: .85; }
+  @media (max-width: 760px) { .perk-grid { grid-template-columns: 1fr 1fr; } }
+  .cols { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
+  @media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
+  .guarantee { margin-top: 2rem; padding: 1.5rem; border-left: 3px solid var(--gold); background: var(--sand-2); }
+  .guarantee .mono { color: var(--clay); margin: 0 0 .4rem; font-size: .68rem; }
+  .guarantee p:last-child { margin: 0; }
+  .elig { list-style: none; padding: 0; margin: 0 0 2rem; }
+  .elig li { padding: .9rem 0 .9rem 2rem; border-bottom: 1px solid var(--line); position: relative; }
+  .elig li::before { content: "★"; position: absolute; left: 0; color: var(--gold); }
+  .lender { background: var(--ink); color: var(--bone); padding: 1.6rem; }
+  .lender .mono { color: var(--gold); font-size: .66rem; margin: 0; }
+  .lender .name { font: 1.5rem var(--display); margin: .4rem 0 .2rem; }
+  .lender .muted { color: #9d978a; margin: 0 0 .8rem; font-size: .95rem; }
+  .lender .links a { color: var(--bone); }
+  .inquire { background: var(--ink); color: var(--bone); padding: clamp(64px, 9vw, 110px) 0; }
+  .inquire .eyebrow, .inquire em { color: var(--gold); }
+  .inq-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  @media (max-width: 860px) { .inq-grid { grid-template-columns: 1fr; } }
+</style>

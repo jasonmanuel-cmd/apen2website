@@ -1,0 +1,162 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import PlanCard from './PlanCard.astro';
+import Gallery from './Gallery.astro';
+import LeadForm from './LeadForm.astro';
+import { site, plans, photos, blueprint, offer, usd, type Plan } from '../data/site';
+
+const { plan } = Astro.props as { plan: Plan };
+const imgs = photos(plan.folder);
+const bp = blueprint(plan.folder);
+const pdf = `/plans/${plan.slug}.pdf`;
+const ogSrc = imgs[0]?.src ?? bp;
+const og = ogSrc ? (await getImage({ src: ogSrc, width: 1200, format: 'jpg' })).src : undefined;
+const i = plans.indexOf(plan);
+const others = [1, 2, 3].map((n) => plans[(i + n) % plans.length]);
+const facts = [
+  ['Living area', `${plan.sqft.toLocaleString()} sf`],
+  ['Bedrooms', plan.beds],
+  ['Bathrooms', plan.baths],
+  ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
+];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'SingleFamilyResidence',
+  name: `${plan.name} by ${site.name}`,
+  description: plan.summary,
+  numberOfBedrooms: plan.beds,
+  numberOfBathroomsTotal: plan.baths,
+  floorSize: { '@type': 'QuantitativeValue', value: plan.sqft, unitCode: 'FTK' },
+  ...(og && { image: new URL(og, site.url).href }),
+};
+---
+<Layout
+  title={`${plan.name}: ${plan.sqft.toLocaleString()} Sq Ft ${plan.price ? `from ${usd(plan.price)}` : `${plan.beds} Bed Home`} | ${site.name}`}
+  description={`${plan.name}: ${plan.sqft.toLocaleString()} sq ft, ${plan.beds} bed, ${plan.baths} bath ${plan.stories === 2 ? 'two-story' : 'single-story'} new home${plan.price ? ` from ${usd(plan.price)}` : ''} in Tehachapi & Kern County. Photos, blueprint & pricing.`}
+  schema={schema}
+  image={og}
+>
+  <section class="wrap intro">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#plans">Models</a> / <span aria-current="page">{plan.name}</span></nav>
+    <div class="top">
+      <div class="reveal">
+        <p class="eyebrow">{plan.tagline}{plan.firstRelease && ` · ${offer.community}, ${offer.city}`}</p>
+        <h1>{plan.name}</h1>
+        <p class="lede">{plan.headline}</p>
+      </div>
+      <div class="price-box reveal" style="animation-delay:.15s">
+        <p class="mono">{plan.price ? 'Starting at' : 'Pricing'}</p>
+        <p class="big">{plan.price ? usd(plan.price) : 'Call today'}</p>
+        {plan.firstRelease && (
+          <ul class="release">{offer.release.map(([h, s]) => <li class="mono"><span>{h}</span><span class:list={[{ live: s === 'Reserving' }]}>{s}</span></li>)}</ul>
+        )}
+        <a class="btn" href="#inquire">{plan.firstRelease ? 'Reserve & customize' : 'Request model information'}</a>
+        <a class="btn btn-ghost" href={site.sms(`Please text me the ${plan.name} price sheet`)}>Text me the price sheet</a>
+      </div>
+    </div>
+    <dl class="facts">
+      {facts.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
+    </dl>
+  </section>
+
+  {imgs.length > 0 && (
+    <section class="wrap">
+      <Gallery images={imgs} name={plan.name} />
+      {plan.rendering && <p class="mono note">Images are artist renderings. Final construction may vary.</p>}
+    </section>
+  )}
+
+  <section class="section wrap cols">
+    <div>
+      <p class="eyebrow">About this model</p>
+      <h2>{plan.headline}</h2>
+      <p class="summary">{plan.summary}</p>
+    </div>
+    <div>
+      <p class="eyebrow">Highlights</p>
+      <ul class="hl">{plan.highlights.map((h) => <li>{h}</li>)}</ul>
+      <p class="muted small">Every model is semi-custom: choose flooring, paint colors, cabinetry and more.</p>
+    </div>
+  </section>
+
+  {bp && (
+    <section class="blueprint">
+      <div class="wrap bp-grid">
+        <div>
+          <p class="eyebrow">The blueprint</p>
+          <h2>See every room <em>before it's built.</em></h2>
+          <p class="muted">The full {plan.name} floor plan, {plan.sqft.toLocaleString()} sq ft. Open the PDF to zoom into dimensions. Confirm current specifications with our team.</p>
+          <div class="bp-ctas">
+            <a class="btn" href={pdf} target="_blank" rel="noopener">Open blueprint PDF</a>
+            <a class="btn btn-ghost" href={pdf} download>Download</a>
+          </div>
+        </div>
+        <a class="bp-img" href={pdf} target="_blank" rel="noopener" aria-label={`Open ${plan.name} blueprint PDF`}>
+          <Image src={bp} alt={`${plan.name} floor plan blueprint`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
+        </a>
+      </div>
+    </section>
+  )}
+
+  <section class="inquire" id="inquire">
+    <div class="wrap inq-grid">
+      <div>
+        <p class="eyebrow">Interested in the {plan.name}?</p>
+        <h2>Get pricing, availability & <em>the incentive breakdown.</em></h2>
+        <p>Ask about 0% down for first-time buyers and up to {usd(offer.earlyCredit)} in early-buyer savings. We reply {site.followUp}.</p>
+      </div>
+      <LeadForm plan={plan.name} interest={plan.firstRelease ? 'reserve' : 'semi'} source={`Plan page: ${plan.name}`} dark />
+    </div>
+  </section>
+
+  <section class="section others">
+    <div class="wrap">
+      <p class="eyebrow">Keep exploring</p>
+      <h2>More models</h2>
+      <div class="grid">{others.map((p) => <PlanCard plan={p} />)}</div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .intro { padding-top: clamp(28px, 5vw, 64px); padding-bottom: 40px; }
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2.2rem; }
+  .crumbs a { text-decoration: none; } .crumbs a:hover { color: var(--clay); }
+  .top { display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: end; }
+  .lede { font-size: 1.3rem; max-width: 40ch; color: var(--muted); margin: 0; }
+  .price-box { background: var(--ink); color: var(--bone); padding: 2rem; display: flex; flex-direction: column; gap: .7rem; }
+  .price-box > .mono { color: #9d978a; margin: 0; font-size: .7rem; }
+  .big { font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3rem); line-height: 1; margin: 0 0 .6rem; color: var(--gold); }
+  .release { list-style: none; padding: 0; margin: 0 0 .8rem; border-top: 1px solid rgba(250,247,242,.12); }
+  .release li { display: flex; justify-content: space-between; padding: .55rem 0; border-bottom: 1px solid rgba(250,247,242,.12); font-size: .68rem; color: #b5ae9f; }
+  .release .live { color: var(--gold); }
+  .release .live::before { content: "● "; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); margin: 3rem 0 0; border-top: 1px solid var(--line); }
+  .facts div { padding: 1.25rem 1rem 0 0; }
+  .facts dt { color: var(--muted); font-size: .66rem; }
+  .facts dd { margin: .3rem 0 0; font-family: var(--display); font-size: 1.6rem; }
+  @media (max-width: 860px) { .top { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { .facts { grid-template-columns: 1fr 1fr; } }
+  .note { font-size: .68rem; color: var(--muted); margin-top: .8rem; }
+  .cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
+  .summary { font-size: 1.15rem; }
+  .hl { list-style: none; margin: 0 0 1.5rem; padding: 0; }
+  .hl li { padding: .9rem 0 .9rem 2rem; border-bottom: 1px solid var(--line); position: relative; }
+  .hl li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); }
+  .small { font-size: .92rem; }
+  @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+  .blueprint { background: var(--sand-2); padding: clamp(64px, 9vw, 110px) 0; }
+  .bp-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+  .bp-ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+  .bp-img { display: block; background: #fff; padding: 1rem; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(14,23,18,.1); cursor: zoom-in; transition: transform .4s var(--ease); }
+  .bp-img:hover { transform: translateY(-4px); }
+  @media (max-width: 860px) { .bp-grid { grid-template-columns: 1fr; } }
+  .inquire { background: var(--ink); color: var(--bone); padding: clamp(64px, 9vw, 110px) 0; }
+  .inquire em, .inquire .eyebrow { color: var(--gold); }
+  .inq-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  @media (max-width: 860px) { .inq-grid { grid-template-columns: 1fr; } }
+  .others { background: var(--bone); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin-top: 2rem; }
+</style>

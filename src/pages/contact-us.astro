@@ -1,0 +1,53 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site, communities, offer } from '../data/site';
+const reasons = [
+  `Reserve & customize a ${offer.community} home`,
+  'Get floor plans, pricing and the incentive breakdown',
+  `Walk the ${offer.community} community and model plans`,
+];
+---
+<Layout
+  title={`Contact & Schedule a Tour | ${site.name}`}
+  description={`Reserve a ${offer.community} home, pick a model or start a custom build. Call or text HOMES to ${site.phone} for plans, pricing and tours.`}
+>
+  <section class="section">
+    <div class="wrap grid">
+      <div>
+        <p class="eyebrow">Request a tour or info</p>
+        <h1>Let's find <em>your home.</em></h1>
+        <p class="lede">Reserve a {offer.community} home, choose your model or ask about a fully custom build. Zero pressure, zero obligation, just information.</p>
+        <ul class="reasons">{reasons.map((r) => <li>{r}</li>)}</ul>
+        <dl class="info">
+          <div><dt class="mono">Call</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
+          <div><dt class="mono">Text</dt><dd><a href={site.sms()}>Text HOMES</a></dd></div>
+          <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+          <div><dt class="mono">Office</dt><dd>{site.address}</dd></div>
+        </dl>
+        <p class="mono serving">Serving {communities.map((c) => c.name).join(' · ')}</p>
+      </div>
+      <div class="card">
+        <p class="mono k">Quick form · we reply {site.followUp}</p>
+        <LeadForm source="Contact page" interest="tour" />
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .lede { font-size: 1.2rem; color: var(--muted); max-width: 44ch; }
+  .reasons { list-style: none; padding: 0; margin: 1.5rem 0; }
+  .reasons li { padding: .6rem 0 .6rem 1.8rem; position: relative; }
+  .reasons li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); }
+  .info { margin: 2rem 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .info dt { font-size: .66rem; color: var(--muted); }
+  .info dd { margin: .2rem 0 0; font-family: var(--display); font-size: 1.25rem; }
+  .info a { text-decoration: none; } .info a:hover { color: var(--clay); }
+  @media (max-width: 480px) { .info { grid-template-columns: 1fr; } }
+  .serving { font-size: .66rem; color: var(--muted); line-height: 2; }
+  .card { background: var(--sand-2); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid var(--line); }
+  .k { color: var(--clay); font-size: .66rem; margin: 0 0 1.2rem; }
+</style>

@@ -1,0 +1,333 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import PlanCard from '../components/PlanCard.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { site, plans, communities, heroes, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
+
+const hero = photos('tranquil-oasis')[0].src;
+const sunset = photos('sunset-retreat')[0].src;
+const kitchen = photos('sunset-retreat').find((p) => p.caption === 'Kitchen')!.src;
+const band = photos('enchanted-haven')[0].src;
+const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
+
+const stats = [
+  ['$459K', 'Plans from'],
+  [offer.sqft.toLocaleString(), 'Sq ft · Sunset Retreat'],
+  ['6', 'Home models'],
+  [offer.downPayment, 'Down option'],
+  ['$15K', 'Early savings'],
+  [offer.moveIn, 'To move-in'],
+];
+const why = [
+  ['New-Home Warranty', 'Builder warranty coverage on your brand-new construction.'],
+  ['Modern & Efficient', 'Current codes, efficient systems and up-to-date materials throughout.'],
+  ['Local Homebuilder', 'A hands-on local team that handles permits and trades and builds every home to one standard.'],
+  ['Equal Housing', 'A fair, transparent process and honest disclosures at every step.'],
+];
+const steps = [
+  ['Tell us your goals', "Share your budget, timeline and whether you're a first-time buyer. A quick call or form is all it takes."],
+  ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
+  ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
+];
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+};
+---
+<Layout
+  title={`New Homes in Tehachapi from ${usd(offer.from)} | ${site.name}`}
+  description={`New homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down for first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings.`}
+  image={og.src}
+  schema={faqSchema}
+>
+  <section class="hero">
+    <Image src={hero} alt="A finished Aspen II home with a landscaped front yard in Tehachapi" class="hero-img" loading="eager" fetchpriority="high" widths={[800, 1280, 1600]} sizes="100vw" />
+    <div class="shade"></div>
+    <div class="wrap hero-grid">
+      <div class="copy">
+        <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
+        <h1 class="reveal" style="animation-delay:.1s">Brand-new homes <em>you help design.</em></h1>
+        <p class="lede reveal" style="animation-delay:.2s">Aspen II Homes is building the first two homes at {offer.community}. Reserve now, choose your model and customize the finishes, backed by builder incentives that make owning easier than you think.</p>
+        <div class="ctas reveal" style="animation-delay:.3s">
+          <a class="btn" href="/contact-us/?interest=reserve">Reserve & customize</a>
+          <a class="btn btn-ghost" href="#plans">Explore the models</a>
+        </div>
+      </div>
+      <a class="release-card reveal" style="animation-delay:.4s" href="/sunset-retreat/">
+        <Image src={sunset} alt="Sunset Retreat exterior" widths={[400, 700]} sizes="360px" />
+        <div>
+          <p class="mono k">First release · only 2 homes</p>
+          <p class="name">{offer.community}</p>
+          <p class="price">From <strong>{usd(offer.from)}</strong></p>
+          <ul>{offer.release.map(([h, s]) => <li class="mono"><span>{h}</span><span class:list={[{ live: s === 'Reserving' }]}>{s}</span></li>)}</ul>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="At a glance">
+    <div class="wrap stat-grid">{stats.map(([n, l]) => <div><p class="stat">{n}</p><p class="mono">{l}</p></div>)}</div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Three ways to own</p>
+          <h2>From move-now to <em>designed from scratch.</em></h2>
+        </div>
+        <p class="muted">Available in roughly three months. No pressure, no obligation, just fast answers to help you decide.</p>
+      </div>
+      <div class="paths">
+        {paths.map((p, i) => (
+          <article class:list={['path', { featured: i === 0 }]}>
+            {p.badge && <span class="badge mono">{p.badge}</span>}
+            <p class="mono n">Path {p.n} · {p.name}</p>
+            <h3>{p.title}</h3>
+            <p class="mono meta">{p.meta}</p>
+            <p>{p.text}</p>
+            <p class="p-price">{p.price}</p>
+            <a class="btn" href={p.cta[1]}>{p.cta[0]}</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section plans-sec" id="plans">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">The model collection</p>
+          <h2>Six models. <em>Your finishes.</em></h2>
+        </div>
+        <p class="muted">Browse real photography and the blueprint for every home, then pick the one that fits your life.</p>
+      </div>
+      <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
+      <details class="compare">
+        <summary class="mono">Compare all six models side by side</summary>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Model</th><th>Sq ft</th><th>Beds</th><th>Baths</th><th>Stories</th><th>Price</th><th>Blueprint</th></tr></thead>
+            <tbody>
+              {plans.map((p) => (
+                <tr>
+                  <th scope="row"><a href={`/${p.slug}/`}>{p.name}</a></th>
+                  <td>{p.sqft.toLocaleString()}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories}</td>
+                  <td>{p.price ? usd(p.price) : 'Call'}</td>
+                  <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener">PDF</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="split">
+    <Image src={kitchen} alt="Kitchen in the Sunset Retreat model" widths={[600, 1000, 1536]} sizes="(max-width: 1000px) 100vw, 50vw" />
+    <div class="split-copy">
+      <p class="eyebrow">A new standard</p>
+      <h2>Built to a standard. <em>Finished to your taste.</em></h2>
+      <p>You don't just buy a house, you help shape it. Choose your model, select your finishes and move into a home that's truly yours from day one.</p>
+      <div class="why">{why.map(([t, d]) => <div><h3>{t}</h3><p class="muted">{d}</p></div>)}</div>
+    </div>
+  </section>
+
+  <section class="section incentives">
+    <div class="wrap inc-grid">
+      <div>
+        <p class="eyebrow">Buyer incentives</p>
+        <h2>Owning is closer <em>than you think.</em></h2>
+        <p>First-time buyer programs, an early-buyer credit you can put toward your floor plan, and buyer-friendly terms. We'll help you find the path that makes owning work.</p>
+        <ul class="programs">{financing.programs.map((p) => <li class="mono">{p}</li>)}</ul>
+        <div class="ctas"><a class="btn" href="/financing/">See how it works</a><a class="btn btn-ghost" href={site.sms('FINANCING')}>Text FINANCING</a></div>
+      </div>
+      <div class="big-nums">
+        <div><p class="n">0%</p><p class="mono">Down option for first-time buyers</p></div>
+        <div><p class="n">$15,000</p><p class="mono">Early-buyer savings toward your plan</p></div>
+        <div><p class="n">2-1</p><p class="mono">Rate buydown available</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Simple steps</p>
+      <h2>How it <em>works.</em></h2>
+      <ol class="steps">{steps.map(([t, d], i) => <li><span class="mono">Step 0{i + 1}</span><h3>{t}</h3><p class="muted">{d}</p></li>)}</ol>
+    </div>
+  </section>
+
+  <section class="section communities" id="communities">
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <p class="eyebrow">Where we build</p>
+          <h2>Six communities. <em>One local builder.</em></h2>
+        </div>
+        <p class="muted">We know each area's building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
+      </div>
+      <div class="comm-grid">
+        {communities.map((c) => <a href={`/${c.slug}/`} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore →</span></a>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <Image src={band} alt="An Aspen II home at sunset" widths={[800, 1500]} sizes="100vw" />
+    <div class="band-copy wrap">
+      <p class="eyebrow">Heroes of the Nation</p>
+      <h2>A home for those who serve.</h2>
+      <p>Qualifying military families near Edwards AFB and China Lake: a {heroes.beds}-bed, {heroes.sqft.toLocaleString()} sq ft new home for {usd(heroes.price)}, plus {usd(heroes.cash)} in Hero Home Cash.</p>
+      <a class="btn" href="/heroes-of-the-nation/">See if you qualify</a>
+    </div>
+  </section>
+
+  <section class="section" id="faq">
+    <div class="wrap faq-grid">
+      <div>
+        <p class="eyebrow">Your questions</p>
+        <h2>Planning your <em>new home.</em></h2>
+        <p class="muted">Still curious? Call <a href={site.phoneHref}>{site.phone}</a> or text HOMES for instant answers.</p>
+      </div>
+      <div class="faq">
+        {faq.map(([q, a], i) => <details open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact" id="contact">
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow">Talk to our team</p>
+        <h2>Your brand-new home starts with <em>a conversation.</em></h2>
+        <p class="muted">Reserve a {offer.community} home, choose your model or start a fully custom build. No pressure, just answers.</p>
+        <p class="direct mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={site.sms()}>Text HOMES</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      </div>
+      <LeadForm source="Home page" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero { position: relative; min-height: min(90vh, 880px); display: flex; align-items: flex-end; color: var(--bone); overflow: hidden; }
+  .hero :global(.hero-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: zoom 20s var(--ease) both; }
+  @keyframes zoom { from { transform: scale(1.1); } }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14,23,18,.78), rgba(14,23,18,.15) 70%), linear-gradient(180deg, transparent 40%, rgba(14,23,18,.8)); }
+  .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.5fr minmax(280px, 360px); gap: 3rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
+  .hero .eyebrow, .hero em { color: var(--gold); }
+  .hero h1 { max-width: 13ch; }
+  .lede { max-width: 50ch; font-size: 1.15rem; opacity: .92; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+  .release-card { display: block; background: rgba(14,23,18,.82); backdrop-filter: blur(10px); border: 1px solid rgba(250,247,242,.15); text-decoration: none; transition: transform .35s var(--ease); }
+  .release-card:hover { transform: translateY(-4px); }
+  .release-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+  .release-card > div { padding: 1.2rem 1.4rem 1.4rem; }
+  .release-card .k { color: var(--gold); font-size: .64rem; margin: 0; }
+  .release-card .name { font: 1.7rem var(--display); margin: .3rem 0 0; }
+  .release-card .price { margin: 0 0 .8rem; font: .8rem var(--mono); }
+  .release-card .price strong { font: 400 1.5rem var(--display); color: var(--gold); }
+  .release-card ul { list-style: none; padding: 0; margin: 0; }
+  .release-card li { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px solid rgba(250,247,242,.12); font-size: .66rem; color: #b5ae9f; }
+  .live { color: var(--gold); } .live::before { content: "● "; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .release-card { max-width: 420px; } }
+
+  .stats { background: var(--ink); color: var(--sand); padding: 40px 0; }
+  .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.5rem; }
+  .stats .mono { color: #9d978a; font-size: .64rem; margin: 0; }
+  .stat { font-family: var(--display); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1; margin: 0 0 .5rem; color: var(--gold); }
+  @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 2rem; margin-bottom: 3rem; }
+  .head > .muted { max-width: 38ch; margin: 0; }
+  @media (max-width: 760px) { .head { flex-direction: column; align-items: start; } }
+
+  .paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .path { position: relative; display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--line); background: var(--bone); }
+  .path.featured { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+  .path .n { color: var(--clay); font-size: .64rem; margin: 0 0 1.5rem; }
+  .path.featured .n { color: var(--gold); }
+  .path .meta { font-size: .66rem; color: var(--muted); margin: -.2rem 0 1rem; }
+  .path.featured .meta { color: #9d978a; }
+  .p-price { font: 1.6rem var(--display); margin: auto 0 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .path.featured .p-price { color: var(--gold); border-color: rgba(250,247,242,.15); }
+  .path .btn { align-self: start; }
+  .path:not(.featured) .btn { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+  .path:not(.featured) .btn:hover { background: var(--ink); color: var(--bone); }
+  .badge { position: absolute; top: -10px; right: 1.5rem; background: var(--clay); color: var(--bone); font-size: .6rem; padding: .35em .8em; }
+  @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
+
+  .plans-sec { background: var(--sand-2); }
+  .plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1.25rem; }
+  .compare { margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
+  .compare summary { cursor: pointer; color: var(--clay); }
+  .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; min-width: 620px; }
+  th, td { text-align: left; padding: .9rem 1rem .9rem 0; border-bottom: 1px solid var(--line); }
+  thead th { font: .68rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  tbody th { font-family: var(--display); font-weight: 400; font-size: 1.15rem; }
+  tbody a { text-decoration: none; } tbody a:hover { color: var(--clay); }
+  td a { color: var(--clay); font-family: var(--mono); font-size: .75rem; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; background: var(--sand); }
+  .split img { width: 100%; height: 100%; object-fit: cover; min-height: 420px; }
+  .split-copy { padding: clamp(40px, 6vw, 88px); align-self: center; }
+  .why { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; margin-top: 2rem; }
+  .why h3 { font-size: 1.2rem; margin-bottom: .3rem; }
+  .why p { margin: 0; font-size: .98rem; }
+  @media (max-width: 1000px) { .split { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { .why { grid-template-columns: 1fr; } }
+
+  .incentives { background: var(--ink); color: var(--bone); }
+  .incentives em, .incentives .eyebrow { color: var(--gold); }
+  .inc-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+  .programs { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .programs li { border: 1px solid rgba(250,247,242,.25); padding: .45em .9em; font-size: .66rem; }
+  .big-nums > div { border-top: 1px solid rgba(250,247,242,.15); padding: 1.3rem 0; }
+  .big-nums .n { font: clamp(2.6rem, 6vw, 4.4rem)/1 var(--display); color: var(--gold); margin: 0 0 .4rem; }
+  .big-nums .mono { margin: 0; color: #b5ae9f; font-size: .68rem; }
+  @media (max-width: 860px) { .inc-grid { grid-template-columns: 1fr; } }
+
+  .steps { list-style: none; padding: 0; margin: 3rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .steps li { border-top: 2px solid var(--ink); padding-top: 1.25rem; }
+  .steps .mono { color: var(--clay); }
+  .steps h3 { margin: .6rem 0; }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+
+  .communities { background: var(--sand-2); }
+  .comm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 1.25rem; }
+  .comm { display: flex; flex-direction: column; padding: 1.8rem; background: var(--bone); border: 1px solid var(--line); text-decoration: none; transition: border-color .3s, transform .3s var(--ease); }
+  .comm:hover { border-color: var(--clay); transform: translateY(-4px); }
+  .comm h3 { font-size: 1.35rem; }
+  .comm .mono { margin-top: auto; color: var(--clay); font-size: .7rem; }
+
+  .band { position: relative; color: var(--bone); min-height: 70vh; display: flex; align-items: center; }
+  .band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .band::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(14,23,18,.9), rgba(14,23,18,.25)); }
+  .band-copy { position: relative; z-index: 2; width: 100%; }
+  .band-copy h2 { max-width: 16ch; }
+  .band-copy p:not(.eyebrow) { max-width: 46ch; }
+  .band .eyebrow { color: var(--gold); }
+
+  .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .faq-grid .muted a { color: var(--clay); }
+  .faq details { border-top: 1px solid var(--line); }
+  .faq details:last-child { border-bottom: 1px solid var(--line); }
+  .faq summary { cursor: pointer; list-style: none; padding: 1.2rem 2.5rem 1.2rem 0; position: relative; font: 1.2rem var(--display); }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; position: absolute; right: .3rem; top: 1rem; font: 1.5rem var(--mono); color: var(--clay); transition: transform .3s var(--ease); }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq details p { margin: 0 0 1.4rem; color: var(--muted); max-width: 60ch; }
+  @media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; } }
+
+  .contact { background: var(--sand-2); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .direct { margin-top: 2rem; line-height: 2.2; }
+  .direct a { text-decoration: none; color: var(--clay); }
+  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; } }
+</style>

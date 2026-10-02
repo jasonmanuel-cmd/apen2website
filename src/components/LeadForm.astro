@@ -1,0 +1,92 @@
+---
+import { site, plans, communities, offer, usd } from '../data/site';
+interface Props { plan?: string; community?: string; interest?: string; source?: string; dark?: boolean }
+const { plan = '', community = '', interest = '', source = 'Website', dark = false } = Astro.props;
+const interests = [
+  ['reserve', `Reserve & customize a ${offer.community} home (from ${usd(offer.from)})`],
+  ['semi', 'Choose a model (semi-custom)'],
+  ['custom', 'Fully custom build'],
+  ['financing', 'Financing & incentives'],
+  ['tour', 'Schedule a tour'],
+  ['military', 'Heroes of the Nation (military)'],
+  ['unsure', 'Not sure yet, help me decide'],
+];
+---
+<form class:list={['lead', { dark }]} action="/api/lead" method="post" data-lead>
+  <input type="hidden" name="source" value={source} />
+  <div class="hp" aria-hidden="true"><label>Leave blank <input name="honeypot" tabindex="-1" autocomplete="off" /></label></div>
+  <div class="row">
+    <label>Name <span aria-hidden="true">*</span><input name="name" required autocomplete="name" /></label>
+    <label>Phone <span aria-hidden="true">*</span><input name="phone" type="tel" required autocomplete="tel" /></label>
+  </div>
+  <label>Email<input name="email" type="email" autocomplete="email" /></label>
+  <label>I'm interested in
+    <select name="timeline" data-interest>
+      {interests.map(([v, l]) => <option value={l} data-key={v} selected={v === interest}>{l}</option>)}
+    </select>
+  </label>
+  <div class="row">
+    <label>Model
+      <select name="plan">
+        <option value="">Not sure yet</option>
+        {plans.map((p) => <option selected={p.name === plan}>{p.name}</option>)}
+      </select>
+    </label>
+    <label>Community
+      <select name="community">
+        <option value="">Not sure yet</option>
+        {communities.map((c) => <option selected={c.name === community}>{c.name}</option>)}
+      </select>
+    </label>
+  </div>
+  <label>When works for you? Anything we should know?<textarea name="notes" rows="3"></textarea></label>
+  <button class="btn" type="submit">Send my request →</button>
+  <p class="status mono" role="status" aria-live="polite">No spam. No pressure. We reply {site.followUp}. Prefer to text? <a href={site.sms()}>Text HOMES to {site.phone}</a></p>
+</form>
+
+<script>
+  // ?interest=reserve|custom|… preselects the dropdown (used by CTA links).
+  const want = new URLSearchParams(location.search).get('interest');
+  if (want) document.querySelectorAll<HTMLSelectElement>('select[data-interest]').forEach((s) => {
+    const o = [...s.options].find((o) => o.dataset.key === want);
+    if (o) s.value = o.value;
+  });
+  // Progressive enhancement: without JS the form still posts to /api/lead.
+  document.querySelectorAll<HTMLFormElement>('form[data-lead]').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button')!;
+      const status = form.querySelector('.status')!;
+      btn.disabled = true; btn.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        if (!res.ok) throw new Error();
+        form.classList.add('sent');
+        status.textContent = "Thank you! Our team will reach out shortly.";
+      } catch {
+        btn.disabled = false; btn.textContent = 'Send my request →';
+        status.innerHTML = 'Something went wrong. Please call <a href="tel:+16612383136">(661) 238-3136</a>.';
+      }
+    });
+  });
+</script>
+
+<style>
+  .lead { display: grid; gap: 1rem; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  label { display: grid; gap: .35rem; font: .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  input, select, textarea { font: 1rem var(--serif); color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 2px; padding: .8em .9em; width: 100%; min-width: 0; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold); outline-offset: 0; border-color: transparent; }
+  .hp { position: absolute; left: -9999px; }
+  .status { font-size: .72rem; color: var(--muted); margin: 0; }
+  .status a { color: var(--clay); }
+  .sent > :not(.status) { display: none; }
+  .sent .status { font: 1.5rem var(--display); text-transform: none; letter-spacing: 0; color: var(--ink); }
+  .dark label, .dark .status { color: #b5ae9f; }
+  .dark .status a { color: var(--gold); }
+  .dark.sent .status { color: var(--bone); }
+</style>

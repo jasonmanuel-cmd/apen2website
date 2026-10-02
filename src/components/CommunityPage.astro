@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PlanCard from './PlanCard.astro';
+import LeadForm from './LeadForm.astro';
+import { site, plans, communities, type Community } from '../data/site';
+
+const { community: c } = Astro.props as { community: Community };
+const military = c.points.some((p) => p.includes('Heroes'));
+const others = communities.filter((x) => x !== c);
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: 'Custom home building',
+  provider: { '@type': 'HomeAndConstructionBusiness', name: site.name, telephone: site.phone },
+  areaServed: c.name,
+};
+---
+<Layout
+  title={c.name.length > 30 ? `${c.name} Home Builder` : `${c.name} Home Builder | ${site.name}`}
+  description={`Build a new semi-custom home in ${c.name} with ${site.name}. Six models, local permit know-how. Call ${site.phone}.`}
+  schema={schema}
+>
+  <section class="hero">
+    <div class="wrap">
+      <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#communities">Communities</a> / <span aria-current="page">{c.name}</span></nav>
+      <p class="eyebrow reveal">Home builder · {c.name}, CA</p>
+      <h1 class="reveal" style="animation-delay:.1s">Build your new home in <em>{c.name}.</em></h1>
+      <p class="lede reveal" style="animation-delay:.2s">{c.intro}</p>
+      <ul class="points reveal" style="animation-delay:.3s">{c.points.map((p) => <li>{p}</li>)}</ul>
+      <div class="ctas">
+        <a class="btn" href="#inquire">Talk about your lot</a>
+        {military && <a class="btn btn-ghost" href="/heroes-of-the-nation/">Military program</a>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Available in {c.name}</p>
+      <h2>Choose from <em>six plans.</em></h2>
+      <div class="grid">{plans.map((p) => <PlanCard plan={p} />)}</div>
+    </div>
+  </section>
+
+  <section class="section inquire" id="inquire">
+    <div class="wrap inq-grid">
+      <div>
+        <p class="eyebrow">Building in {c.name}?</p>
+        <h2>Tell us about <em>your lot.</em></h2>
+        <p class="muted">Own land already, or still looking? Either way, we'll walk you through what it takes to build here.</p>
+        <p class="mono also">Also serving: {others.map((o, i) => <><a href={`/${o.slug}/`}>{o.name}</a>{i < others.length - 1 && ' · '}</>)}</p>
+      </div>
+      <LeadForm community={c.name} source={`Community page: ${c.name}`} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero { background: var(--ink); color: var(--bone); padding: clamp(40px, 7vw, 96px) 0 clamp(56px, 8vw, 110px); }
+  .hero .eyebrow, .hero em { color: var(--gold); }
+  .crumbs { color: #9d978a; font-size: .68rem; margin-bottom: 2.5rem; }
+  .crumbs a { text-decoration: none; }
+  .hero h1 { max-width: 16ch; }
+  .lede { max-width: 56ch; font-size: 1.2rem; opacity: .9; }
+  .points { list-style: none; padding: 0; margin: 2rem 0; display: flex; flex-wrap: wrap; gap: .6rem; }
+  .points li { border: 1px solid rgba(250,247,242,.25); padding: .5em 1em; font: .75rem var(--mono); letter-spacing: .06em; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin-top: 2rem; }
+  .inquire { background: var(--sand-2); }
+  .inq-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .also { font-size: .7rem; line-height: 2; margin-top: 2rem; color: var(--muted); }
+  .also a { color: var(--clay); }
+  @media (max-width: 860px) { .inq-grid { grid-template-columns: 1fr; } }
+</style>

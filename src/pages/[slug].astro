@@ -1,0 +1,15 @@
+---
+// Plans and communities both live at the site root to keep the live site's URLs.
+import PlanPage from '../components/PlanPage.astro';
+import CommunityPage from '../components/CommunityPage.astro';
+import { plans, communities } from '../data/site';
+
+export function getStaticPaths() {
+  return [
+    ...plans.map((plan) => ({ params: { slug: plan.slug }, props: { plan } })),
+    ...communities.map((community) => ({ params: { slug: community.slug }, props: { community } })),
+  ];
+}
+const { plan, community } = Astro.props;
+---
+{plan ? <PlanPage plan={plan} /> : <CommunityPage community={community} />}
