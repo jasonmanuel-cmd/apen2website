@@ -5,7 +5,7 @@ import captions from './captions.json';
 export const site = {
   name: 'Aspen II Homes',
   tagline: "Kern County's Local Custom Home Builder",
-  url: 'https://aspen2homes.com',
+  url: 'https://www.aspen2homes.com', // apex 308-redirects here, so www is the canonical host
   phone: '(661) 238-3136',
   phoneHref: 'tel:+16612383136',
   sms: (body = 'HOMES') => `sms:+16612383136?body=${encodeURIComponent(body)}`,
@@ -176,6 +176,8 @@ export const faq: [string, string][] = [
 export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';
 
 export const usd = (n: number) => '$' + n.toLocaleString('en-US');
+// "the Sunset Retreat" but "The Grand Haven", never "the The Grand Haven".
+export const theName = (name: string) => (/^the /i.test(name) ? name : `the ${name}`);
 export const sqftRange = () => {
   const s = plans.map((p) => p.sqft);
   return `${Math.min(...s).toLocaleString()}–${Math.max(...s).toLocaleString()}`;

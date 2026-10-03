@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
-import { site, plans, photos, blueprint, offer, usd, type Plan } from '../data/site';
+import { site, plans, photos, blueprint, offer, usd, type Plan, theName } from '../data/site';
 
 const { plan } = Astro.props as { plan: Plan };
 const imgs = photos(plan.folder);
@@ -52,7 +52,7 @@ const schema = {
           <ul class="release">{offer.release.map(([h, s]) => <li class="mono"><span>{h}</span><span class:list={[{ live: s === 'Reserving' }]}>{s}</span></li>)}</ul>
         )}
         <a class="btn" href="#inquire">{plan.firstRelease ? 'Reserve & customize' : 'Request model information'}</a>
-        <a class="btn btn-ghost" href={site.sms(`Please text me the ${plan.name} price sheet`)}>Text me the price sheet</a>
+        <a class="btn btn-ghost" href={site.sms(`Please text me ${theName(plan.name)} price sheet`)}>Text me the price sheet</a>
       </div>
     </div>
     <dl class="facts">
@@ -102,7 +102,7 @@ const schema = {
   <section class="inquire" id="inquire">
     <div class="wrap inq-grid">
       <div>
-        <p class="eyebrow">Interested in the {plan.name}?</p>
+        <p class="eyebrow">Interested in {theName(plan.name)}?</p>
         <h2>Get pricing, availability & <em>the incentive breakdown.</em></h2>
         <p>Ask about 0% down for first-time buyers and up to {usd(offer.earlyCredit)} in early-buyer savings. We reply {site.followUp}.</p>
       </div>

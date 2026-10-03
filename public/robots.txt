@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://aspen2homes.com/sitemap.xml
+Sitemap: https://www.aspen2homes.com/sitemap.xml

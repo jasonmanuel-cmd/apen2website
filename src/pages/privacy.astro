@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
+// Plain-language notice describing what the site actually does. Owner review pending (see README).
+---
+<Layout title={`Privacy Notice | ${site.name}`} description={`How ${site.name} collects and uses the information you send through this website.`}>
+  <section class="section wrap prose">
+    <p class="eyebrow">Privacy notice</p>
+    <h1>Your information, <em>plainly.</em></h1>
+
+    <h2>What we collect</h2>
+    <p>When you send a request through our forms, we receive what you type: your name, phone number, email (optional), what you're interested in, the model and community you pick, and any notes.</p>
+    <p>We also count page visits with Vercel Web Analytics, which does not use cookies and does not identify you personally.</p>
+
+    <h2>Why we use it</h2>
+    <p>Only to answer your request: to call, text or email you about homes, financing and tours you asked about. We don't sell your information.</p>
+
+    <h2>Who handles it</h2>
+    <ul>
+      <li>The {site.name} team, who receive your request by email.</li>
+      <li>Vercel, which hosts this website.</li>
+      <li>Resend, which delivers the form email to our team.</li>
+    </ul>
+    <p>If you ask about financing, we may pass your contact details to the lender you choose to work with, with your permission.</p>
+
+    <h2>Texts</h2>
+    <p>Giving us your phone number lets us contact you about your request. We won't send you marketing texts unless you agree to them, and you can tell us to stop at any time.</p>
+
+    <h2>Your choices</h2>
+    <p>To see, correct or delete what you've sent us, email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.</p>
+
+    <h2>Contact</h2>
+    <p>{site.name}, {site.address}</p>
+  </section>
+</Layout>
+
+<style>
+  .prose { max-width: 760px; }
+  .prose h2 { font-size: 1.6rem; margin-top: 2.2rem; }
+  .prose ul { padding-left: 1.2rem; }
+</style>

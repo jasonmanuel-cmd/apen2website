@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
+---
+<Layout title={`Request received | ${site.name}`} description="Thanks for contacting Aspen II Homes." noindex>
+  <section class="section wrap">
+    <p class="eyebrow">Request received</p>
+    <h1>Thank you. <em>We'll be in touch.</em></h1>
+    <p class="muted">Our team will reach out {site.followUp}. Need us sooner? Call <a href={site.phoneHref}>{site.phone}</a> or <a href={site.sms()}>text HOMES</a>.</p>
+    <p><a class="btn" href="/#plans">Keep browsing the models</a></p>
+  </section>
+</Layout>

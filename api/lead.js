@@ -9,6 +9,26 @@ const esc = (s = '') =>
 const str = (v, max = 200) => (v == null ? '' : String(v)).trim().slice(0, max);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const CALL = 'Please call (661) 238-3136.';
+
+// A plain HTML form post (JavaScript off or blocked) gets a page back instead of raw JSON.
+const isFormPost = (req) => /application\/x-www-form-urlencoded|multipart\/form-data/i.test(req.headers?.['content-type'] || '');
+
+const reply = (req, res, code, body) => {
+  if (!isFormPost(req)) return res.status(code).json(body);
+  if (body.success) {
+    res.setHeader('Location', '/thank-you/');
+    return res.status(303).end();
+  }
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.status(code).end(
+    `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request not sent | Aspen II Homes</title>` +
+    `<body style="font:18px/1.6 Georgia,serif;max-width:36rem;margin:15vh auto;padding:0 20px;color:#15302A;background:#F7F2E8">` +
+    `<h1>Your request didn't go through.</h1><p>${esc(body.error)}</p>` +
+    `<p><a href="tel:+16612383136">Call (661) 238-3136</a> or <a href="/contact-us/">go back to the form</a>.</p></body>`
+  );
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
@@ -35,12 +55,12 @@ export default async function handler(req, res) {
 
     // 1. Bot trap: if the hidden honeypot field is filled, pretend success.
     if (str(data.honeypot)) {
-      return res.status(200).json({ success: true, message: 'Received' });
+      return reply(req, res, 200, { success: true, message: 'Received' });
     }
 
     // 2. Validate required inputs
     if (!name || !phone) {
-      return res.status(400).json({
+      return reply(req, res, 400, {
         success: false,
         error: 'Missing required fields: name and phone number are required.'
       });
@@ -48,7 +68,8 @@ export default async function handler(req, res) {
 
     const leadPayload = { timestamp: new Date().toISOString(), name, phone, email, community, timeline, plan, notes, source };
 
-    console.log('[ASPEN II LEAD CAPTURED]:', JSON.stringify(leadPayload, null, 2));
+    // Log only non-identifying fields; names, phones, emails and notes stay out of hosting logs.
+    console.log('[ASPEN II LEAD]', JSON.stringify({ timestamp: leadPayload.timestamp, source, plan, community }));
 
     // 3. Email the lead via Resend (see .env.example).
     // Until the domain is verified in Resend, RESEND_FROM must stay onboarding@resend.dev,
@@ -94,20 +115,21 @@ export default async function handler(req, res) {
 
       // Key is set but sending failed: tell the visitor to call rather than silently losing the lead.
       if (!emailSent) {
-        return res.status(502).json({ success: false, error: 'Could not deliver your request. Please call (661) 238-3136.' });
+        return reply(req, res, 502, { success: false, error: `Could not deliver your request. ${CALL}` });
       }
+    } else {
+      // No RESEND_API_KEY: nothing can be delivered, so don't tell the visitor it was.
+      console.error('RESEND_API_KEY is not set; lead not delivered.');
+      return reply(req, res, 503, { success: false, error: `Our form is temporarily unavailable. ${CALL}` });
     }
 
-    return res.status(200).json({
+    return reply(req, res, 200, {
       success: true,
       message: 'Consultation request received successfully.',
       emailDispatched: emailSent
     });
   } catch (error) {
     console.error('Lead processing error:', error);
-    return res.status(500).json({
-      success: false,
-      error: 'An error occurred while processing the consultation request.'
-    });
+    return reply(req, res, 500, { success: false, error: `Something went wrong. ${CALL}` });
   }
 }

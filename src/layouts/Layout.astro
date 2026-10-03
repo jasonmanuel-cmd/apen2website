@@ -42,6 +42,8 @@ const nav = [
   <link href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+  <!-- Vercel Web Analytics: cookieless page views. Enable it in Vercel > Project > Analytics. -->
+  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -80,7 +82,7 @@ const nav = [
         <p class="mono head">Communities</p>
         <ul>{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li></ul>
+        <ul><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
