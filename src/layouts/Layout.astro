@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import logo from '../assets/logo.webp';
 import { site, plans, communities, offer, usd, disclaimer } from '../data/site';
+import SpeedInsights from '@vercel/speed-insights/astro';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
@@ -97,6 +98,7 @@ const nav = [
     <a href={site.sms()}>Text</a>
     <a href="/contact-us/" class="primary">Schedule a tour</a>
   </div>
+  <SpeedInsights />
 </body>
 </html>
 
