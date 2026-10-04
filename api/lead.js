@@ -81,37 +81,41 @@ export default async function handler(req, res) {
     let emailSent = false;
 
     if (resendKey) {
-      try {
-        const resendRes = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${resendKey}`
-          },
-          body: JSON.stringify({
-            from,
-            to: destinationEmail.split(',').map((s) => s.trim()),
-            ...(email && { reply_to: email }),
-            subject: `[New Lead] ${name} - ${plan || community || 'General Inquiry'}`,
-            html: `
-              <h2>New Aspen II Homes Lead</h2>
-              <p><strong>Name:</strong> ${esc(name)}</p>
-              <p><strong>Phone:</strong> <a href="tel:${esc(phone)}">${esc(phone)}</a></p>
-              <p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not provided'}</p>
-              <p><strong>Interested in:</strong> ${esc(timeline)}</p>
-              <p><strong>Model:</strong> ${esc(plan) || 'Not sure yet'}</p>
-              <p><strong>Community:</strong> ${esc(community) || 'Not sure yet'}</p>
-              <p><strong>Notes:</strong><br>${notes ? esc(notes).replace(/\n/g, '<br>') : 'None'}</p>
-              <hr>
-              <small>From ${esc(source)} at ${leadPayload.timestamp}. Reply to this email to answer the buyer directly.</small>
-            `
-          })
-        });
-        if (resendRes.ok) emailSent = true;
-        else console.error('Resend rejected the email:', resendRes.status, await resendRes.text());
-      } catch (err) {
-        console.error('Resend dispatch error:', err.message);
-      }
+      const message = {
+        from,
+        ...(email && { reply_to: email }),
+        subject: `[New Lead] ${name} - ${plan || community || 'General Inquiry'}`,
+        html: `
+          <h2>New Aspen II Homes Lead</h2>
+          <p><strong>Name:</strong> ${esc(name)}</p>
+          <p><strong>Phone:</strong> <a href="tel:${esc(phone)}">${esc(phone)}</a></p>
+          <p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not provided'}</p>
+          <p><strong>Interested in:</strong> ${esc(timeline)}</p>
+          <p><strong>Model:</strong> ${esc(plan) || 'Not sure yet'}</p>
+          <p><strong>Community:</strong> ${esc(community) || 'Not sure yet'}</p>
+          <p><strong>Notes:</strong><br>${notes ? esc(notes).replace(/\n/g, '<br>') : 'None'}</p>
+          <hr>
+          <small>From ${esc(source)} at ${leadPayload.timestamp}. Reply to this email to answer the buyer directly.</small>
+        `
+      };
+      // One email per recipient, so one rejected address (e.g. Resend's test sender only
+      // reaches the account owner) can't block delivery to the others.
+      const recipients = destinationEmail.split(',').map((s) => s.trim()).filter(Boolean);
+      const results = await Promise.all(recipients.map(async (to) => {
+        try {
+          const resendRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+            body: JSON.stringify({ ...message, to: [to] })
+          });
+          if (!resendRes.ok) console.error('Resend rejected the email:', resendRes.status, await resendRes.text());
+          return resendRes.ok;
+        } catch (err) {
+          console.error('Resend dispatch error:', err.message);
+          return false;
+        }
+      }));
+      emailSent = results.some(Boolean);
 
       // Key is set but sending failed: tell the visitor to call rather than silently losing the lead.
       if (!emailSent) {
