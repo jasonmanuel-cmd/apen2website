@@ -13,3 +13,5 @@ old_url,new_url,reason,status,test_result
 /contact-us/,/contact/,spec route (D10),"configured (local, not deployed)",build: target exists; live test pending
 /sunset-retreat-tehachapi/,/available-homes/,inventory lives under Available Homes (D8),"configured (local, not deployed)",build: target exists; live test pending
 /heroes-of-the-nation/,/financing/,program ended (D7),live,301 configured
+/build-on-your-lot/,/floor-plans/,own-lot builds not offered (D12),"configured (local, not deployed)",build: target exists; live test pending
+/check-my-lot/,/contact/,own-lot builds not offered (D12),"configured (local, not deployed)",build: target exists; live test pending

@@ -35,14 +35,14 @@ const qa: [string, string][] = [
     : `${plan.name} is a single-story plan, with every room on one level.`],
   [`Can ${theName(plan.name)} be built at Sunset Retreat?`, sr
     ? `Yes. The ${offer.community} first release in Tehachapi uses this plan, from ${usd(offer.from)}. Home 1 and Home 2 are reserving now.`
-    : `The current ${offer.community} release uses the ${offer.community} model. Ask us about building ${theName(plan.name)} on another lot.`],
+    : `The current ${offer.community} release uses the ${offer.community} model. Ask us where ${theName(plan.name)} can be built next.`],
   ['Which finishes can I choose?', 'Every model is semi-custom: choose flooring, paint colors, cabinetry and more. Available choices depend on the construction stage.'],
   ['How long until move-in?', sr
     ? `${offer.community} first-release homes are estimated at roughly three months to move-in, subject to construction conditions.`
-    : 'Timing depends on the lot, permits and construction schedule. Ask us for a current estimate.'],
+    : 'Timing depends on the homesite, permits and construction schedule. Ask us for a current estimate.'],
   ['What does the price include?', plan.price
     ? `Plans start at ${usd(plan.price)}. Ask us what the starting price includes for the home you're considering; pricing and availability are subject to change.`
-    : 'Pricing depends on the lot, design, finishes and options. Ask us for a current quote.'],
+    : 'Pricing depends on the homesite, finishes and options. Ask us for a current quote.'],
   ['Can the plan be changed?', 'Ask us about modifications. What can change depends on the plan and construction stage.'],
 ];
 const path = planUrl(plan);
@@ -81,7 +81,7 @@ const schema = [
     <dl class="facts">
       {facts.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
     </dl>
-    <p class="where mono">Where it's available: {sr ? <><a href="/available-homes/">{offer.community}, Tehachapi</a> (first release) · other lots on request</> : <>on request across <a href="/areas/">Tehachapi and eastern Kern County</a>. Availability depends on the lot.</>}</p>
+    <p class="where mono">Where it's available: {sr ? <><a href="/available-homes/">{offer.community}, Tehachapi</a> (first release)</> : <>ask us where it can be built next in <a href="/areas/">Tehachapi and eastern Kern County</a>.</>}</p>
   </section>
 
   {imgs.length > 0 && (

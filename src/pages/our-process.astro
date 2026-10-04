@@ -12,7 +12,7 @@ const stages: [string, string, string][] = [
   ['Talk it through', 'Share your goals, budget, financing situation and timeline. We tell you which path and programs fit.', 'All paths'],
   ['Choose', 'Pick a Sunset Retreat home or one of the six semi-custom models.', 'All paths'],
   ['Review the details', 'Go over selections, specifications, pricing and contract terms before you commit.', 'All paths'],
-  ['Build', 'Construction with milestone updates along the way. Timing depends on the path, lot, permits and conditions.', `Sunset Retreat est. ${offer.moveIn}; other builds vary`],
+  ['Build', 'Construction with milestone updates along the way. Timing depends on the homesite, permits and conditions.', `Sunset Retreat est. ${offer.moveIn}; other builds vary`],
   ['Move in', 'Final walkthrough, closing and warranty handoff.', 'All paths'],
 ];
 const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['How it works', path]])];
@@ -40,7 +40,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
           </article>
         ))}
       </div>
-      <p class="mono note">Sunset Retreat first release from {usd(offer.from)}. Pricing for other paths depends on the home, lot, design, finishes and options.</p>
+      <p class="mono note">Sunset Retreat first release from {usd(offer.from)}. Pricing for the other models depends on the homesite, finishes and options.</p>
     </div>
   </section>
 
@@ -50,7 +50,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
     <ol class="stages">
       {stages.map(([t, d, a], i) => <li><span class="mono">Stage 0{i + 1}</span><h3>{t}</h3><p>{d}</p><p class="mono applies">{a}</p></li>)}
     </ol>
-    <p class="ctas"><a class="btn" href="/contact/">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href="/contact/?interest=lot">Build on your lot</a></p>
+    <p class="ctas"><a class="btn" href="/contact/">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a></p>
   </section>
 </Layout>
 

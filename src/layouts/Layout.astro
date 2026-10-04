@@ -21,7 +21,7 @@ const org = {
   areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
 };
 const path = Astro.url.pathname;
-// Spec §04 navigation; Check My Lot is the one persistent primary button.
+// Spec §04 navigation, minus Build on Your Lot (owner decision D12: spec and semi-custom homes only).
 const nav: [string, string, [string, string][]][] = [
   ['/floor-plans/', 'Floor Plans', [
     ['/floor-plans/', 'All floor plans'],
@@ -29,7 +29,6 @@ const nav: [string, string, [string, string][]][] = [
     ...plans.map((p): [string, string] => [planUrl(p), p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name]),
     ['/semi-custom-homes/', 'Semi-custom homes'],
   ]],
-  ['/build-on-your-lot/', 'Build on Your Lot', []],
   ['/available-homes/', 'Available Homes', []],
   ['/areas/', 'Areas We Serve', [
     ['/areas/', 'All areas'],
@@ -81,11 +80,11 @@ const nav: [string, string, [string, string][]][] = [
         </div>
       ))}
     </nav>
-    <a class="btn btn-sm nav-cta" href="/check-my-lot/">Check My Lot</a>
+    <a class="btn btn-sm nav-cta" href="/contact/?interest=tour#form">Schedule a Tour</a>
     <details class="menu">
       <summary class="mono" aria-label="Menu">Menu</summary>
       <nav aria-label="Mobile">
-        <a href="/check-my-lot/" class="cml-m">Check My Lot</a>
+        <a href="/contact/?interest=tour#form" class="cml-m">Schedule a Tour</a>
         {nav.map(([href, label, items]) => (items.length
           ? <div class="group"><p class="mono">{label}</p>{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
           : <a href={href} class="solo">{label}</a>))}
@@ -111,7 +110,7 @@ const nav: [string, string, [string, string][]][] = [
         <p class="mono head">Areas we serve</p>
         <ul>{communities.filter((c) => c.published).map((c) => <li><a href={areaUrl(c)}>{c.name}</a></li>)}<li><a href="/areas/">All areas we serve</a></li></ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/build-on-your-lot/">Build on your lot</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
+        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
@@ -124,7 +123,7 @@ const nav: [string, string, [string, string][]][] = [
   <div class="mobile-bar" aria-label="Quick contact">
     <a href={site.phoneHref}>Call</a>
     <a href="/contact/">Contact</a>
-    <a href="/check-my-lot/" class="primary">Check My Lot</a>
+    <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
   </div>
 </body>
 </html>

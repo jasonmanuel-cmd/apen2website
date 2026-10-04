@@ -152,23 +152,17 @@ const askAvailability = (place: string): [string, string] => [
   `Do you have homes or lots available in ${place} right now?`,
   `Availability changes, so we confirm it case by case. Call ${site.phone} or send the form and we'll tell you what's currently possible in ${place}, including building one of our six models.`,
 ];
-const ownLot = (place: string): [string, string] => [
-  `Can I build on land I already own in ${place}?`,
-  `Ask us. Tell us where your lot is and we'll walk you through what it takes to build there, which models fit, and the next steps.`,
-];
-
 export const communities: Community[] = [
   {
     slug: 'tehachapi-home-builders', area: 'tehachapi', published: true, name: 'Tehachapi', short: 'Home of Sunset Retreat, our current release, from $459,000.',
     title: 'New & Semi-Custom Homes in Tehachapi, CA | Aspen II Homes',
     h1: 'New Homes and Semi-Custom Builds in Tehachapi, CA',
-    description: 'Aspen II Homes builds in Tehachapi, home of the Sunset Retreat first release from $459,000. Reserve a home, choose one of six models or ask about building on your lot.',
-    intro: 'Tehachapi is where Aspen II Homes is based and where our current release, Sunset Retreat, is located. Reserve one of the first two Sunset Retreat homes, choose one of six models, or ask about building on your own lot.',
-    points: ['Sunset Retreat first release reserving', 'Six models to choose from', 'Ask about building on your lot'],
+    description: 'Aspen II Homes builds in Tehachapi, home of the Sunset Retreat first release from $459,000. Reserve a home or choose one of six semi-custom models.',
+    intro: 'Tehachapi is where Aspen II Homes is based and where our current release, Sunset Retreat, is located. Reserve one of the first two Sunset Retreat homes or choose one of six semi-custom models.',
+    points: ['Sunset Retreat first release reserving', 'Six models to choose from', 'Two homes reserving now'],
     faq: [
       ['Are new homes available in Tehachapi now?', 'Yes. Sunset Retreat is our current release in Tehachapi. Home 1 and Home 2 are reserving, with Phase 2 on a waitlist. Plans start at $459,000; pricing and availability are subject to change.'],
-      ['Which models can I build in Tehachapi?', 'The Sunset Retreat release uses the Sunset Retreat model (1,715 sq ft, 3 bed, 2 bath). Ask us about building any of our six models on another lot.'],
-      ownLot('Tehachapi'),
+      ['Which models can I build in Tehachapi?', 'The Sunset Retreat release uses the Sunset Retreat model (1,715 sq ft, 3 bed, 2 bath). Ask us where the other five models can be built next.'],
     ],
   },
   {
@@ -178,7 +172,7 @@ export const communities: Community[] = [
     description: 'Aspen II Homes serves buyers in Golden Hills, Bear Valley Springs and Stallion Springs near Tehachapi. Six semi-custom models; contact us to confirm current availability.',
     intro: 'Aspen II Homes serves buyers in the communities around Tehachapi: Golden Hills, Bear Valley Springs and Stallion Springs. Choose one of our six semi-custom models. Contact us to confirm current land, build and model availability in each community.',
     points: ['Three communities near Tehachapi', 'Six semi-custom models', 'We confirm availability case by case'],
-    faq: [askAvailability('Golden Hills, Bear Valley Springs or Stallion Springs'), ownLot('these communities')],
+    faq: [askAvailability('Golden Hills, Bear Valley Springs or Stallion Springs')],
   },
   {
     slug: 'california-city-ca-home-builders', area: 'california-city', published: false, name: 'California City', short: 'Serving California City buyers near Edwards AFB.',
@@ -187,7 +181,7 @@ export const communities: Community[] = [
     description: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base. Six semi-custom models and VA, FHA and conventional financing.',
     intro: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base, through select semi-custom model opportunities. Contact our team to confirm current land, build and model availability.',
     points: ['Near Edwards Air Force Base', 'VA, FHA & conventional financing', 'We confirm availability case by case'],
-    faq: [askAvailability('California City'), ownLot('California City')],
+    faq: [askAvailability('California City')],
   },
   {
     slug: 'ridgecrest-home-builders', area: 'ridgecrest', published: false, name: 'Ridgecrest', short: 'Serving Ridgecrest and Indian Wells Valley buyers.',
@@ -196,7 +190,7 @@ export const communities: Community[] = [
     description: 'Aspen II Homes serves Ridgecrest and Indian Wells Valley buyers, including NAWS China Lake families, through select semi-custom opportunities.',
     intro: 'Aspen II Homes serves qualified buyers in the Ridgecrest and Indian Wells Valley area through select semi-custom opportunities. Contact our team to confirm current land, build and model availability.',
     points: ['Serving the Indian Wells Valley', 'Near NAWS China Lake', 'VA, FHA & conventional financing'],
-    faq: [askAvailability('the Ridgecrest area'), ownLot('the Ridgecrest area')],
+    faq: [askAvailability('the Ridgecrest area')],
   },
 ];
 

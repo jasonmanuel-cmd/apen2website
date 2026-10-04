@@ -175,6 +175,26 @@
       "source": "/heroes-of-the-nation",
       "destination": "/financing/",
       "permanent": true
+    },
+    {
+      "source": "/build-on-your-lot/",
+      "destination": "/floor-plans/",
+      "permanent": true
+    },
+    {
+      "source": "/build-on-your-lot",
+      "destination": "/floor-plans/",
+      "permanent": true
+    },
+    {
+      "source": "/check-my-lot/",
+      "destination": "/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/check-my-lot",
+      "destination": "/contact/",
+      "permanent": true
     }
   ]
 }

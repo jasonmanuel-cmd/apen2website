@@ -11,12 +11,12 @@ Phases follow spec §19. "Blocked by" lists only what stops that item; everythin
 - Blocked by: D1 (palette), D2 (canonical host), approved model specs for garage/dimensions (else shown as "confirm with us").
 
 ## Phase 2: Lead intake (needs D4)
-- `db/migrations/`: all spec §12 tables with constraints, RLS on every table, roles sales/reviewer/admin.
+- `db/migrations/`: spec §12 tables except `lot_requests`, `lot_findings` and `files` (D12), with constraints, RLS on every table, roles sales/reviewer/admin.
 - `POST /api/leads`: spec §11 contract, Idempotency-Key, 201/200/409/422/413/429/503, 32 KB cap, origin check, honeypot + timing + rate limit, one transaction writing lead/project_request/lot_request/consent/score/receipt/outbox.
 - Scoring v1 exactly per spec §14 with breakdown and override.
-- Check My Lot: five steps, owned/under-contract needs one locator, land shoppers none, unknown always valid, no data in URL/localStorage.
+- ~~Check My Lot~~ dropped (D12). Intents: plan_inquiry, tour_request, consultation, contact.
 - Outbox worker on Vercel Cron with backoff + jitter, failure alert; staff inbox behind Supabase Auth.
-- Private upload endpoint (PDF/JPEG/PNG, 10 MB, 5 files, signature check, quarantine). Malware scanning needs a provider decision.
+- ~~Parcel uploads~~ dropped with Check My Lot (D12).
 - **Gate:** real staging persistence, anonymous denial proven, replay/409/503 tests, worker retry evidence.
 
 ## Phase 3: SEO and measurement
@@ -36,7 +36,7 @@ Phase 1: 2–3 sessions. Phase 2: 3–4 sessions after Supabase is provisioned. 
 
 ## Acceptance tests to build (spec §20)
 - Content: six model records match approved facts; unknowns held; PDFs open.
-- Flows: APN-only, address-only, pin-only accepted; land shopper with no parcel accepted; all-unknown accepted; model/area context arrives; tour needs real inventory_id.
+- Flows: all-unknown optional fields accepted; model/area context arrives; tour needs real inventory_id.
 - API: missing contact 422; bad enum 422; >32 KB 413; burst 429; DB down 503 with no success event; replay → same receipt 200; same key new body 409; two inquiries same contact → two project_requests.
 - Atomicity: score + outbox exist for every request; email outage leaves pending outbox row; retry doesn't double-send; final failure alerts staff.
 - Access: anonymous select/update/delete denied on every table; sales can't change roles; reviewer limited to lot review; no service key in `dist/`.

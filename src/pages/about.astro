@@ -5,7 +5,7 @@ import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/about/';
 const title = `About ${site.name} | Local Home Builder in Tehachapi, CA`;
-const description = `${site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County: the Sunset Retreat release, six floor plans and fully custom builds.`;
+const description = `${site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County: the Sunset Retreat release and six semi-custom floor plans.`;
 const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), breadcrumb([['Home', '/'], ['About', path]])];
 ---
 <Layout title={title} description={description} schema={schema}>

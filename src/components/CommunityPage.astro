@@ -29,7 +29,7 @@ const schema = [
       <ul class="points reveal" style="animation-delay:.3s">{c.points.map((p) => <li>{p}</li>)}</ul>
       <div class="ctas">
         {home && <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>}
-        <a class:list={['btn', { 'btn-ghost': home }]} href="#inquire">{home ? 'Build on your lot' : 'Ask about current availability'}</a>
+        <a class:list={['btn', { 'btn-ghost': home }]} href="#inquire">{home ? 'Request pricing' : 'Ask about current availability'}</a>
       </div>
     </div>
   </section>
@@ -38,7 +38,7 @@ const schema = [
     <div class="wrap">
       <p class="eyebrow">{home ? 'Models' : `Models to ask about in ${c.name}`}</p>
       <h2>Six floor plans, <em>ready for your finishes.</em></h2>
-      {home && <p class="muted">The current {offer.community} release in Tehachapi uses the {offer.community} model, from {usd(offer.from)}. Ask about building any plan on another lot.</p>}
+      {home && <p class="muted">The current {offer.community} release in Tehachapi uses the {offer.community} model, from {usd(offer.from)}. Ask us where the other models can be built next.</p>}
       <div class="grid">{plans.map((p) => <PlanCard plan={p} />)}</div>
       <p><a class="btn btn-ghost" href="/floor-plans/">Compare all floor plans</a></p>
     </div>
@@ -59,8 +59,8 @@ const schema = [
     <div class="wrap inq-grid">
       <div>
         <p class="eyebrow">Building in {c.name}?</p>
-        <h2>Tell us about <em>your lot.</em></h2>
-        <p class="muted">Own land already, or still looking? Either way, we'll walk you through what it takes to build here.</p>
+        <h2>Ask about <em>availability.</em></h2>
+        <p class="muted">Tell us what you're looking for and we'll let you know which homes and models are available.</p>
         <p class="mono also">We also take inquiries from nearby communities. <a href="/areas/">See areas we serve</a></p>
       </div>
       <LeadForm community={c.name} source={`Community page: ${c.name}`} />

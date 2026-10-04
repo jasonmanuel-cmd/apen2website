@@ -186,7 +186,6 @@ const faqSchema = faqPage(faq);
       <div class="comm-grid">
         {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore →</span></a>)}
         <a href="/areas/" class="comm"><h3>Nearby communities</h3><p class="muted">{serviceAreaNames.filter((n) => n !== 'Tehachapi').join(', ')}. Availability confirmed case by case.</p><span class="mono">Areas we serve →</span></a>
-        <a href="/build-on-your-lot/" class="comm"><h3>Your own lot</h3><p class="muted">Own land or still looking? Start with a preliminary lot review.</p><span class="mono">Check My Lot →</span></a>
       </div>
     </div>
   </section>
