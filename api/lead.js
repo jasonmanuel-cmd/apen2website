@@ -65,7 +65,7 @@ export default async function handler(req, res) {
       /fully custom/i.test(timeline) && 'Custom',
       (/own lot/i.test(timeline) || /own lot/i.test(stage)) && 'Own lot',
       (/financ/i.test(timeline) || firstTime) && 'Financing',
-      (/military|heroes/i.test(timeline) || military) && 'Military/VA',
+      (/military|\bVA\b/.test(timeline) || military) && 'Military/VA',
     ].filter(Boolean);
 
     // 1. Bot trap: if the hidden honeypot field is filled, pretend success.

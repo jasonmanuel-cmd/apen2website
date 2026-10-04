@@ -173,9 +173,9 @@ export const communities: Community[] = [
     slug: 'california-city-ca-home-builders', name: 'California City', short: 'Serving California City buyers near Edwards AFB.',
     title: 'New & Semi-Custom Home Builder in California City, CA | Aspen II Homes',
     h1: 'New Homes and Custom-Build Options in California City, CA',
-    description: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base. Six models, custom builds and the Heroes of the Nation program.',
+    description: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base. Six models, custom builds and VA, FHA and conventional financing.',
     intro: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base, through select model and custom-build opportunities. Contact our team to confirm current land, build and model availability.',
-    points: ['Near Edwards Air Force Base', 'Heroes of the Nation military program', 'We confirm availability case by case'],
+    points: ['Near Edwards Air Force Base', 'VA, FHA & conventional financing', 'We confirm availability case by case'],
     faq: [askAvailability('California City'), ownLot('California City')],
   },
   {
@@ -184,26 +184,10 @@ export const communities: Community[] = [
     h1: 'New Home Options for Ridgecrest-Area Buyers',
     description: 'Aspen II Homes serves Ridgecrest and Indian Wells Valley buyers, including NAWS China Lake families, through select semi-custom and custom-build opportunities.',
     intro: 'Aspen II Homes serves qualified buyers in the Ridgecrest and Indian Wells Valley area through select semi-custom and custom-build opportunities. Contact our team to confirm current land, build and model availability.',
-    points: ['Serving the Indian Wells Valley', 'Near NAWS China Lake', 'Heroes of the Nation military program'],
+    points: ['Serving the Indian Wells Valley', 'Near NAWS China Lake', 'VA, FHA & conventional financing'],
     faq: [askAvailability('the Ridgecrest area'), ownLot('the Ridgecrest area')],
   },
 ];
-
-export const heroes = {
-  price: 359000, beds: 4, baths: 2, sqft: 1705, cash: 14360,
-  eligibility: [
-    'Married or have dependents',
-    'Navy & Air Force: E5 and above',
-    'Army & USMC: E6 and above',
-    'Barracks unavailable (CNA approval from Command)',
-    'Officers of any rank qualify regardless of dependents',
-  ],
-  lender: {
-    name: 'Alex Fischer', title: 'Loan Officer', nmls: '1937673',
-    email: 'alexfischer@barretfinancial.com', phone: '(760) 793-7164', phoneHref: 'tel:+17607937164',
-    company: 'Barrett Financial Group, L.L.C.',
-  },
-};
 
 // [question, answer, page with the full answer]
 export const faq: [string, string, string][] = [
@@ -214,7 +198,7 @@ export const faq: [string, string, string][] = [
   ['Is 0% down financing available?', 'A 0% down option is available for eligible first-time buyers. Eligibility, lender approval and program terms apply. We also work with FHA, VA and conventional financing.', '/financing/'],
   ['How do early-buyer savings work?', 'Reserve early and apply up to $15,000 in early-buyer savings toward your floor plan. Availability, eligibility and program terms apply.', '/financing/'],
   ['How long until I can move in?', 'Sunset Retreat first-release homes are estimated at roughly three months to move-in.', '/sunset-retreat-tehachapi/'],
-  ['Do you have a program for military families?', 'Yes. Heroes of the Nation offers qualifying military and veteran families a 4-bed, 1,705 sq ft new home for $359,000 plus $14,360 in Hero Home Cash.', '/heroes-of-the-nation/'],
+  ['Do you work with VA loans?', 'Yes. We work with VA, FHA and conventional financing. Eligibility, lender approval and program terms apply.', '/financing/'],
 ];
 
 export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';

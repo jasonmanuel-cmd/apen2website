@@ -44,7 +44,6 @@ Code changes can't settle these; each needs a written answer from the owner or l
 - **Callback promise:** the site says "within 30 minutes during business hours" (`site.followUp`). Confirm the real response time and business hours.
 - **Warranty:** one place says 10-year builder warranty, another 1-year systems/appliances. Confirm coverage, provider and exclusions.
 - **Offer terms:** Sunset Retreat price, "first two homes", move-in estimate, 0% down eligibility, $15,000 credit, 2-1 buydown.
-- **Heroes of the Nation:** $359,000, 1,705 sq ft, $14,360 Hero Home Cash, eligibility, home location.
 - **Lender:** officer name, NMLS number, company spelling.
 - **Business facts:** legal name, whether the Tucker Road address is a staffed office, CSLB license (`site.license`).
 - **Privacy notice** (`src/pages/privacy.astro`): written from what the site does today. Owner to approve the wording, data retention and SMS consent.
@@ -57,7 +56,6 @@ Built pages say only what the data file can support. These items stay unpublishe
 - **One reply-time promise.** The site uses `site.followUp` everywhere; the old WordPress copy said 1 to 2 business days.
 - **Warranty.** The site said both "1-year" and "10-year"; both are now neutral ("ask for coverage details") until the real document is linked.
 - **Incentive terms:** start/end dates, eligible homes/lots, who funds each credit, combinability; lender-approved wording. Update `site.verified` whenever re-checked.
-- **Heroes of the Nation:** the "100% money-back guarantee" and "$100 for your time" claims on that page need written confirmation or removal.
 - **Included features** list (exterior, HVAC, windows, appliances, etc.) for an `/included-features/` page.
 - **Team, credentials, completed-project years and locations** for About and Gallery.
 - **Separate Golden Hills / Bear Valley Springs / Stallion Springs pages:** only once each has real, distinct information.

@@ -3,7 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, plans, communities, heroes, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
+import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
 import { faqPage } from '../data/schema';
 
 const hero = photos('tranquil-oasis')[0].src;
@@ -11,7 +11,6 @@ const hero = photos('tranquil-oasis')[0].src;
 const pick = (folder: string, caption: string) => photos(folder).find((p) => p.caption === caption)!.src;
 const sunset = pick('sunset-retreat', 'Great room');
 const kitchen = pick('sunset-retreat', 'Kitchen');
-const band = pick('enchanted-haven', 'Living room');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
 
 const stats = [
@@ -189,16 +188,6 @@ const faqSchema = faqPage(faq);
     </div>
   </section>
 
-  <section class="band">
-    <Image src={band} alt="An Aspen II home at sunset" widths={[800, 1500]} sizes="100vw" />
-    <div class="band-copy wrap">
-      <p class="eyebrow">Heroes of the Nation</p>
-      <h2>A home for those who serve.</h2>
-      <p>Qualifying military families near Edwards AFB and China Lake: a {heroes.beds}-bed, {heroes.sqft.toLocaleString()} sq ft new home for {usd(heroes.price)}, plus {usd(heroes.cash)} in Hero Home Cash.</p>
-      <a class="btn" href="/heroes-of-the-nation/">See if you qualify</a>
-    </div>
-  </section>
-
   <section class="section" id="faq">
     <div class="wrap faq-grid">
       <div>
@@ -329,13 +318,6 @@ const faqSchema = faqPage(faq);
   .comm h3 { font-size: 1.35rem; }
   .comm .mono { margin-top: auto; color: var(--clay); font-size: .7rem; }
 
-  .band { position: relative; color: var(--bone); min-height: 70vh; display: flex; align-items: center; }
-  .band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .band::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgb(var(--ink-rgb) / .9), rgb(var(--ink-rgb) / .25)); }
-  .band-copy { position: relative; z-index: 2; width: 100%; }
-  .band-copy h2 { max-width: 16ch; }
-  .band-copy p:not(.eyebrow) { max-width: 46ch; }
-  .band .eyebrow { color: var(--gold); }
 
   .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
   .faq-grid .muted a { color: var(--clay); }

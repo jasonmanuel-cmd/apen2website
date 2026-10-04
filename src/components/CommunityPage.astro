@@ -6,7 +6,6 @@ import { site, plans, communities, offer, usd, type Community } from '../data/si
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 const { community: c } = Astro.props as { community: Community };
-const military = c.points.some((p) => p.includes('Heroes'));
 const others = communities.filter((x) => x !== c);
 const home = c.slug === 'tehachapi-home-builders';
 const path = `/${c.slug}/`;
@@ -31,7 +30,6 @@ const schema = [
       <div class="ctas">
         {home && <a class="btn" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>}
         <a class:list={['btn', { 'btn-ghost': home }]} href="#inquire">{home ? 'Build on your lot' : 'Ask about current availability'}</a>
-        {military && <a class="btn btn-ghost" href="/heroes-of-the-nation/">Military program</a>}
       </div>
     </div>
   </section>

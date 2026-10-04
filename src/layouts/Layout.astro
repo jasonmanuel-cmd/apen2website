@@ -32,7 +32,6 @@ const nav: [string, string, [string, string][]][] = [
   ['/#communities', 'Communities', communities.map((c): [string, string] => [`/${c.slug}/`, c.name])],
   ['/financing/', 'Financing', [
     ['/financing/', 'Financing & incentives'],
-    ['/heroes-of-the-nation/', 'Military: Heroes of the Nation'],
     ['/#faq', 'FAQ'],
   ]],
   ['/about/', 'About', [
@@ -110,7 +109,7 @@ const nav: [string, string, [string, string][]][] = [
         <p class="mono head">Communities</p>
         <ul>{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/sunset-retreat-tehachapi/">Sunset Retreat, Tehachapi</a></li><li><a href="/floor-plans/">All floor plans</a></li><li><a href="/how-it-works/">How it works</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
+        <ul><li><a href="/sunset-retreat-tehachapi/">Sunset Retreat, Tehachapi</a></li><li><a href="/floor-plans/">All floor plans</a></li><li><a href="/how-it-works/">How it works</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
