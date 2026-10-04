@@ -4,7 +4,7 @@ import captions from './captions.json';
 // Single source of truth. Facts come from aspen2homes.com and aspen2bakersfield.com (checked 2026-09-28).
 export const site = {
   name: 'Aspen II Homes',
-  tagline: "Kern County's Local Custom Home Builder",
+  tagline: "Kern County's Local New Home Builder",
   url: 'https://aspen2homes.com', // canonical host (owner decision D2). At launch, flip the Vercel domain redirect to www -> apex.
   phone: '(661) 238-3136',
   phoneHref: 'tel:+16612383136',
@@ -50,8 +50,6 @@ export const paths = [
     text: 'The first two homes coming to Sunset Retreat. Lock your pricing and customize your finishes before they are built.', cta: ['See availability', '/available-homes/'] },
   { n: '02', name: 'Semi-Custom', title: 'Choose Your Model', meta: 'Six layouts · Curated finishes', price: 'Call today',
     text: 'Pick from our proven model layouts and personalize the details that matter most. A guided path to a brand-new home.', cta: ['Compare floor plans', '/floor-plans/'] },
-  { n: '03', name: 'Designed With You', title: 'Fully Custom', meta: 'Your vision · Premium lots', price: 'By design',
-    text: 'Design your home from the ground up with our team: layout, materials and details tailored to how you live.', cta: ['Build on your lot', '/contact/?interest=lot'] },
 ];
 
 // Photos live in src/assets/photos/<folder>/ and are picked up automatically, with captions from captions.json.
@@ -152,7 +150,7 @@ export type Community = {
 // Sunset Retreat is the current release in Tehachapi; elsewhere we confirm availability case by case.
 const askAvailability = (place: string): [string, string] => [
   `Do you have homes or lots available in ${place} right now?`,
-  `Availability changes, so we confirm it case by case. Call ${site.phone} or send the form and we'll tell you what's currently possible in ${place}, including building one of our six models or a custom home.`,
+  `Availability changes, so we confirm it case by case. Call ${site.phone} or send the form and we'll tell you what's currently possible in ${place}, including building one of our six models.`,
 ];
 const ownLot = (place: string): [string, string] => [
   `Can I build on land I already own in ${place}?`,
@@ -177,17 +175,17 @@ export const communities: Community[] = [
     slug: 'golden-hills-bear-valley-and-stallion-springs-home-builder', area: 'golden-hills-bear-valley-stallion-springs', published: false, name: 'Golden Hills, Bear Valley & Stallion Springs', short: 'The foothill communities around Tehachapi.',
     title: 'New & Semi-Custom Homes in Golden Hills, Bear Valley Springs & Stallion Springs | Aspen II Homes',
     h1: 'New and Semi-Custom Homes in Golden Hills, Bear Valley Springs and Stallion Springs',
-    description: 'Aspen II Homes serves buyers in Golden Hills, Bear Valley Springs and Stallion Springs near Tehachapi. Six models or a custom build; contact us to confirm current availability.',
-    intro: 'Aspen II Homes serves buyers in the communities around Tehachapi: Golden Hills, Bear Valley Springs and Stallion Springs. Choose one of our six models or ask about a custom build. Contact us to confirm current land, build and model availability in each community.',
-    points: ['Three communities near Tehachapi', 'Six models or a custom build', 'We confirm availability case by case'],
+    description: 'Aspen II Homes serves buyers in Golden Hills, Bear Valley Springs and Stallion Springs near Tehachapi. Six semi-custom models; contact us to confirm current availability.',
+    intro: 'Aspen II Homes serves buyers in the communities around Tehachapi: Golden Hills, Bear Valley Springs and Stallion Springs. Choose one of our six semi-custom models. Contact us to confirm current land, build and model availability in each community.',
+    points: ['Three communities near Tehachapi', 'Six semi-custom models', 'We confirm availability case by case'],
     faq: [askAvailability('Golden Hills, Bear Valley Springs or Stallion Springs'), ownLot('these communities')],
   },
   {
     slug: 'california-city-ca-home-builders', area: 'california-city', published: false, name: 'California City', short: 'Serving California City buyers near Edwards AFB.',
     title: 'New & Semi-Custom Home Builder in California City, CA | Aspen II Homes',
-    h1: 'New Homes and Custom-Build Options in California City, CA',
-    description: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base. Six models, custom builds and VA, FHA and conventional financing.',
-    intro: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base, through select model and custom-build opportunities. Contact our team to confirm current land, build and model availability.',
+    h1: 'New and Semi-Custom Home Options in California City, CA',
+    description: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base. Six semi-custom models and VA, FHA and conventional financing.',
+    intro: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base, through select semi-custom model opportunities. Contact our team to confirm current land, build and model availability.',
     points: ['Near Edwards Air Force Base', 'VA, FHA & conventional financing', 'We confirm availability case by case'],
     faq: [askAvailability('California City'), ownLot('California City')],
   },
@@ -195,8 +193,8 @@ export const communities: Community[] = [
     slug: 'ridgecrest-home-builders', area: 'ridgecrest', published: false, name: 'Ridgecrest', short: 'Serving Ridgecrest and Indian Wells Valley buyers.',
     title: 'New & Semi-Custom Homes Near Ridgecrest, CA | Aspen II Homes',
     h1: 'New Home Options for Ridgecrest-Area Buyers',
-    description: 'Aspen II Homes serves Ridgecrest and Indian Wells Valley buyers, including NAWS China Lake families, through select semi-custom and custom-build opportunities.',
-    intro: 'Aspen II Homes serves qualified buyers in the Ridgecrest and Indian Wells Valley area through select semi-custom and custom-build opportunities. Contact our team to confirm current land, build and model availability.',
+    description: 'Aspen II Homes serves Ridgecrest and Indian Wells Valley buyers, including NAWS China Lake families, through select semi-custom opportunities.',
+    intro: 'Aspen II Homes serves qualified buyers in the Ridgecrest and Indian Wells Valley area through select semi-custom opportunities. Contact our team to confirm current land, build and model availability.',
     points: ['Serving the Indian Wells Valley', 'Near NAWS China Lake', 'VA, FHA & conventional financing'],
     faq: [askAvailability('the Ridgecrest area'), ownLot('the Ridgecrest area')],
   },
@@ -207,7 +205,7 @@ export const faq: [string, string, string][] = [
   ['Where does Aspen II Homes build?', 'Our current release is Sunset Retreat in Tehachapi. We also serve buyers in Golden Hills, Bear Valley Springs, Stallion Springs, California City and Ridgecrest. Contact us to confirm current lot availability and construction status.', '/areas/'],
   ['How much do the new homes cost?', 'The Sunset Retreat first release starts at $459,000. Pricing for other models depends on the home, lot, design, finishes and options. Ask us for a current quote.', '/available-homes/'],
   ['Which home models can I choose from?', 'Six: Tranquil Oasis, Sunset Retreat, The Tranquil Abode, Sunrise View Residence, Enchanted Haven and The Grand Haven, from 1,507 to 2,348 sq ft. Each model page has photos and a downloadable blueprint.', '/floor-plans/'],
-  ['Can I customize my new home?', 'Yes. Choose reserve-and-customize, semi-custom model selection, or a fully custom build. Available choices depend on the model and construction stage.', '/our-process/'],
+  ['Can I customize my new home?', 'Yes. Reserve a Sunset Retreat home and choose your finishes, or pick one of six semi-custom models. Available choices depend on the model and construction stage.', '/our-process/'],
   ['Is 0% down financing available?', 'A 0% down option is available for eligible first-time buyers. Eligibility, lender approval and program terms apply. We also work with FHA, VA and conventional financing.', '/financing/'],
   ['How do early-buyer savings work?', 'Reserve early and apply up to $15,000 in early-buyer savings toward your floor plan. Availability, eligibility and program terms apply.', '/financing/'],
   ['How long until I can move in?', 'Sunset Retreat first-release homes are estimated at roughly three months to move-in.', '/available-homes/'],

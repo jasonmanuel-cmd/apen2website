@@ -6,7 +6,7 @@ import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 const path = '/build-on-your-lot/';
 const title = `Build on Your Lot in Tehachapi | ${site.name}`;
-const description = `Own land, have a lot under contract, or still looking? ${site.name} reviews your land and plan with you, then builds one of six floor plans or a custom home in Tehachapi and eastern Kern County.`;
+const description = `Own land, have a lot under contract, or still looking? ${site.name} reviews your land and plan with you, then builds one of six semi-custom floor plans in Tehachapi and eastern Kern County.`;
 const factors: [string, string][] = [
   ['Access', 'Is there legal, year-round road access to the lot?'],
   ['Slope and site work', 'How much grading, retaining or foundation work might the site need?'],
@@ -28,7 +28,7 @@ const costs: [string, string][] = [
 const qa: [string, string][] = [
   ['Do I need to own land to start?', 'No. You can talk with us if you own land, have a lot under contract, or are still looking.'],
   ['Will you tell me if my lot is buildable?', 'We give a preliminary human review of what you share and what we can find, and we tell you which questions need a surveyor, engineer, utility or the county or city. It is not a survey, engineering opinion, permit approval or guarantee.'],
-  ['Which plans can I build on my lot?', 'Any of our six floor plans may fit, depending on the lot. We also design fully custom homes.'],
+  ['Which plans can I build on my lot?', 'Any of our six semi-custom floor plans may fit, depending on the lot.'],
   ['What does it cost to build on my own land?', 'It depends on the house, site work, utilities, permits and financing for your specific lot. We go through each category with you rather than quoting a number before we know the site.'],
 ];
 const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['Build on your lot', path]]), faqPage(qa)];
