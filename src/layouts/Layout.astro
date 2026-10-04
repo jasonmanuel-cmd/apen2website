@@ -13,12 +13,33 @@ const org = {
   areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
 };
 const path = Astro.url.pathname;
-const nav = [
-  ['/#plans', 'Models'],
-  ['/financing/', 'Financing'],
-  ['/#communities', 'Communities'],
-  ['/heroes-of-the-nation/', 'Military'],
-  ['/contact-us/', 'Contact'],
+// Four buyer journeys: buy at Sunset Retreat, pick a model, build with us, understand financing and places.
+const nav: [string, string, [string, string][]][] = [
+  ['/sunset-retreat-tehachapi/', 'New Homes', [
+    ['/sunset-retreat-tehachapi/', 'Sunset Retreat, Tehachapi'],
+    ['/sunset-retreat-tehachapi/#availability', 'Pricing & availability'],
+  ]],
+  ['/floor-plans/', 'Models', [
+    ['/floor-plans/', 'All floor plans'],
+    ['/floor-plans/#compare', 'Compare models'],
+    ...plans.map((p): [string, string] => [`/${p.slug}/`, p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name]),
+  ]],
+  ['/how-it-works/', 'Build With Us', [
+    ['/how-it-works/', 'How it works'],
+    ['/how-it-works/#paths', 'Semi-custom & fully custom'],
+    ['/contact-us/?interest=lot', 'Build on your lot'],
+  ]],
+  ['/#communities', 'Communities', communities.map((c): [string, string] => [`/${c.slug}/`, c.name])],
+  ['/financing/', 'Financing', [
+    ['/financing/', 'Financing & incentives'],
+    ['/heroes-of-the-nation/', 'Military: Heroes of the Nation'],
+    ['/#faq', 'FAQ'],
+  ]],
+  ['/about/', 'About', [
+    ['/about/', 'About Aspen II Homes'],
+    ['/gallery/', 'Gallery'],
+    ['/contact-us/', 'Contact'],
+  ]],
 ];
 ---
 <!doctype html>
@@ -52,15 +73,22 @@ const nav = [
   </a>
   <header class="nav">
     <a href="/" class="logo" aria-label="Aspen II Homes, home"><Image src={logo} alt="" width={34} height={34} class="mark" loading="eager" />Aspen <em>II</em> Homes</a>
-    <nav aria-label="Main">
-      {nav.map(([href, label]) => <a href={href} aria-current={path === href ? 'page' : undefined}>{label}</a>)}
+    <nav aria-label="Main" class="main-nav">
+      {nav.map(([href, label, items]) => (
+        <div class="dd">
+          <a href={href} class="top" aria-current={items.some(([h]) => h === path) ? 'page' : undefined}>{label}</a>
+          <div class="panel">{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
+        </div>
+      ))}
     </nav>
     <a class="btn btn-sm nav-call" href={site.phoneHref}>{site.phone}</a>
     <details class="menu">
       <summary class="mono" aria-label="Menu">Menu</summary>
       <nav aria-label="Mobile">
-        {nav.map(([href, label]) => <a href={href}>{label}</a>)}
-        <a href={site.phoneHref}>Call {site.phone}</a>
+        {nav.map(([, label, items]) => (
+          <div class="group"><p class="mono">{label}</p>{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
+        ))}
+        <a href={site.phoneHref} class="call">Call {site.phone}</a>
       </nav>
     </details>
   </header>
@@ -82,7 +110,7 @@ const nav = [
         <p class="mono head">Communities</p>
         <ul>{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
+        <ul><li><a href="/sunset-retreat-tehachapi/">Sunset Retreat, Tehachapi</a></li><li><a href="/floor-plans/">All floor plans</a></li><li><a href="/how-it-works/">How it works</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
@@ -143,9 +171,15 @@ const nav = [
 
   .nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
          padding: .85rem var(--gutter); background: rgb(var(--bone-rgb) / .92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-  .nav nav { display: flex; gap: 1.8rem; }
-  .nav nav a { text-decoration: none; font: .74rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-  .nav nav a:hover, .nav nav a[aria-current] { color: var(--clay); }
+  .main-nav { display: flex; gap: 1.4rem; }
+  .dd { position: relative; }
+  .dd .top { display: block; padding: .5rem 0; text-decoration: none; font: .72rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  .dd .top:hover, .dd .top[aria-current] { color: var(--clay); }
+  .dd .panel { position: absolute; left: -1rem; top: 100%; min-width: 240px; display: none; flex-direction: column; background: var(--paper);
+               border: 1px solid var(--line); box-shadow: 0 16px 40px rgb(var(--ink-rgb) / .15); padding: .4rem 0; z-index: 30; }
+  .dd:hover .panel, .dd:focus-within .panel { display: flex; }
+  .dd .panel a { padding: .6rem 1rem; text-decoration: none; font-size: .95rem; }
+  .dd .panel a:hover, .dd .panel a:focus-visible { background: var(--sand-2); color: var(--clay); }
   .logo { font-family: var(--display); font-size: 1.45rem; text-decoration: none; margin: 0; white-space: nowrap; display: inline-flex; align-items: center; gap: .55rem; }
   .logo .mark { width: 34px; height: 34px; border-radius: 4px; }
   .logo em { font-weight: 700; letter-spacing: -.04em; }
@@ -161,10 +195,13 @@ const nav = [
   .menu summary { list-style: none; cursor: pointer; border: 1px solid var(--ink); padding: .55em 1em; font-size: .72rem; }
   .menu summary::-webkit-details-marker { display: none; }
   .menu[open] summary { background: var(--ink); color: var(--bone); }
-  .nav .menu nav { display: flex; flex-direction: column; gap: 0; position: absolute; right: 0; top: calc(100% + 10px); min-width: 230px;
+  .nav .menu nav { display: flex; flex-direction: column; gap: 0; position: absolute; right: 0; top: calc(100% + 10px); min-width: 260px; max-height: 75vh; overflow-y: auto;
                    background: var(--bone); border: 1px solid var(--line); box-shadow: 0 16px 40px rgb(var(--ink-rgb) / .15); }
-  .nav .menu nav a { padding: 1rem 1.2rem; border-bottom: 1px solid var(--line); font-size: .78rem; }
-  @media (max-width: 900px) { .nav > nav { display: none; } .menu { display: block; } }
+  .nav .menu nav a { display: block; padding: .75rem 1.2rem; text-decoration: none; font-size: 1rem; }
+  .nav .menu .group { border-bottom: 1px solid var(--line); padding: .4rem 0; }
+  .nav .menu .group p { margin: .6rem 1.2rem .2rem; font-size: .66rem; color: var(--muted); }
+  .nav .menu .call { font: 500 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 1rem 1.2rem; }
+  @media (max-width: 1080px) { .nav > nav { display: none; } .menu { display: block; } }
   @media (max-width: 480px) { .nav-call { display: none; } }
 
   .footer { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--sand); padding: 72px 0 110px; }

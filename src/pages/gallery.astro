@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Gallery from '../components/Gallery.astro';
+import { site, plans, photos } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
+
+const path = '/gallery/';
+const title = `Home Photo Gallery | ${site.name}`;
+const description = `Photos and artist renderings of ${site.name} floor plans, labeled by model, with links to each plan's specs and floor plan.`;
+const sets = plans.map((p) => ({ p, imgs: photos(p.folder), name: p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name })).filter((x) => x.imgs.length);
+const schema = [webPage(path, title, description, { '@type': 'CollectionPage' }), breadcrumb([['Home', '/'], ['Gallery', path]])];
+---
+<Layout title={title} description={description} schema={schema}>
+  <section class="section wrap">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Gallery</span></nav>
+    <p class="eyebrow">Gallery</p>
+    <h1>Inside the <em>floor plans.</em></h1>
+    <p class="lede">Every set is labeled by model. Artist renderings are marked and may differ from completed construction.</p>
+  </section>
+  {sets.map(({ p, imgs, name }) => (
+    <section class="wrap set">
+      <div class="head">
+        <h2>{name}</h2>
+        <p class="mono">{p.sqft.toLocaleString()} sf · {p.beds} bd · {p.baths} ba · {p.rendering ? 'Artist renderings' : 'Photography'}</p>
+        <a href={`/${p.slug}/`} class="mono more">Specs & floor plan →</a>
+      </div>
+      <Gallery images={imgs} name={name} />
+    </section>
+  ))}
+  <section class="section wrap"><p><a class="btn" href="/floor-plans/">Compare all floor plans</a></p></section>
+</Layout>
+
+<style>
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); }
+  .lede { max-width: 60ch; font-size: 1.15rem; color: var(--muted); }
+  .set { margin-bottom: clamp(48px, 7vw, 88px); }
+  .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.5rem; margin-bottom: 1rem; }
+  .head h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .head .mono { font-size: .7rem; color: var(--muted); margin: 0; }
+  .head .more { color: var(--clay); text-decoration: none; }
+</style>

@@ -3,16 +3,19 @@ import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, heroes as h, photos, usd } from '../data/site';
+import { breadcrumb } from '../data/schema';
 const img = photos('sunset-retreat')[0].src;
 const l = h.lender;
 const perks = [
   [usd(h.cash), 'Hero Home Cash'],
-  ['10-Year', 'Builder warranty'],
+  ['Warranty', 'Ask for coverage details'],
   ['20 min', 'From Edwards AFB'],
   ['$1,000+', 'Move-in bonus'],
 ];
+const crumbSchema = breadcrumb([['Home', '/'], ['Financing', '/financing/'], ['Heroes of the Nation', '/heroes-of-the-nation/']]);
 ---
 <Layout
+  schema={crumbSchema}
   title={`Military & Veteran Homes from ${usd(h.price)} | ${site.name}`}
   description={`A ${h.beds}-bed, ${h.sqft.toLocaleString()} sq ft new construction home for ${usd(h.price)}, plus ${usd(h.cash)} Hero Home Cash. For qualifying military near Edwards AFB. Use your BAH to buy.`}
 >

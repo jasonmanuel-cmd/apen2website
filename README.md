@@ -49,6 +49,21 @@ Code changes can't settle these; each needs a written answer from the owner or l
 - **Business facts:** legal name, whether the Tucker Road address is a staffed office, CSLB license (`site.license`).
 - **Privacy notice** (`src/pages/privacy.astro`): written from what the site does today. Owner to approve the wording, data retention and SMS consent.
 
+## Still needed from the owner (2026-10-04 architecture brief)
+
+Built pages say only what the data file can support. These items stay unpublished until confirmed in writing:
+
+- **Legal/public name, CSLB license, staffed office or service-area only, business hours.** Then set `site.license` and align Google Business Profile, BBB, BuildZoom and social profiles to the same name, address and phone.
+- **One reply-time promise.** The site uses `site.followUp` everywhere; the old WordPress copy said 1 to 2 business days.
+- **Warranty.** The site said both "1-year" and "10-year"; both are now neutral ("ask for coverage details") until the real document is linked.
+- **Incentive terms:** start/end dates, eligible homes/lots, who funds each credit, combinability; lender-approved wording. Update `site.verified` whenever re-checked.
+- **Heroes of the Nation:** the "100% money-back guarantee" and "$100 for your time" claims on that page need written confirmation or removal.
+- **Included features** list (exterior, HVAC, windows, appliances, etc.) for an `/included-features/` page.
+- **Team, credentials, completed-project years and locations** for About and Gallery.
+- **Separate Golden Hills / Bear Valley Springs / Stallion Springs pages:** only once each has real, distinct information.
+- **aspen2bakersfield.com:** if owned, 301-redirect it here or give it a different purpose.
+- **Buyer guides:** the 12 articles need real, reviewed facts; none were written.
+
 ## Hosting checklist
 
 - Canonical host is `https://www.aspen2homes.com` (`site.url`, `astro.config.mjs`, `public/robots.txt`). Keep the apex domain as a single permanent redirect to www in Vercel > Domains.

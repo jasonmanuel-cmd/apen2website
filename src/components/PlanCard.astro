@@ -2,12 +2,14 @@
 import { Image } from 'astro:assets';
 import { type Plan, usd, photos, blueprint } from '../data/site';
 const { plan } = Astro.props as { plan: Plan };
-const cover = photos(plan.folder)[0]?.src;
+const first = photos(plan.folder)[0];
+const cover = first?.src;
+const name = plan.slug === 'sunset-retreat' ? `${plan.name} Model` : plan.name;
 const bp = cover ? undefined : blueprint(plan.folder);
 ---
 <a class="card" href={`/${plan.slug}/`}>
   <div class:list={['media', { plan: bp }]}>
-    {cover && <Image src={cover} alt={`${plan.name} exterior`} widths={[400, 700]} sizes="(max-width: 700px) 100vw, 400px" />}
+    {cover && <Image src={cover} alt={`${name}${first?.caption ? `: ${first.caption.toLowerCase()}` : ''}${plan.rendering ? ' (artist rendering)' : ''}`} widths={[400, 700]} sizes="(max-width: 700px) 100vw, 400px" />}
     {bp && <Image src={bp} alt={`${plan.name} floor plan`} widths={[400, 700]} sizes="(max-width: 700px) 100vw, 400px" />}
     {plan.firstRelease && <span class="tag mono hot">Now selling</span>}
     {plan.rendering && <span class="tag mono">Rendering</span>}
@@ -16,9 +18,9 @@ const bp = cover ? undefined : blueprint(plan.folder);
   </div>
   <div class="body">
     <p class="mono kicker">{plan.tagline}</p>
-    <h3>{plan.name}</h3>
+    <h3>{name}</h3>
     <p class="mono meta">{plan.sqft.toLocaleString()} sf · {plan.beds} bd · {plan.baths} ba</p>
-    <p class="price">{plan.price ? <>From <strong>{usd(plan.price)}</strong></> : <span class="mono">Call for pricing</span>} <span class="arrow" aria-hidden="true">→</span></p>
+    <p class="price">{plan.price ? <>From <strong>{usd(plan.price)}</strong></> : <span class="mono">Request current pricing</span>} <span class="arrow" aria-hidden="true">→</span></p>
   </div>
 </a>
 

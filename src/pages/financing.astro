@@ -2,13 +2,16 @@
 import Layout from '../layouts/Layout.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, offer, financing, usd } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
 const steps = [
   ['Tell us your goals', "Share your budget, timeline and whether you're a first-time buyer. A quick call or form is all it takes."],
   ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
   ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
 ];
+const crumbSchema = breadcrumb([['Home', '/'], ['Financing', '/financing/']]);
 ---
 <Layout
+  schema={crumbSchema}
   title={`Financing: 0% Down & ${usd(offer.earlyCredit)} Savings | ${site.name}`}
   description={`0% down for eligible first-time buyers, up to ${usd(offer.earlyCredit)} early-buyer savings, 2-1 buydowns and closing credits. FHA, VA & conventional.`}
 >
@@ -23,7 +26,8 @@ const steps = [
         <div><p class="n">{usd(offer.earlyCredit)}</p><p class="mono">Toward your plan</p></div>
         <div><p class="n">$459K</p><p class="mono">Plans starting at</p></div>
       </div>
-      <div class="ctas"><a class="btn" href="#qualify">Check if you qualify</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a></div>
+      <p class="notlender mono">We are a home builder, not a lender. Programs are offered by lenders and are subject to eligibility, approval and terms. Last confirmed {site.verified}; subject to change without notice.</p>
+      <div class="ctas"><a class="btn" href="#qualify">Ask about 0% down options</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a></div>
     </div>
   </section>
 
@@ -34,6 +38,7 @@ const steps = [
       <div class="perks">
         {financing.perks.map(([t, d]) => <article><h3>{t}</h3><p class="muted">{d}</p></article>)}
       </div>
+      <p class="caveat">Which homes and lots qualify, who provides each credit, start and end dates, and whether offers can be combined vary by program. Ask us for the current terms in writing before you rely on any incentive.</p>
       <div class="loans">
         <p class="mono">Loan types we work with</p>
         <ul>{financing.programs.map((p) => <li class="mono">{p}</li>)}</ul>
@@ -73,6 +78,8 @@ const steps = [
   .nums .mono { margin: 0; font-size: .66rem; color: var(--muted); }
   @media (max-width: 520px) { .nums { grid-template-columns: 1fr 1fr; } }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .notlender { font-size: .68rem; color: var(--muted); max-width: 70ch; margin: 0 0 1.5rem; line-height: 1.7; }
+  .caveat { max-width: 70ch; margin: 2rem 0 0; padding: 1rem 1.2rem; border-left: 3px solid var(--gold); background: var(--paper); }
   .perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2.5rem; }
   .perks article { border: 1px solid var(--line); padding: 1.8rem; }
   .perks h3 { font-size: 1.35rem; }

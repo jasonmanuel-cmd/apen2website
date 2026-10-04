@@ -5,6 +5,7 @@ import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
 import { site, plans, photos, blueprint, offer, usd, type Plan, theName } from '../data/site';
+import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
 const imgs = photos(plan.folder);
@@ -14,36 +15,56 @@ const ogSrc = imgs[0]?.src ?? bp;
 const og = ogSrc ? (await getImage({ src: ogSrc, width: 1200, format: 'jpg' })).src : undefined;
 const i = plans.indexOf(plan);
 const others = [1, 2, 3].map((n) => plans[(i + n) % plans.length]);
+const sr = plan.slug === 'sunset-retreat';
+// "Sunset Retreat" is both a community and a plan; the plan page always says "model".
+const label = sr ? `${plan.name} Model` : plan.name;
+const story = plan.stories === 2 ? 'two-story' : 'single-story';
+const spec = `${plan.sqft.toLocaleString()} Sq Ft, ${plan.beds} Bed, ${plan.baths} Bath`;
+const title = `${label} | ${plan.sqft.toLocaleString()} Sq Ft ${plan.beds}-Bed New Home Plan | ${site.name}`;
+const description = `${label}: ${plan.sqft.toLocaleString()} sq ft, ${plan.beds} bed, ${plan.baths} bath ${story} new home plan${plan.price ? ` from ${usd(plan.price)}` : ''} by ${site.name}, Tehachapi & eastern Kern County. Photos, floor plan PDF, availability.`;
 const facts = [
   ['Living area', `${plan.sqft.toLocaleString()} sf`],
   ['Bedrooms', plan.beds],
   ['Bathrooms', plan.baths],
   ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
 ];
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'SingleFamilyResidence',
-  name: `${plan.name} by ${site.name}`,
-  description: plan.summary,
-  numberOfBedrooms: plan.beds,
-  numberOfBathroomsTotal: plan.baths,
-  floorSize: { '@type': 'QuantitativeValue', value: plan.sqft, unitCode: 'FTK' },
-  ...(og && { image: new URL(og, site.url).href }),
-};
+const qa: [string, string][] = [
+  [`Is ${theName(plan.name)} one story or two?`, plan.stories === 2
+    ? `${plan.name} is a two-story plan: living on the main floor, bedrooms upstairs.`
+    : `${plan.name} is a single-story plan, with every room on one level.`],
+  [`Can ${theName(plan.name)} be built at Sunset Retreat?`, sr
+    ? `Yes. The ${offer.community} first release in Tehachapi uses this plan, from ${usd(offer.from)}. Home 1 and Home 2 are reserving now.`
+    : `The current ${offer.community} release uses the ${offer.community} model. Ask us about building ${theName(plan.name)} on another lot.`],
+  ['Which finishes can I choose?', 'Every model is semi-custom: choose flooring, paint colors, cabinetry and more. Available choices depend on the construction stage.'],
+  ['How long until move-in?', sr
+    ? `${offer.community} first-release homes are estimated at roughly three months to move-in, subject to construction conditions.`
+    : 'Timing depends on the lot, permits and construction schedule. Ask us for a current estimate.'],
+  ['What does the price include?', plan.price
+    ? `Plans start at ${usd(plan.price)}. Ask us what the starting price includes for the home you're considering; pricing and availability are subject to change.`
+    : 'Pricing depends on the lot, design, finishes and options. Ask us for a current quote.'],
+  ['Can the plan be changed?', 'Ask us about modifications. If you need something different, we also design fully custom homes.'],
+];
+const path = `/${plan.slug}/`;
+const schema = [
+  webPage(path, title, description, og ? { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } } : {}),
+  breadcrumb([['Home', '/'], ['Floor plans', '/floor-plans/'], [label, path]]),
+  faqPage(qa),
+];
 ---
 <Layout
-  title={`${plan.name}: ${plan.sqft.toLocaleString()} Sq Ft ${plan.price ? `from ${usd(plan.price)}` : `${plan.beds} Bed Home`} | ${site.name}`}
-  description={`${plan.name}: ${plan.sqft.toLocaleString()} sq ft, ${plan.beds} bed, ${plan.baths} bath ${plan.stories === 2 ? 'two-story' : 'single-story'} new home${plan.price ? ` from ${usd(plan.price)}` : ''} in Tehachapi & Kern County. Photos, blueprint & pricing.`}
+  title={title}
+  description={description}
   schema={schema}
   image={og}
 >
   <section class="wrap intro">
-    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#plans">Models</a> / <span aria-current="page">{plan.name}</span></nav>
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/floor-plans/">Floor plans</a> / <span aria-current="page">{label}</span></nav>
     <div class="top">
       <div class="reveal">
         <p class="eyebrow">{plan.tagline}{plan.firstRelease && ` · ${offer.community}, ${offer.city}`}</p>
-        <h1>{plan.name}</h1>
+        <h1>{label}: <em>{spec}</em> New Home Plan</h1>
         <p class="lede">{plan.headline}</p>
+        {sr && <p class="note-sr">This is the floor plan being built in the <a href="/sunset-retreat-tehachapi/">{offer.community} first release in Tehachapi</a>.</p>}
       </div>
       <div class="price-box reveal" style="animation-delay:.15s">
         <p class="mono">{plan.price ? 'Starting at' : 'Pricing'}</p>
@@ -51,19 +72,21 @@ const schema = {
         {plan.firstRelease && (
           <ul class="release">{offer.release.map(([h, s]) => <li class="mono"><span>{h}</span><span class:list={[{ live: s === 'Reserving' }]}>{s}</span></li>)}</ul>
         )}
-        <a class="btn" href="#inquire">{plan.firstRelease ? 'Reserve & customize' : 'Request model information'}</a>
+        <p class="mono status">{plan.status}</p>
+        <a class="btn" href="#inquire">{plan.firstRelease ? 'Reserve & customize' : `Request pricing for ${theName(plan.name)}`}</a>
         <a class="btn btn-ghost" href={site.sms(`Please text me ${theName(plan.name)} price sheet`)}>Text me the price sheet</a>
       </div>
     </div>
     <dl class="facts">
       {facts.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
     </dl>
+    <p class="where mono">Where it's available: {sr ? <><a href="/sunset-retreat-tehachapi/">{offer.community}, Tehachapi</a> (first release) · other lots on request</> : <>on request across <a href="/#communities">Tehachapi and eastern Kern County</a>. Availability depends on the lot.</>}</p>
   </section>
 
   {imgs.length > 0 && (
     <section class="wrap">
+      <p class="mono note">{plan.rendering ? 'Artist renderings. Final construction may differ.' : `Photography of the ${label} plan.`}</p>
       <Gallery images={imgs} name={plan.name} />
-      {plan.rendering && <p class="mono note">Images are artist renderings. Final construction may vary.</p>}
     </section>
   )}
 
@@ -93,11 +116,18 @@ const schema = {
           </div>
         </div>
         <a class="bp-img" href={pdf} target="_blank" rel="noopener" aria-label={`Open ${plan.name} blueprint PDF`}>
-          <Image src={bp} alt={`${plan.name} floor plan blueprint`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
+          <Image src={bp} alt={`${label} ${plan.sqft.toLocaleString()}-square-foot ${plan.beds}-bedroom floor plan by ${site.name}`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
         </a>
       </div>
     </section>
   )}
+
+  <section class="section wrap plan-faq">
+    <p class="eyebrow">{label} questions</p>
+    <h2>Before you <em>ask.</em></h2>
+    <div class="faq">{qa.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div>
+    <p class="ctas-row"><a class="btn btn-ghost" href="/floor-plans/#compare">Compare all models</a>{!sr && <a class="btn btn-ghost" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>}</p>
+  </section>
 
   <section class="inquire" id="inquire">
     <div class="wrap inq-grid">
@@ -139,7 +169,19 @@ const schema = {
   .facts dd { margin: .3rem 0 0; font-family: var(--display); font-size: 1.6rem; }
   @media (max-width: 860px) { .top { grid-template-columns: 1fr; } }
   @media (max-width: 520px) { .facts { grid-template-columns: 1fr 1fr; } }
-  .note { font-size: .68rem; color: var(--muted); margin-top: .8rem; }
+  .note { font-size: .68rem; color: var(--muted); margin: 0 0 .8rem; }
+  .top h1 { font-size: clamp(2.2rem, 5vw, 4rem); }
+  .top h1 em { display: block; font-size: .55em; color: var(--clay); }
+  .note-sr { margin: 1rem 0 0; } .note-sr a { color: var(--clay); }
+  .price-box .status { color: var(--gold); font-size: .68rem; margin: 0 0 .4rem; }
+  .where { font-size: .72rem; color: var(--muted); margin: 1.5rem 0 0; line-height: 1.8; }
+  .where a { color: var(--clay); }
+  .plan-faq .faq { max-width: 860px; margin-top: 1.5rem; }
+  .plan-faq details { border-top: 1px solid var(--line); }
+  .plan-faq details:last-child { border-bottom: 1px solid var(--line); }
+  .plan-faq summary { cursor: pointer; padding: 1.1rem 0; font: 1.15rem var(--display); }
+  .plan-faq details p { margin: 0 0 1.2rem; color: var(--muted); }
+  .ctas-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
   .cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(2rem, 6vw, 6rem); }
   .summary { font-size: 1.15rem; }
   .hl { list-style: none; margin: 0 0 1.5rem; padding: 0; }

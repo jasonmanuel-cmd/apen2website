@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site, offer, plans, communities, usd, sqftRange } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
+
+const path = '/about/';
+const title = `About ${site.name} | Local Home Builder in Tehachapi, CA`;
+const description = `${site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County: the Sunset Retreat release, six floor plans and fully custom builds.`;
+const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), breadcrumb([['Home', '/'], ['About', path]])];
+---
+<Layout title={title} description={description} schema={schema}>
+  <section class="section wrap">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">About</span></nav>
+    <p class="eyebrow">About us</p>
+    <h1>The local builder of new and semi-custom homes in <em>Tehachapi.</em></h1>
+    <p class="lede">{site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County. Our current release is <a href="/sunset-retreat-tehachapi/">{offer.community}</a> in Tehachapi, from {usd(offer.from)}.</p>
+  </section>
+
+  <section class="section facts-sec">
+    <div class="wrap grid">
+      <div>
+        <h2>What we <em>build.</em></h2>
+        <ul class="list">
+          <li><a href="/sunset-retreat-tehachapi/">{offer.community}</a>: our current release in Tehachapi.</li>
+          <li><a href="/floor-plans/">Six floor plans</a>, {sqftRange()} sq ft, every one semi-custom.</li>
+          <li>Fully custom homes, including on <a href="/contact-us/?interest=lot">land you already own</a>.</li>
+          <li><a href="/heroes-of-the-nation/">Heroes of the Nation</a>, a program for qualifying military families.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Where we <em>work.</em></h2>
+        <ul class="list">{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <h2>Contact <em>details.</em></h2>
+    <dl class="nap">
+      <div><dt class="mono">Business</dt><dd>{site.name}</dd></div>
+      <div><dt class="mono">Phone</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
+      <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+      <div><dt class="mono">Address</dt><dd>{site.address}</dd></div>
+      {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
+    </dl>
+    <p class="mono eho">Equal Housing Opportunity</p>
+    <p><a class="btn" href="/contact-us/">Talk with our team</a></p>
+  </section>
+</Layout>
+
+<style>
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); max-width: 20ch; }
+  .lede { max-width: 60ch; font-size: 1.2rem; color: var(--muted); } .lede a { color: var(--clay); }
+  .facts-sec { background: var(--sand-2); }
+  .grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(2rem, 6vw, 5rem); }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .list { padding-left: 1.2rem; } .list li { margin: .6rem 0; } .list a { color: var(--clay); }
+  .nap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin: 1.5rem 0; }
+  .nap dt { font-size: .66rem; color: var(--muted); } .nap dd { margin: .3rem 0 0; font-size: 1.1rem; } .nap a { color: var(--clay); }
+  .eho { font-size: .7rem; border: 1px solid var(--muted); display: inline-block; padding: .3em .7em; }
+</style>

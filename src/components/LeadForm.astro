@@ -6,6 +6,7 @@ const interests = [
   ['reserve', `Reserve & customize a ${offer.community} home (from ${usd(offer.from)})`],
   ['semi', 'Choose a model (semi-custom)'],
   ['custom', 'Fully custom build'],
+  ['lot', 'Build on my own lot'],
   ['financing', 'Financing & incentives'],
   ['tour', 'Schedule a tour'],
   ['military', 'Heroes of the Nation (military)'],
@@ -39,9 +40,34 @@ const interests = [
       </select>
     </label>
   </div>
+  <details class="more">
+    <summary class="mono">Tell us more (optional)</summary>
+    <div class="row">
+      <label>Best way to reach you
+        <select name="contactPref"><option value="">Any</option><option>Call</option><option>Text</option><option>Email</option></select>
+      </label>
+      <label>Where are you in the process?
+        <select name="stage"><option value="">Choose one</option><option>Ready to buy now</option><option>Researching</option><option>Building on my own lot</option></select>
+      </label>
+    </div>
+    <div class="row">
+      <label>Timeline
+        <select name="when"><option value="">Not sure</option><option>Within 3 months</option><option>3 to 6 months</option><option>6 to 12 months</option><option>More than a year</option></select>
+      </label>
+      <label>Budget
+        <select name="budget"><option value="">Prefer not to say</option><option>Under $400K</option><option>$400K to $500K</option><option>$500K to $650K</option><option>Over $650K</option></select>
+      </label>
+    </div>
+    <fieldset class="checks">
+      <legend class="mono">Ask me about</legend>
+      <label class="check"><input type="checkbox" name="firstTime" value="yes" /> First-time buyer options</label>
+      <label class="check"><input type="checkbox" name="military" value="yes" /> VA / military options</label>
+    </fieldset>
+  </details>
   <label>When works for you? Anything we should know?<textarea name="notes" rows="3"></textarea></label>
   <button class="btn" type="submit">Send my request →</button>
-  <p class="status mono" role="status" aria-live="polite">No spam. No pressure. We reply {site.followUp}. See our <a href="/privacy/">privacy notice</a>. Prefer to text? <a href={site.sms()}>Text HOMES to {site.phone}</a></p>
+  <p class="consent">By sending, you agree we may call, text or email you about this request. We won't send marketing messages without your permission. See our <a href="/privacy/">privacy notice</a>.</p>
+  <p class="status mono" role="status" aria-live="polite">No spam. No pressure. We reply {site.followUp}. Prefer to text? <a href={site.sms()}>Text HOMES to {site.phone}</a></p>
 </form>
 
 <script>
@@ -76,6 +102,14 @@ const interests = [
 
 <style>
   .lead { display: grid; gap: 1rem; }
+  .more { border: 1px solid var(--line); padding: .8rem 1rem; }
+  .more[open] { display: grid; gap: 1rem; }
+  .more summary { cursor: pointer; font-size: .72rem; }
+  .checks { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; }
+  .checks legend { font-size: .68rem; margin-bottom: .4rem; }
+  .check { display: flex; align-items: center; gap: .5rem; font-weight: 400; }
+  .check input { width: auto; }
+  .consent { font-size: .82rem; margin: 0; opacity: .85; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
   label { display: grid; gap: .35rem; font: .7rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }

@@ -2,32 +2,43 @@
 import Layout from '../layouts/Layout.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, communities, offer } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
 const reasons = [
   `Reserve & customize a ${offer.community} home`,
   'Get floor plans, pricing and the incentive breakdown',
   `Walk the ${offer.community} community and model plans`,
 ];
+const crumbSchema = [webPage('/contact-us/', `Contact ${site.name}`, `Contact ${site.name} in Tehachapi, CA.`, { '@type': 'ContactPage' }), breadcrumb([['Home', '/'], ['Contact', '/contact-us/']])];
 ---
 <Layout
+  schema={crumbSchema}
   title={`Contact & Schedule a Tour | ${site.name}`}
   description={`Reserve a ${offer.community} home, pick a model or start a custom build. Call or text HOMES to ${site.phone} for plans, pricing and tours.`}
 >
   <section class="section">
     <div class="wrap grid">
       <div>
-        <p class="eyebrow">Request a tour or info</p>
-        <h1>Let's find <em>your home.</em></h1>
+        <p class="eyebrow">Contact</p>
+        <h1>Talk With Aspen II Homes About <em>Your New Home</em></h1>
+        <ul class="choices">
+          <li><a href="?interest=reserve#form">Reserve a Sunset Retreat home</a></li>
+          <li><a href="?interest=semi#form">Request model pricing</a></li>
+          <li><a href="?interest=financing#form">Ask about financing</a></li>
+          <li><a href="?interest=lot#form">Build on my lot</a></li>
+          <li><a href="?interest=tour#form">Schedule a call</a></li>
+        </ul>
         <p class="lede">Reserve a {offer.community} home, choose your model or ask about a fully custom build. Zero pressure, zero obligation, just information.</p>
         <ul class="reasons">{reasons.map((r) => <li>{r}</li>)}</ul>
         <dl class="info">
           <div><dt class="mono">Call</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
           <div><dt class="mono">Text</dt><dd><a href={site.sms()}>Text HOMES</a></dd></div>
           <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-          <div><dt class="mono">Office</dt><dd>{site.address}</dd></div>
+          <div><dt class="mono">Address</dt><dd>{site.address}</dd></div>
+          {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
         </dl>
         <p class="mono serving">Serving {communities.map((c) => c.name).join(' · ')}</p>
       </div>
-      <div class="card">
+      <div class="card" id="form">
         <p class="mono k">Quick form · we reply {site.followUp}</p>
         <LeadForm source="Contact page" interest="tour" />
       </div>
@@ -39,6 +50,10 @@ const reasons = [
   .grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
   @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
   .lede { font-size: 1.2rem; color: var(--muted); max-width: 44ch; }
+  h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
+  .choices { list-style: none; padding: 0; margin: 1.2rem 0 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .choices a { display: inline-block; border: 1px solid var(--ink); padding: .6em 1em; text-decoration: none; font: .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .choices a:hover { background: var(--ink); color: var(--bone); }
   .reasons { list-style: none; padding: 0; margin: 1.5rem 0; }
   .reasons li { padding: .6rem 0 .6rem 1.8rem; position: relative; }
   .reasons li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); }

@@ -52,6 +52,21 @@ export default async function handler(req, res) {
     const plan = str(data.plan, 100);
     const notes = str(data.notes, 3000);
     const source = str(data.source, 100) || 'Website';
+    const contactPref = str(data.contactPref, 20);
+    const stage = str(data.stage, 60);
+    const when = str(data.when, 40);
+    const budget = str(data.budget, 40);
+    const firstTime = str(data.firstTime, 5) === 'yes';
+    const military = str(data.military, 5) === 'yes';
+    // Short routing tags for the subject line, so the team can sort leads at a glance.
+    const tags = [
+      /reserve/i.test(timeline) && 'Sunset Retreat',
+      /model/i.test(timeline) && 'Model pricing',
+      /fully custom/i.test(timeline) && 'Custom',
+      (/own lot/i.test(timeline) || /own lot/i.test(stage)) && 'Own lot',
+      (/financ/i.test(timeline) || firstTime) && 'Financing',
+      (/military|heroes/i.test(timeline) || military) && 'Military/VA',
+    ].filter(Boolean);
 
     // 1. Bot trap: if the hidden honeypot field is filled, pretend success.
     if (str(data.honeypot)) {
@@ -84,7 +99,7 @@ export default async function handler(req, res) {
       const message = {
         from,
         ...(email && { reply_to: email }),
-        subject: `[New Lead] ${name} - ${plan || community || 'General Inquiry'}`,
+        subject: `[New Lead]${tags.map((t) => `[${t}]`).join('')} ${name} - ${plan || community || 'General Inquiry'}`,
         html: `
           <h2>New Aspen II Homes Lead</h2>
           <p><strong>Name:</strong> ${esc(name)}</p>
@@ -93,6 +108,9 @@ export default async function handler(req, res) {
           <p><strong>Interested in:</strong> ${esc(timeline)}</p>
           <p><strong>Model:</strong> ${esc(plan) || 'Not sure yet'}</p>
           <p><strong>Community:</strong> ${esc(community) || 'Not sure yet'}</p>
+          <p><strong>Best way to reach:</strong> ${esc(contactPref) || 'Any'}</p>
+          <p><strong>Stage:</strong> ${esc(stage) || 'Not given'} · <strong>Timeline:</strong> ${esc(when) || 'Not given'} · <strong>Budget:</strong> ${esc(budget) || 'Not given'}</p>
+          <p><strong>Ask about:</strong> ${[firstTime && 'First-time buyer options', military && 'VA / military options'].filter(Boolean).join(', ') || 'Nothing extra'}</p>
           <p><strong>Notes:</strong><br>${notes ? esc(notes).replace(/\n/g, '<br>') : 'None'}</p>
           <hr>
           <small>From ${esc(source)} at ${leadPayload.timestamp}. Reply to this email to answer the buyer directly.</small>

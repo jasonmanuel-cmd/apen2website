@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site, paths, offer, usd } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
+
+const path = '/how-it-works/';
+const title = `How Buying or Building With ${site.name} Works`;
+const description = `The steps to reserve a Sunset Retreat home, choose and customize one of six models, or plan a fully custom build with ${site.name} in Tehachapi and eastern Kern County.`;
+// Which stages apply to which path: reservation homes skip design work that custom builds need.
+const stages: [string, string, string][] = [
+  ['Explore', 'Look at the current Sunset Retreat release, the six floor plans and, for a custom build, your lot or the lots available.', 'All paths'],
+  ['Talk it through', 'Share your goals, budget, financing situation and timeline. We tell you which path and programs fit.', 'All paths'],
+  ['Choose', 'Pick a Sunset Retreat home, one of the six models for your lot, or start a fully custom design.', 'All paths'],
+  ['Review the details', 'Go over selections, specifications, pricing and contract terms before you commit.', 'All paths; custom builds include design review'],
+  ['Build', 'Construction with milestone updates along the way. Timing depends on the path, lot, permits and conditions.', `Sunset Retreat est. ${offer.moveIn}; other builds vary`],
+  ['Move in', 'Final walkthrough, closing and warranty handoff.', 'All paths'],
+];
+const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['How it works', path]])];
+---
+<Layout title={`${title} | ${site.name}`} description={description} schema={schema}>
+  <section class="section wrap">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">How it works</span></nav>
+    <p class="eyebrow">Build with us</p>
+    <h1>How Buying or Building With <em>Aspen II Homes Works</em></h1>
+    <p class="lede">Three ways in, one team. Your exact steps depend on the path you choose; we'll walk you through each one.</p>
+  </section>
+
+  <section class="section paths-sec" id="paths">
+    <div class="wrap">
+      <p class="eyebrow">Choose your path</p>
+      <h2>Reserve, choose <em>or design.</em></h2>
+      <div class="paths">
+        {paths.map((p) => (
+          <article>
+            <p class="mono n">Path {p.n} · {p.name}</p>
+            <h3>{p.title}</h3>
+            <p class="mono meta">{p.meta}</p>
+            <p>{p.text}</p>
+            <p class="price">{p.price}</p>
+          </article>
+        ))}
+      </div>
+      <p class="mono note">Sunset Retreat first release from {usd(offer.from)}. Pricing for other paths depends on the home, lot, design, finishes and options.</p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Step by step</p>
+    <h2>From first call to <em>keys.</em></h2>
+    <ol class="stages">
+      {stages.map(([t, d, a], i) => <li><span class="mono">Stage 0{i + 1}</span><h3>{t}</h3><p>{d}</p><p class="mono applies">{a}</p></li>)}
+    </ol>
+    <p class="ctas"><a class="btn" href="/contact-us/">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href="/contact-us/?interest=lot">Build on your lot</a></p>
+  </section>
+</Layout>
+
+<style>
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); max-width: 18ch; }
+  .lede { max-width: 56ch; font-size: 1.15rem; color: var(--muted); }
+  .paths-sec { background: var(--sand-2); }
+  .paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 2rem; }
+  .paths article { background: var(--paper); border: 1px solid var(--line); padding: 1.8rem; }
+  .paths .n { color: var(--clay); font-size: .64rem; }
+  .paths .meta { font-size: .66rem; color: var(--muted); }
+  .paths .price { font: 1.4rem var(--display); margin: 1rem 0 0; }
+  @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
+  .note { font-size: .68rem; color: var(--muted); margin-top: 1.5rem; }
+  .stages { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .stages li { border-top: 2px solid var(--ink); padding-top: 1.2rem; }
+  .stages .mono { color: var(--clay); font-size: .7rem; }
+  .stages h3 { margin: .5rem 0; }
+  .stages p { margin: 0 0 .6rem; }
+  .stages .applies { color: var(--muted); font-size: .64rem; }
+  @media (max-width: 860px) { .stages { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .stages { grid-template-columns: 1fr; } }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.5rem; }
+</style>

@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, plans, communities, heroes, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
+import { faqPage } from '../data/schema';
 
 const hero = photos('tranquil-oasis')[0].src;
 // Each section uses a different photo; exteriors already appear on the model cards.
@@ -22,20 +23,24 @@ const stats = [
   [offer.moveIn, 'To move-in'],
 ];
 const why = [
-  ['New-Home Warranty', 'Builder warranty coverage on your brand-new construction.'],
-  ['Modern & Efficient', 'Current codes, efficient systems and up-to-date materials throughout.'],
-  ['Local Homebuilder', 'A hands-on local team that handles permits and trades and builds every home to one standard.'],
-  ['Equal Housing', 'A fair, transparent process and honest disclosures at every step.'],
+  ['Six proven floor plans', `${sqftRange()} sq ft, single- and two-story, each with a downloadable floor plan.`],
+  ['Semi-custom finishes', 'Choose flooring, paint colors, cabinetry and more, depending on construction stage.'],
+  ['Based in Tehachapi', 'A local builder serving Tehachapi and eastern Kern County.'],
+  ['Equal Housing Opportunity', 'A fair, transparent process and honest disclosures at every step.'],
+];
+const trust = [
+  'Local Tehachapi builder',
+  'Six-model collection',
+  'Serving Tehachapi & eastern Kern County',
+  'Equal Housing Opportunity',
+  ...(site.license ? [site.license] : []),
 ];
 const steps = [
   ['Tell us your goals', "Share your budget, timeline and whether you're a first-time buyer. A quick call or form is all it takes."],
   ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
   ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
 ];
-const faqSchema = {
-  '@context': 'https://schema.org', '@type': 'FAQPage',
-  mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
-};
+const faqSchema = faqPage(faq);
 ---
 <Layout
   title={`New Homes in Tehachapi from ${usd(offer.from)} | ${site.name}`}
@@ -49,14 +54,15 @@ const faqSchema = {
     <div class="wrap hero-grid">
       <div class="copy">
         <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
-        <h1 class="reveal" style="animation-delay:.1s">Brand-new homes <em>you help design.</em></h1>
-        <p class="lede reveal" style="animation-delay:.2s">The first two homes at {offer.community} are reserving now. Choose your model, customize the finishes, and own with {offer.downPayment} down for first-time buyers.</p>
+        <h1 class="reveal" style="animation-delay:.1s">New homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
+        <p class="lede reveal" style="animation-delay:.2s">Reserve a home at {offer.community}, choose one of six customizable models, or plan a fully custom build in eastern Kern County.</p>
+        <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/sunset-retreat-tehachapi/#availability">Current release details →</a></p>
         <div class="ctas reveal" style="animation-delay:.3s">
-          <a class="btn" href="/contact-us/?interest=reserve">Reserve & customize</a>
-          <a class="btn btn-ghost" href="#plans">Explore the models</a>
+          <a class="btn" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>
+          <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
         </div>
       </div>
-      <a class="release-card reveal" style="animation-delay:.4s" href="/sunset-retreat/">
+      <a class="release-card reveal" style="animation-delay:.4s" href="/sunset-retreat-tehachapi/">
         <Image src={sunset} alt="Great room in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
         <div>
           <p class="mono k">First release · only 2 homes</p>
@@ -66,6 +72,10 @@ const faqSchema = {
         </div>
       </a>
     </div>
+  </section>
+
+  <section class="trust" aria-label="About Aspen II Homes">
+    <ul class="wrap">{trust.map((t) => <li class="mono">{t}</li>)}</ul>
   </section>
 
   <section class="stats" aria-label="At a glance">
@@ -107,8 +117,9 @@ const faqSchema = {
         <p class="muted">Browse real photography and the blueprint for every home, then pick the one that fits your life.</p>
       </div>
       <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
-      <details class="compare">
-        <summary class="mono"><span aria-hidden="true">⇄</span> Compare all six models side by side</summary>
+      <p class="compare-link"><a class="btn btn-ghost" href="/floor-plans/#compare"><span aria-hidden="true">⇄</span> Compare all six models side by side</a></p>
+      <details class="compare" hidden>
+        <summary class="mono">Compare</summary>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Model</th><th>Sq ft</th><th>Beds</th><th>Baths</th><th>Stories</th><th>Price</th><th>Blueprint</th></tr></thead>
@@ -196,7 +207,7 @@ const faqSchema = {
         <p class="muted">Still curious? Call <a href={site.phoneHref}>{site.phone}</a> or text HOMES for instant answers.</p>
       </div>
       <div class="faq">
-        {faq.map(([q, a], i) => <details open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}
+        {faq.map(([q, a, href], i) => <details open={i === 0}><summary>{q}</summary><p>{a} <a href={href} class="more">Full answer →</a></p></details>)}
       </div>
     </div>
   </section>
@@ -221,7 +232,14 @@ const faqSchema = {
   .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(var(--ink-rgb) / .72), rgb(var(--ink-rgb) / .1) 70%), linear-gradient(180deg, transparent 45%, rgb(var(--ink-rgb) / .75)); }
   .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.5fr minmax(280px, 360px); gap: 3rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
   .hero .eyebrow, .hero em { color: var(--gold); }
-  .hero h1 { max-width: 15ch; font-size: clamp(2.8rem, 7vw, 6rem); }
+  .hero h1 { max-width: 15ch; font-size: clamp(2.6rem, 6.4vw, 5.6rem); }
+  .asof { font-size: .66rem; opacity: .85; margin: .5rem 0 0; } .asof a { color: var(--gold); }
+  .trust { background: var(--paper); border-bottom: 1px solid var(--line); }
+  .trust ul { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 2rem; padding-top: 1rem; padding-bottom: 1rem; margin: 0 auto; }
+  .trust li { font-size: .68rem; color: var(--ink); }
+  .trust li::before { content: "✓ "; color: var(--clay); }
+  .compare-link { margin-top: 2.5rem; }
+  .faq .more { color: var(--clay); white-space: nowrap; }
   .hero h1 em { display: block; }
   .lede { max-width: 50ch; font-size: 1.15rem; opacity: .92; }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }

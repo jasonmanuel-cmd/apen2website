@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PlanCard from '../components/PlanCard.astro';
+import { site, plans, offer, usd, sqftRange, disclaimer } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
+
+const path = '/floor-plans/';
+const title = `New Home Floor Plans in Tehachapi & Kern County | ${site.name}`;
+const description = `Compare all six ${site.name} floor plans, ${sqftRange()} sq ft, 3 to 4 bedrooms, single- and two-story. Specs, status and floor plan PDFs.`;
+const name = (slug: string, n: string) => (slug === 'sunset-retreat' ? `${n} Model` : n);
+const schema = [
+  webPage(path, title, description, {
+    mainEntity: { '@type': 'ItemList', itemListElement: plans.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: name(p.slug, p.name), url: new URL(`/${p.slug}/`, site.url).href })) },
+  }),
+  breadcrumb([['Home', '/'], ['Floor plans', path]]),
+];
+---
+<Layout title={title} description={description} schema={schema}>
+  <section class="section wrap intro">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Floor plans</span></nav>
+    <p class="eyebrow">The model collection</p>
+    <h1>Six New-Home Floor Plans, <em>Ready for Your Finishes</em></h1>
+    <p class="lede">From {sqftRange()} sq ft. Every plan is semi-custom: choose flooring, paint colors, cabinetry and more. The current <a href="/sunset-retreat-tehachapi/">{offer.community} release in Tehachapi</a> uses the {offer.community} model, from {usd(offer.from)}.</p>
+
+    <div class="filters" role="group" aria-label="Filter floor plans">
+      <span class="mono">Filter:</span>
+      <button type="button" class="chip" aria-pressed="true" data-filter="all">All</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="beds-3">3 bed</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="beds-4">4 bed</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="stories-1">Single-story</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="stories-2">Two-story</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="size-small">Under 1,800 sf</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="size-large">1,800 sf and up</button>
+    </div>
+    <div class="grid" data-plans>
+      {plans.map((p) => (
+        <div data-tags={`beds-${p.beds} stories-${p.stories} size-${p.sqft < 1800 ? 'small' : 'large'}`}><PlanCard plan={p} /></div>
+      ))}
+    </div>
+    <p class="mono empty" hidden>No plans match that filter.</p>
+  </section>
+
+  <section class="section compare" id="compare">
+    <div class="wrap">
+      <p class="eyebrow">Side by side</p>
+      <h2>Compare <em>all six.</em></h2>
+      <div class="table-wrap" role="region" aria-label="Floor plan comparison" tabindex="0">
+        <table>
+          <thead><tr><th scope="col">Model</th><th scope="col">Sq ft</th><th scope="col">Beds</th><th scope="col">Baths</th><th scope="col">Stories</th><th scope="col">Price</th><th scope="col">Status</th><th scope="col">Floor plan</th></tr></thead>
+          <tbody>
+            {plans.map((p) => (
+              <tr>
+                <th scope="row"><a href={`/${p.slug}/`}>{name(p.slug, p.name)}</a></th>
+                <td>{p.sqft.toLocaleString()}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
+                <td>{p.price ? `From ${usd(p.price)}` : 'Request pricing'}</td>
+                <td class="st">{p.status}</td>
+                <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener" aria-label={`${name(p.slug, p.name)} floor plan PDF`}>PDF</a></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="fine">Pricing and availability last confirmed {site.verified}. {disclaimer} Plans, dimensions, features and elevations may change.</p>
+      <p class="ctas"><a class="btn" href="/contact-us/?interest=semi">Request current pricing</a><a class="btn btn-ghost" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a></p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-tags]')];
+  const empty = document.querySelector<HTMLElement>('.empty')!;
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    const f = chip.dataset.filter!;
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+    let shown = 0;
+    cards.forEach((card) => {
+      const on = f === 'all' || card.dataset.tags!.split(' ').includes(f);
+      card.hidden = !on; if (on) shown++;
+    });
+    empty.hidden = shown > 0;
+  }));
+</script>
+
+<style>
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .intro h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); max-width: 18ch; }
+  .lede { max-width: 62ch; font-size: 1.15rem; color: var(--muted); }
+  .lede a { color: var(--clay); }
+  .filters { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 2rem 0 1.5rem; }
+  .filters .mono { font-size: .68rem; margin-right: .3rem; }
+  .chip { font: .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: .55em 1em; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; min-height: 40px; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--bone); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 1.25rem; }
+  .grid > div { display: flex; } .grid > div[hidden] { display: none; } .grid > div > :global(*) { flex: 1; }
+  .empty { color: var(--muted); }
+  .compare { background: var(--sand-2); }
+  .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  th, td { text-align: left; padding: .9rem 1rem .9rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font: .68rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  tbody th { font: 400 1.15rem var(--display); }
+  tbody a { color: var(--clay); }
+  .st { font-size: .9rem; color: var(--muted); max-width: 22ch; }
+  .fine { font-size: .8rem; color: var(--muted); margin-top: 1.5rem; max-width: 80ch; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+</style>
