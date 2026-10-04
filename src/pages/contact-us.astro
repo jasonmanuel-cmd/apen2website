@@ -13,7 +13,7 @@ const crumbSchema = [webPage('/contact-us/', `Contact ${site.name}`, `Contact ${
 <Layout
   schema={crumbSchema}
   title={`Contact & Schedule a Tour | ${site.name}`}
-  description={`Reserve a ${offer.community} home, pick a model or start a custom build. Call or text HOMES to ${site.phone} for plans, pricing and tours.`}
+  description={`Reserve a ${offer.community} home, or pick a semi-custom model. Call or text HOMES to ${site.phone} for plans, pricing and tours.`}
 >
   <section class="section">
     <div class="wrap grid">
@@ -27,7 +27,7 @@ const crumbSchema = [webPage('/contact-us/', `Contact ${site.name}`, `Contact ${
           <li><a href="?interest=lot#form">Build on my lot</a></li>
           <li><a href="?interest=tour#form">Schedule a call</a></li>
         </ul>
-        <p class="lede">Reserve a {offer.community} home, choose your model or ask about a fully custom build. Zero pressure, zero obligation, just information.</p>
+        <p class="lede">Reserve a {offer.community} home, or choose a semi-custom model. Zero pressure, zero obligation, just information.</p>
         <ul class="reasons">{reasons.map((r) => <li>{r}</li>)}</ul>
         <dl class="info">
           <div><dt class="mono">Call</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>

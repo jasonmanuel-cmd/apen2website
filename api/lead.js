@@ -62,7 +62,6 @@ export default async function handler(req, res) {
     const tags = [
       /reserve/i.test(timeline) && 'Sunset Retreat',
       /model/i.test(timeline) && 'Model pricing',
-      /fully custom/i.test(timeline) && 'Custom',
       (/own lot/i.test(timeline) || /own lot/i.test(stage)) && 'Own lot',
       (/financ/i.test(timeline) || firstTime) && 'Financing',
       (/military|\bVA\b/.test(timeline) || military) && 'Military/VA',

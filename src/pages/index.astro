@@ -6,9 +6,10 @@ import LeadForm from '../components/LeadForm.astro';
 import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
 import { faqPage } from '../data/schema';
 
-const hero = photos('tranquil-oasis')[0].src;
 // Each section uses a different photo; exteriors already appear on the model cards.
 const pick = (folder: string, caption: string) => photos(folder).find((p) => p.caption === caption)!.src;
+// Hero shows the Sunset Retreat model, matching the Sunset Retreat headline and card.
+const hero = pick('sunset-retreat', 'Exterior');
 const sunset = pick('sunset-retreat', 'Great room');
 const kitchen = pick('sunset-retreat', 'Kitchen');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
@@ -48,13 +49,13 @@ const faqSchema = faqPage(faq);
   schema={faqSchema}
 >
   <section class="hero">
-    <Image src={hero} alt="A finished Aspen II home with a landscaped front yard in Tehachapi" class="hero-img" loading="eager" fetchpriority="high" widths={[800, 1280, 1600]} sizes="100vw" />
+    <Image src={hero} alt="Sunset Retreat model exterior with the Tehachapi mountains behind it" class="hero-img" loading="eager" fetchpriority="high" widths={[800, 1280, 1600]} sizes="100vw" />
     <div class="shade"></div>
     <div class="wrap hero-grid">
       <div class="copy">
         <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
         <h1 class="reveal" style="animation-delay:.1s">New homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
-        <p class="lede reveal" style="animation-delay:.2s">Reserve a home at {offer.community}, choose one of six customizable models, or plan a fully custom build in eastern Kern County.</p>
+        <p class="lede reveal" style="animation-delay:.2s">Reserve a home at {offer.community}, or choose one of six semi-custom models in Tehachapi and eastern Kern County.</p>
         <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/sunset-retreat-tehachapi/#availability">Current release details →</a></p>
         <div class="ctas reveal" style="animation-delay:.3s">
           <a class="btn" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>
@@ -85,8 +86,8 @@ const faqSchema = faqPage(faq);
     <div class="wrap">
       <div class="head">
         <div>
-          <p class="eyebrow">Three ways to own</p>
-          <h2>From move-now to <em>designed from scratch.</em></h2>
+          <p class="eyebrow">Two ways to own</p>
+          <h2>Move-in ready or <em>made yours.</em></h2>
         </div>
         <p class="muted">Available in roughly three months. No pressure, no obligation, just fast answers to help you decide.</p>
       </div>
@@ -206,7 +207,7 @@ const faqSchema = faqPage(faq);
       <div>
         <p class="eyebrow">Talk to our team</p>
         <h2>Your brand-new home starts with <em>a conversation.</em></h2>
-        <p class="muted">Reserve a {offer.community} home, choose your model or start a fully custom build. No pressure, just answers.</p>
+        <p class="muted">Reserve a {offer.community} home, or choose a semi-custom model. No pressure, just answers.</p>
         <p class="direct mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={site.sms()}>Text HOMES</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
       </div>
       <LeadForm source="Home page" />
@@ -257,7 +258,7 @@ const faqSchema = faqPage(faq);
   .head > .muted { max-width: 38ch; margin: 0; }
   @media (max-width: 760px) { .head { flex-direction: column; align-items: start; } }
 
-  .paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .paths { display: grid; grid-template-columns: repeat(2, 1fr); max-width: 900px; gap: 1.25rem; }
   .path { position: relative; display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 10px 30px rgb(var(--ink-rgb) / .07); }
   .path.featured { background: var(--ink); color: var(--bone); border-color: var(--ink); }
   .path .n { color: var(--clay); font-size: .64rem; margin: 0 0 1.5rem; }
