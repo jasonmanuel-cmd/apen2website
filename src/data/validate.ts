@@ -32,7 +32,8 @@ need(communities.some((c) => c.published), 'at least one published area is requi
 faq.forEach(([q, a, href], i) => need(q && a && href?.startsWith('/'), `faq ${i + 1}: needs question, answer and an internal link`));
 need(offer.release.length > 0 && offer.from > 0, 'offer: release status and starting price required');
 need(/^[A-Z][a-z]+ \d{4}$/.test(site.verified), 'site.verified must look like "September 2026"');
-need(site.url === 'https://aspen2homes.com', 'site.url must be the canonical apex origin (decision D2)');
+// Must match whichever host Vercel serves without redirecting (see the note on site.url).
+need(['https://aspen2homes.com', 'https://www.aspen2homes.com'].includes(site.url), 'site.url must be the aspen2homes.com origin Vercel serves directly');
 
 if (errors.length) throw new Error(`Content validation failed:\n- ${errors.join('\n- ')}`);
 export const contentValid = true;

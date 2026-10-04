@@ -5,7 +5,9 @@ import captions from './captions.json';
 export const site = {
   name: 'Aspen II Homes',
   tagline: "Kern County's Local New Home Builder",
-  url: 'https://aspen2homes.com', // canonical host (owner decision D2). At launch, flip the Vercel domain redirect to www -> apex.
+  // Owner chose the apex (D2), but Vercel still redirects apex -> www and that setting can only be changed in the
+  // Vercel dashboard. Keep www here until the redirect is flipped, then change both this line and astro.config.mjs.
+  url: 'https://www.aspen2homes.com',
   phone: '(661) 238-3136',
   phoneHref: 'tel:+16612383136',
   sms: (body = 'HOMES') => `sms:+16612383136?body=${encodeURIComponent(body)}`,

@@ -64,7 +64,7 @@ Built pages say only what the data file can support. These items stay unpublishe
 
 ## Hosting checklist
 
-- Canonical host is `https://aspen2homes.com` (owner decision D2; `site.url`, `astro.config.mjs`, `public/robots.txt`). **At launch, change Vercel > Domains so `www` permanently redirects to the apex** (today it is the reverse).
+- Canonical host is `https://www.aspen2homes.com` for now, because Vercel redirects the apex to www. The owner chose the apex (D2): in Vercel > Domains make `www` redirect to `aspen2homes.com`, then change `site.url`, `astro.config.mjs` and `public/robots.txt` to the apex in the same deploy.
 - Set `RESEND_API_KEY`, `NOTIFICATION_EMAIL` and `RESEND_FROM` in Vercel. Without the key, the form now tells visitors to call instead of pretending it sent.
 - Turn on Vercel > Analytics to start the cookieless page-view counts (the script is already in the layout).
-- After deploying, submit `https://aspen2homes.com/sitemap.xml` in Google Search Console and request indexing of the main pages.
+- After deploying, submit the sitemap for whichever host is canonical in Google Search Console and request indexing of the main pages.
