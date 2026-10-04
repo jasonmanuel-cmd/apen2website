@@ -1,0 +1,116 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PlanCard from '../components/PlanCard.astro';
+import { site, plans, offer, usd } from '../data/site';
+import { breadcrumb, faqPage, webPage } from '../data/schema';
+
+const path = '/build-on-your-lot/';
+const title = `Build on Your Lot in Tehachapi | ${site.name}`;
+const description = `Own land, have a lot under contract, or still looking? ${site.name} reviews your land and plan with you, then builds one of six floor plans or a custom home in Tehachapi and eastern Kern County.`;
+const factors: [string, string][] = [
+  ['Access', 'Is there legal, year-round road access to the lot?'],
+  ['Slope and site work', 'How much grading, retaining or foundation work might the site need?'],
+  ['Water', 'Is public water available, or would the lot need a well?'],
+  ['Sewer or septic', 'Is a sewer connection available, or would a septic system be needed?'],
+  ['Electricity', 'How far is the nearest service, and what would a connection involve?'],
+  ['HOA and restrictions', 'Does an association or recorded restriction review building plans?'],
+  ['Existing studies', 'Surveys, soils reports or permits you already have help speed things up.'],
+];
+const costs: [string, string][] = [
+  ['The house', 'Plan, size, finishes and options.'],
+  ['Land', 'Purchase price, if you are still buying a lot.'],
+  ['Site work', 'Clearing, grading, driveway and foundation preparation.'],
+  ['Utilities', 'Water, wastewater, power and any extensions to the lot.'],
+  ['Permits and fees', 'Set by the jurisdiction that governs your parcel.'],
+  ['Financing', 'Construction or purchase loan costs, if you finance.'],
+  ['Contingency', 'A reserve for conditions found once work starts.'],
+];
+const qa: [string, string][] = [
+  ['Do I need to own land to start?', 'No. You can talk with us if you own land, have a lot under contract, or are still looking.'],
+  ['Will you tell me if my lot is buildable?', 'We give a preliminary human review of what you share and what we can find, and we tell you which questions need a surveyor, engineer, utility or the county or city. It is not a survey, engineering opinion, permit approval or guarantee.'],
+  ['Which plans can I build on my lot?', 'Any of our six floor plans may fit, depending on the lot. We also design fully custom homes.'],
+  ['What does it cost to build on my own land?', 'It depends on the house, site work, utilities, permits and financing for your specific lot. We go through each category with you rather than quoting a number before we know the site.'],
+];
+const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['Build on your lot', path]]), faqPage(qa)];
+---
+<Layout title={title} description={description} schema={schema}>
+  <section class="hero">
+    <div class="wrap">
+      <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Build on your lot</span></nav>
+      <p class="eyebrow">Build on your lot</p>
+      <h1>Build on Your Lot in <em>Tehachapi and Eastern Kern County</em></h1>
+      <p class="lede">Own land, have a lot under contract, or still looking? Tell us about the land and the home you have in mind. We'll review it with you and talk through next steps.</p>
+      <div class="ctas"><a class="btn" href="/contact/?interest=lot#form">Check My Lot</a><a class="btn btn-ghost" href="/floor-plans/">Browse floor plans</a></div>
+    </div>
+  </section>
+
+  <section class="section wrap who">
+    <h2>Who this is <em>for.</em></h2>
+    <div class="three">
+      <article><h3>You own land</h3><p>Share the address, APN or a map pin and what you already know about it.</p></article>
+      <article><h3>A lot is under contract</h3><p>We can help you think through questions to answer before closing.</p></article>
+      <article><h3>You're still looking</h3><p>No parcel needed. Tell us the area and budget and we'll talk through what to look for.</p></article>
+    </div>
+    <p class="muted coverage">We're based in Tehachapi and take inquiries from nearby communities. We confirm coverage for each location. <a href="/areas/">Areas we serve</a></p>
+  </section>
+
+  <section class="section factors-sec">
+    <div class="wrap">
+      <p class="eyebrow">What we look at</p>
+      <h2>Questions every lot <em>raises.</em></h2>
+      <dl class="factors">{factors.map(([t, d]) => <div><dt>{t}</dt><dd>{d}</dd></div>)}</dl>
+      <p class="limits"><strong>Review limits.</strong> Our review is preliminary. It is not a survey, an engineering opinion, a permit approval or a guarantee that a parcel can be built on. Unknown answers are fine; we'll help you find out.</p>
+      <p class="muted small">Official starting points: <a href="https://www.kernpublicworks.com/services/development/overview" rel="noopener" target="_blank">Kern County Public Works development</a> and <a href="https://www.liveuptehachapi.com/Directory/Home/DepartmentListing?DID=5" rel="noopener" target="_blank">City of Tehachapi Development Services</a>. A Tehachapi mailing address does not by itself mean the city governs a parcel.</p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Budget</p>
+    <h2>What goes into the <em>cost.</em></h2>
+    <ul class="costs">{costs.map(([t, d]) => <li><strong>{t}</strong><span>{d}</span></li>)}</ul>
+    <p class="muted small">For comparison, the current {offer.community} release in Tehachapi starts at {usd(offer.from)}. Building on your own land is priced for your site.</p>
+  </section>
+
+  <section class="section plans-sec">
+    <div class="wrap">
+      <p class="eyebrow">Plans</p>
+      <h2>Six plans to <em>start from.</em></h2>
+      <div class="grid">{plans.map((p) => <PlanCard plan={p} />)}</div>
+      <p><a class="btn btn-ghost" href="/our-process/">How the build process works</a></p>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <h2>Common <em>questions.</em></h2>
+    <div class="faq">{qa.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div>
+    <p class="ctas"><a class="btn" href="/contact/?interest=lot#form">Check My Lot</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a></p>
+  </section>
+</Layout>
+
+<style>
+  .hero { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--bone); padding: clamp(40px, 7vw, 96px) 0 clamp(56px, 8vw, 110px); }
+  .hero .eyebrow, .hero em { color: var(--gold); }
+  .hero h1 { font-size: clamp(2.3rem, 5.5vw, 4.4rem); max-width: 20ch; } .hero h1 em { display: block; }
+  .crumbs { color: var(--on-dark-muted); font-size: .68rem; margin-bottom: 2.5rem; } .crumbs a { text-decoration: none; }
+  .lede { max-width: 58ch; font-size: 1.2rem; opacity: .92; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+  .three article { background: var(--paper); border: 1px solid var(--line); padding: 1.6rem; }
+  .three h3 { font-size: 1.3rem; } .three p { margin: 0; }
+  @media (max-width: 860px) { .three { grid-template-columns: 1fr; } }
+  .coverage { margin-top: 1.5rem; } .coverage a, .small a { color: var(--clay); }
+  .factors-sec { background: var(--sand-2); }
+  .factors { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 1rem 2rem; margin: 2rem 0; }
+  .factors dt { font: 1.15rem var(--display); } .factors dd { margin: .3rem 0 0; color: var(--muted); }
+  .limits { max-width: 72ch; padding: 1rem 1.2rem; border-left: 3px solid var(--gold); background: var(--paper); }
+  .small { font-size: .9rem; max-width: 72ch; }
+  .costs { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: .8rem 2rem; }
+  .costs li { border-top: 1px solid var(--line); padding-top: .8rem; display: flex; flex-direction: column; gap: .2rem; }
+  .costs span { color: var(--muted); }
+  .plans-sec { background: var(--bone); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin: 2rem 0; }
+  .faq { max-width: 860px; margin-top: 1.5rem; }
+  .faq details { border-top: 1px solid var(--line); } .faq details:last-child { border-bottom: 1px solid var(--line); }
+  .faq summary { cursor: pointer; padding: 1.1rem 0; font: 1.15rem var(--display); }
+  .faq details p { margin: 0 0 1.2rem; color: var(--muted); }
+</style>

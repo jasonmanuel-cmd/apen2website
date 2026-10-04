@@ -1,7 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import logo from '../assets/logo.webp';
-import { site, plans, communities, offer, usd, disclaimer } from '../data/site';
+import '../data/validate';
+// Self-hosted fonts (spec §18): latin subsets only, font-display: swap.
+import '@fontsource/gloock/latin-400.css';
+import '@fontsource/source-serif-4/latin-400.css';
+import '@fontsource/source-serif-4/latin-400-italic.css';
+import '@fontsource/source-serif-4/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
@@ -13,32 +21,28 @@ const org = {
   areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
 };
 const path = Astro.url.pathname;
-// Four buyer journeys: buy at Sunset Retreat, pick a model, build with us, understand financing and places.
+// Spec §04 navigation; Check My Lot is the one persistent primary button.
 const nav: [string, string, [string, string][]][] = [
-  ['/sunset-retreat-tehachapi/', 'New Homes', [
-    ['/sunset-retreat-tehachapi/', 'Sunset Retreat, Tehachapi'],
-    ['/sunset-retreat-tehachapi/#availability', 'Pricing & availability'],
-  ]],
-  ['/floor-plans/', 'Models', [
+  ['/floor-plans/', 'Floor Plans', [
     ['/floor-plans/', 'All floor plans'],
-    ['/floor-plans/#compare', 'Compare models'],
-    ...plans.map((p): [string, string] => [`/${p.slug}/`, p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name]),
+    ['/floor-plans/#compare', 'Compare plans'],
+    ...plans.map((p): [string, string] => [planUrl(p), p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name]),
+    ['/semi-custom-homes/', 'Semi-custom homes'],
   ]],
-  ['/how-it-works/', 'Build With Us', [
-    ['/how-it-works/', 'How it works'],
-    ['/how-it-works/#paths', 'Semi-custom & fully custom'],
-    ['/contact-us/?interest=lot', 'Build on your lot'],
+  ['/build-on-your-lot/', 'Build on Your Lot', []],
+  ['/available-homes/', 'Available Homes', []],
+  ['/areas/', 'Areas We Serve', [
+    ['/areas/', 'All areas'],
+    ...communities.filter((c) => c.published).map((c): [string, string] => [areaUrl(c), c.name]),
   ]],
-  ['/#communities', 'Communities', communities.map((c): [string, string] => [`/${c.slug}/`, c.name])],
-  ['/financing/', 'Financing', [
-    ['/financing/', 'Financing & incentives'],
+  ['/our-process/', 'Our Process', []],
+  ['/financing/', 'Resources', [
+    ['/financing/', 'Financing'],
     ['/#faq', 'FAQ'],
-  ]],
-  ['/about/', 'About', [
-    ['/about/', 'About Aspen II Homes'],
     ['/gallery/', 'Gallery'],
-    ['/contact-us/', 'Contact'],
+    ['/about/', 'About'],
   ]],
+  ['/contact/', 'Contact', []],
 ];
 ---
 <!doctype html>
@@ -57,9 +61,6 @@ const nav: [string, string, [string, string][]][] = [
   <meta name="theme-color" content="#15302A" />
   <link rel="icon" href="/favicon.webp" type="image/webp" />
   <link rel="sitemap" href="/sitemap.xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   <!-- Vercel Web Analytics: cookieless page views. Enable it in Vercel > Project > Analytics. -->
@@ -75,18 +76,19 @@ const nav: [string, string, [string, string][]][] = [
     <nav aria-label="Main" class="main-nav">
       {nav.map(([href, label, items]) => (
         <div class="dd">
-          <a href={href} class="top" aria-current={items.some(([h]) => h === path) ? 'page' : undefined}>{label}</a>
-          <div class="panel">{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
+          <a href={href} class="top" aria-current={(href === path || items.some(([h]) => h === path)) ? 'page' : undefined}>{label}</a>
+          {items.length > 0 && <div class="panel">{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>}
         </div>
       ))}
     </nav>
-    <a class="btn btn-sm nav-call" href={site.phoneHref}>{site.phone}</a>
+    <a class="btn btn-sm nav-cta" href="/check-my-lot/">Check My Lot</a>
     <details class="menu">
       <summary class="mono" aria-label="Menu">Menu</summary>
       <nav aria-label="Mobile">
-        {nav.map(([, label, items]) => (
-          <div class="group"><p class="mono">{label}</p>{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
-        ))}
+        <a href="/check-my-lot/" class="cml-m">Check My Lot</a>
+        {nav.map(([href, label, items]) => (items.length
+          ? <div class="group"><p class="mono">{label}</p>{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
+          : <a href={href} class="solo">{label}</a>))}
         <a href={site.phoneHref} class="call">Call {site.phone}</a>
       </nav>
     </details>
@@ -103,13 +105,13 @@ const nav: [string, string, [string, string][]][] = [
       </div>
       <div>
         <p class="mono head">Floor plans</p>
-        <ul>{plans.map((p) => <li><a href={`/${p.slug}/`}>{p.name}</a></li>)}</ul>
+        <ul>{plans.map((p) => <li><a href={planUrl(p)}>{p.name}</a></li>)}</ul>
       </div>
       <div>
-        <p class="mono head">Communities</p>
-        <ul>{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
+        <p class="mono head">Areas we serve</p>
+        <ul>{communities.filter((c) => c.published).map((c) => <li><a href={areaUrl(c)}>{c.name}</a></li>)}<li><a href="/areas/">All areas we serve</a></li></ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/sunset-retreat-tehachapi/">Sunset Retreat, Tehachapi</a></li><li><a href="/floor-plans/">All floor plans</a></li><li><a href="/how-it-works/">How it works</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
+        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/build-on-your-lot/">Build on your lot</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
@@ -121,8 +123,8 @@ const nav: [string, string, [string, string][]][] = [
 
   <div class="mobile-bar" aria-label="Quick contact">
     <a href={site.phoneHref}>Call</a>
-    <a href={site.sms()}>Text</a>
-    <a href="/contact-us/" class="primary">Schedule a tour</a>
+    <a href="/contact/">Contact</a>
+    <a href="/check-my-lot/" class="primary">Check My Lot</a>
   </div>
 </body>
 </html>
@@ -170,7 +172,10 @@ const nav: [string, string, [string, string][]][] = [
 
   .nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
          padding: .85rem var(--gutter); background: rgb(var(--bone-rgb) / .92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-  .main-nav { display: flex; gap: 1.4rem; }
+  .main-nav { display: flex; gap: 1.2rem; }
+  .nav-cta { white-space: nowrap; }
+  .nav .menu .solo { border-bottom: 1px solid var(--line); }
+  .nav .menu .cml-m { background: var(--gold); font: 500 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; }
   .dd { position: relative; }
   .dd .top { display: block; padding: .5rem 0; text-decoration: none; font: .72rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
   .dd .top:hover, .dd .top[aria-current] { color: var(--clay); }
@@ -200,8 +205,8 @@ const nav: [string, string, [string, string][]][] = [
   .nav .menu .group { border-bottom: 1px solid var(--line); padding: .4rem 0; }
   .nav .menu .group p { margin: .6rem 1.2rem .2rem; font-size: .66rem; color: var(--muted); }
   .nav .menu .call { font: 500 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 1rem 1.2rem; }
-  @media (max-width: 1080px) { .nav > nav { display: none; } .menu { display: block; } }
-  @media (max-width: 480px) { .nav-call { display: none; } }
+  @media (max-width: 1180px) { .nav > nav { display: none; } .menu { display: block; } }
+  @media (max-width: 480px) { .nav-cta { display: none; } }
 
   .footer { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--sand); padding: 72px 0 110px; }
   .footer a { text-decoration: none; } .footer a:hover { color: var(--gold); }

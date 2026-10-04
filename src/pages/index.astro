@@ -3,7 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange } from '../data/site';
+import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, planUrl, areaUrl, serviceAreaNames } from '../data/site';
 import { faqPage } from '../data/schema';
 
 const hero = photos('tranquil-oasis')[0].src;
@@ -55,13 +55,13 @@ const faqSchema = faqPage(faq);
         <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
         <h1 class="reveal" style="animation-delay:.1s">New homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
         <p class="lede reveal" style="animation-delay:.2s">Reserve a home at {offer.community}, choose one of six customizable models, or plan a fully custom build in eastern Kern County.</p>
-        <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/sunset-retreat-tehachapi/#availability">Current release details →</a></p>
+        <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/available-homes/#availability">Current release details →</a></p>
         <div class="ctas reveal" style="animation-delay:.3s">
-          <a class="btn" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>
+          <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
           <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
         </div>
       </div>
-      <a class="release-card reveal" style="animation-delay:.4s" href="/sunset-retreat-tehachapi/">
+      <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/">
         <Image src={sunset} alt="Great room in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
         <div>
           <p class="mono k">First release · only 2 homes</p>
@@ -125,7 +125,7 @@ const faqSchema = faqPage(faq);
             <tbody>
               {plans.map((p) => (
                 <tr>
-                  <th scope="row"><a href={`/${p.slug}/`}>{p.name}</a></th>
+                  <th scope="row"><a href={planUrl(p)}>{p.name}</a></th>
                   <td>{p.sqft.toLocaleString()}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories}</td>
                   <td>{p.price ? usd(p.price) : 'Call'}</td>
                   <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener">PDF</a></td>
@@ -178,12 +178,14 @@ const faqSchema = faqPage(faq);
       <div class="head">
         <div>
           <p class="eyebrow">Where we build</p>
-          <h2>Six communities. <em>One local builder.</em></h2>
+          <h2>Based in Tehachapi. <em>Serving the region.</em></h2>
         </div>
         <p class="muted">We know each area's building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
       </div>
       <div class="comm-grid">
-        {communities.map((c) => <a href={`/${c.slug}/`} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore →</span></a>)}
+        {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore →</span></a>)}
+        <a href="/areas/" class="comm"><h3>Nearby communities</h3><p class="muted">{serviceAreaNames.filter((n) => n !== 'Tehachapi').join(', ')}. Availability confirmed case by case.</p><span class="mono">Areas we serve →</span></a>
+        <a href="/build-on-your-lot/" class="comm"><h3>Your own lot</h3><p class="muted">Own land or still looking? Start with a preliminary lot review.</p><span class="mono">Check My Lot →</span></a>
       </div>
     </div>
   </section>
@@ -249,7 +251,7 @@ const faqSchema = faqPage(faq);
   .stats { background: var(--ink-2); color: var(--sand); padding: 40px 0; }
   .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.5rem; }
   .stats .mono { color: var(--on-dark-muted); font-size: .64rem; margin: 0; }
-  .stat { font-family: var(--display); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1; margin: 0 0 .5rem; color: var(--gold); }
+  .stat { font-family: var(--display); font-size: clamp(1.6rem, 2.6vw, 2.4rem); line-height: 1; margin: 0 0 .5rem; color: var(--gold); white-space: nowrap; }
   @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
 

@@ -5,7 +5,7 @@ import captions from './captions.json';
 export const site = {
   name: 'Aspen II Homes',
   tagline: "Kern County's Local Custom Home Builder",
-  url: 'https://www.aspen2homes.com', // apex 308-redirects here, so www is the canonical host
+  url: 'https://aspen2homes.com', // canonical host (owner decision D2). At launch, flip the Vercel domain redirect to www -> apex.
   phone: '(661) 238-3136',
   phoneHref: 'tel:+16612383136',
   sms: (body = 'HOMES') => `sms:+16612383136?body=${encodeURIComponent(body)}`,
@@ -47,11 +47,11 @@ export const financing = {
 
 export const paths = [
   { n: '01', name: 'Reserve & Customize', title: 'Sunset Retreat', meta: '1,715 sq ft · Single-story · Tehachapi', price: 'From $459,000', badge: 'First 2 homes',
-    text: 'The first two homes coming to Sunset Retreat. Lock your pricing and customize your finishes before they are built.', cta: ['See availability', '/sunset-retreat-tehachapi/'] },
+    text: 'The first two homes coming to Sunset Retreat. Lock your pricing and customize your finishes before they are built.', cta: ['See availability', '/available-homes/'] },
   { n: '02', name: 'Semi-Custom', title: 'Choose Your Model', meta: 'Six layouts · Curated finishes', price: 'Call today',
     text: 'Pick from our proven model layouts and personalize the details that matter most. A guided path to a brand-new home.', cta: ['Compare floor plans', '/floor-plans/'] },
   { n: '03', name: 'Designed With You', title: 'Fully Custom', meta: 'Your vision · Premium lots', price: 'By design',
-    text: 'Design your home from the ground up with our team: layout, materials and details tailored to how you live.', cta: ['Build on your lot', '/contact-us/?interest=lot'] },
+    text: 'Design your home from the ground up with our team: layout, materials and details tailored to how you live.', cta: ['Build on your lot', '/contact/?interest=lot'] },
 ];
 
 // Photos live in src/assets/photos/<folder>/ and are picked up automatically, with captions from captions.json.
@@ -79,6 +79,10 @@ export type Plan = {
   rendering?: boolean;
   tagline: string;
   status: string;      // shown on the model page; keep it current
+  garage: string | null;      // null = not confirmed; never guessed
+  dimensions: string | null;  // overall width x depth, from an approved spec sheet
+  specSource: string;         // where the specs above came from
+  specReviewedAt: string | null; // ISO date an owner approved the specs; null = not yet approved
   headline: string;
   summary: string;
   highlights: string[];
@@ -87,6 +91,7 @@ export type Plan = {
 export const plans: Plan[] = [
   {
     slug: 'tranquil-oasis', folder: 'tranquil-oasis', name: 'Tranquil Oasis', sqft: 1507, beds: 3, baths: 2, stories: 1, tagline: 'Open-concept living',
+    garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Available to build · request current pricing',
     headline: 'Charming, efficient, easy to love.',
     summary: 'An open floor plan connects the living room, dining area and kitchen, with large windows pulling natural light through the whole home. The kitchen brings modern appliances, ample countertop space and sleek cabinetry.',
@@ -94,6 +99,7 @@ export const plans: Plan[] = [
   },
   {
     slug: 'sunset-retreat', folder: 'sunset-retreat', name: 'Sunset Retreat', sqft: 1715, beds: 3, baths: 2, stories: 1, price: 459000, firstRelease: true, tagline: 'Everyday comfort',
+    garage: '2-car garage', dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Now reserving in the Sunset Retreat first release',
     headline: 'Now selling in Tehachapi.',
     summary: 'A welcoming open-concept layout connects the great room, dining area and kitchen, with a breakfast nook opening to a covered patio. The primary suite is a quiet retreat with its own bath and wardrobe.',
@@ -101,6 +107,7 @@ export const plans: Plan[] = [
   },
   {
     slug: 'the-tranquil-abode', folder: 'tranquil-abode', name: 'The Tranquil Abode', sqft: 1736, beds: 3, baths: 2.5, stories: 2, tagline: 'Two-story living',
+    garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Available to build · request current pricing',
     headline: 'Two stories. All the calm.',
     summary: 'Living on the main floor, sleeping upstairs. The second-floor primary suite includes a walk-in closet, joined by two more bedrooms and a full bath, with a half bath downstairs for guests.',
@@ -108,6 +115,7 @@ export const plans: Plan[] = [
   },
   {
     slug: 'sunrise-view-residence', folder: 'sunrise-view', name: 'Sunrise View Residence', sqft: 1848, beds: 4, baths: 2, stories: 1, rendering: true, tagline: 'Room to grow',
+    garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Available to build · request current pricing',
     headline: 'Four bedrooms, room to grow.',
     summary: 'Connected living and dining spaces, a spacious kitchen with ample storage, and four bedrooms that flex as guest rooms, a home office or hobby space. The primary bath is designed for a spa-like start to the day.',
@@ -115,6 +123,7 @@ export const plans: Plan[] = [
   },
   {
     slug: 'enchanted-haven', folder: 'enchanted-haven', name: 'Enchanted Haven', sqft: 1910, beds: 3, baths: 2, stories: 1, tagline: 'Semi-custom living',
+    garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Available to build · request current pricing',
     headline: 'Made yours, down to the cabinetry.',
     summary: 'A light-filled living room, spacious kitchen and peaceful primary suite. Personalize flooring, paint colors and cabinetry, and shape the kitchen around how you actually cook.',
@@ -122,6 +131,7 @@ export const plans: Plan[] = [
   },
   {
     slug: 'the-grand-haven', folder: 'grand-haven', name: 'The Grand Haven', sqft: 2348, beds: 4, baths: 2.5, stories: 1, tagline: 'Spacious semi-custom living',
+    garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Available to build · request current pricing',
     headline: 'Our largest plan. Built to host.',
     summary: 'An open-concept great room flows into a modern kitchen with a generous island, pantry and a bay-windowed dining room opening to the patio. Four bedrooms provide flexibility, with opportunities to personalize finishes.',
@@ -130,7 +140,10 @@ export const plans: Plan[] = [
 ];
 
 export type Community = {
-  slug: string; name: string; short: string;
+  slug: string;        // legacy WordPress slug, kept only for redirects
+  area: string;        // /areas/<area>/
+  published: boolean;  // spec: publish an area page only with confirmed coverage and distinct content
+  name: string; short: string;
   title: string; h1: string; description: string; intro: string; points: string[];
   faq: [string, string][];
 };
@@ -148,7 +161,7 @@ const ownLot = (place: string): [string, string] => [
 
 export const communities: Community[] = [
   {
-    slug: 'tehachapi-home-builders', name: 'Tehachapi', short: 'Home of Sunset Retreat, our current release, from $459,000.',
+    slug: 'tehachapi-home-builders', area: 'tehachapi', published: true, name: 'Tehachapi', short: 'Home of Sunset Retreat, our current release, from $459,000.',
     title: 'New & Semi-Custom Homes in Tehachapi, CA | Aspen II Homes',
     h1: 'New Homes and Semi-Custom Builds in Tehachapi, CA',
     description: 'Aspen II Homes builds in Tehachapi, home of the Sunset Retreat first release from $459,000. Reserve a home, choose one of six models or ask about building on your lot.',
@@ -161,7 +174,7 @@ export const communities: Community[] = [
     ],
   },
   {
-    slug: 'golden-hills-bear-valley-and-stallion-springs-home-builder', name: 'Golden Hills, Bear Valley & Stallion Springs', short: 'The foothill communities around Tehachapi.',
+    slug: 'golden-hills-bear-valley-and-stallion-springs-home-builder', area: 'golden-hills-bear-valley-stallion-springs', published: false, name: 'Golden Hills, Bear Valley & Stallion Springs', short: 'The foothill communities around Tehachapi.',
     title: 'New & Semi-Custom Homes in Golden Hills, Bear Valley Springs & Stallion Springs | Aspen II Homes',
     h1: 'New and Semi-Custom Homes in Golden Hills, Bear Valley Springs and Stallion Springs',
     description: 'Aspen II Homes serves buyers in Golden Hills, Bear Valley Springs and Stallion Springs near Tehachapi. Six models or a custom build; contact us to confirm current availability.',
@@ -170,7 +183,7 @@ export const communities: Community[] = [
     faq: [askAvailability('Golden Hills, Bear Valley Springs or Stallion Springs'), ownLot('these communities')],
   },
   {
-    slug: 'california-city-ca-home-builders', name: 'California City', short: 'Serving California City buyers near Edwards AFB.',
+    slug: 'california-city-ca-home-builders', area: 'california-city', published: false, name: 'California City', short: 'Serving California City buyers near Edwards AFB.',
     title: 'New & Semi-Custom Home Builder in California City, CA | Aspen II Homes',
     h1: 'New Homes and Custom-Build Options in California City, CA',
     description: 'Aspen II Homes serves California City buyers, including military families near Edwards Air Force Base. Six models, custom builds and VA, FHA and conventional financing.',
@@ -179,7 +192,7 @@ export const communities: Community[] = [
     faq: [askAvailability('California City'), ownLot('California City')],
   },
   {
-    slug: 'ridgecrest-home-builders', name: 'Ridgecrest', short: 'Serving Ridgecrest and Indian Wells Valley buyers.',
+    slug: 'ridgecrest-home-builders', area: 'ridgecrest', published: false, name: 'Ridgecrest', short: 'Serving Ridgecrest and Indian Wells Valley buyers.',
     title: 'New & Semi-Custom Homes Near Ridgecrest, CA | Aspen II Homes',
     h1: 'New Home Options for Ridgecrest-Area Buyers',
     description: 'Aspen II Homes serves Ridgecrest and Indian Wells Valley buyers, including NAWS China Lake families, through select semi-custom and custom-build opportunities.',
@@ -191,17 +204,22 @@ export const communities: Community[] = [
 
 // [question, answer, page with the full answer]
 export const faq: [string, string, string][] = [
-  ['Where does Aspen II Homes build?', 'Our current release is Sunset Retreat in Tehachapi. We also serve buyers in Golden Hills, Bear Valley Springs, Stallion Springs, California City and Ridgecrest. Contact us to confirm current lot availability and construction status.', '/#communities'],
-  ['How much do the new homes cost?', 'The Sunset Retreat first release starts at $459,000. Pricing for other models depends on the home, lot, design, finishes and options. Ask us for a current quote.', '/sunset-retreat-tehachapi/'],
+  ['Where does Aspen II Homes build?', 'Our current release is Sunset Retreat in Tehachapi. We also serve buyers in Golden Hills, Bear Valley Springs, Stallion Springs, California City and Ridgecrest. Contact us to confirm current lot availability and construction status.', '/areas/'],
+  ['How much do the new homes cost?', 'The Sunset Retreat first release starts at $459,000. Pricing for other models depends on the home, lot, design, finishes and options. Ask us for a current quote.', '/available-homes/'],
   ['Which home models can I choose from?', 'Six: Tranquil Oasis, Sunset Retreat, The Tranquil Abode, Sunrise View Residence, Enchanted Haven and The Grand Haven, from 1,507 to 2,348 sq ft. Each model page has photos and a downloadable blueprint.', '/floor-plans/'],
-  ['Can I customize my new home?', 'Yes. Choose reserve-and-customize, semi-custom model selection, or a fully custom build. Available choices depend on the model and construction stage.', '/how-it-works/'],
+  ['Can I customize my new home?', 'Yes. Choose reserve-and-customize, semi-custom model selection, or a fully custom build. Available choices depend on the model and construction stage.', '/our-process/'],
   ['Is 0% down financing available?', 'A 0% down option is available for eligible first-time buyers. Eligibility, lender approval and program terms apply. We also work with FHA, VA and conventional financing.', '/financing/'],
   ['How do early-buyer savings work?', 'Reserve early and apply up to $15,000 in early-buyer savings toward your floor plan. Availability, eligibility and program terms apply.', '/financing/'],
-  ['How long until I can move in?', 'Sunset Retreat first-release homes are estimated at roughly three months to move-in.', '/sunset-retreat-tehachapi/'],
+  ['How long until I can move in?', 'Sunset Retreat first-release homes are estimated at roughly three months to move-in.', '/available-homes/'],
   ['Do you work with VA loans?', 'Yes. We work with VA, FHA and conventional financing. Eligibility, lender approval and program terms apply.', '/financing/'],
 ];
 
 export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';
+
+export const planUrl = (p: { slug: string }) => `/floor-plans/${p.slug}/`;
+export const areaUrl = (c: Community) => (c.published ? `/areas/${c.area}/` : '/areas/');
+// Every area name the business takes inquiries from (shown on /areas/ without separate pages until confirmed).
+export const serviceAreaNames = ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'];
 
 export const usd = (n: number) => '$' + n.toLocaleString('en-US');
 // "the Sunset Retreat" but "The Grand Haven", never "the The Grand Haven".

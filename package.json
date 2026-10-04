@@ -13,6 +13,9 @@
     "test": "node tests/lead.test.mjs"
   },
   "dependencies": {
+    "@fontsource/gloock": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/source-serif-4": "^5.3.0",
     "astro": "^7.3.5"
   },
   "allowScripts": {
@@ -20,6 +23,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.6.4",
     "typescript": "^6.0.3"
   }
 }

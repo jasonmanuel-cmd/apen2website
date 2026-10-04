@@ -1,8 +1,8 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import PlanCard from '../components/PlanCard.astro';
-import { site, plans, offer, usd, sqftRange, disclaimer } from '../data/site';
-import { breadcrumb, webPage } from '../data/schema';
+import Layout from '../../layouts/Layout.astro';
+import PlanCard from '../../components/PlanCard.astro';
+import { site, plans, offer, usd, sqftRange, disclaimer, planUrl } from '../../data/site';
+import { breadcrumb, webPage } from '../../data/schema';
 
 const path = '/floor-plans/';
 const title = `New Home Floor Plans in Tehachapi & Kern County | ${site.name}`;
@@ -10,7 +10,7 @@ const description = `Compare all six ${site.name} floor plans, ${sqftRange()} sq
 const name = (slug: string, n: string) => (slug === 'sunset-retreat' ? `${n} Model` : n);
 const schema = [
   webPage(path, title, description, {
-    mainEntity: { '@type': 'ItemList', itemListElement: plans.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: name(p.slug, p.name), url: new URL(`/${p.slug}/`, site.url).href })) },
+    mainEntity: { '@type': 'ItemList', itemListElement: plans.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: name(p.slug, p.name), url: new URL(planUrl(p), site.url).href })) },
   }),
   breadcrumb([['Home', '/'], ['Floor plans', path]]),
 ];
@@ -20,7 +20,7 @@ const schema = [
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Floor plans</span></nav>
     <p class="eyebrow">The model collection</p>
     <h1>Six New-Home Floor Plans, <em>Ready for Your Finishes</em></h1>
-    <p class="lede">From {sqftRange()} sq ft. Every plan is semi-custom: choose flooring, paint colors, cabinetry and more. The current <a href="/sunset-retreat-tehachapi/">{offer.community} release in Tehachapi</a> uses the {offer.community} model, from {usd(offer.from)}.</p>
+    <p class="lede">From {sqftRange()} sq ft. Every plan is semi-custom: choose flooring, paint colors, cabinetry and more. The current <a href="/available-homes/">{offer.community} release in Tehachapi</a> uses the {offer.community} model, from {usd(offer.from)}.</p>
 
     <div class="filters" role="group" aria-label="Filter floor plans">
       <span class="mono">Filter:</span>
@@ -50,7 +50,7 @@ const schema = [
           <tbody>
             {plans.map((p) => (
               <tr>
-                <th scope="row"><a href={`/${p.slug}/`}>{name(p.slug, p.name)}</a></th>
+                <th scope="row"><a href={planUrl(p)}>{name(p.slug, p.name)}</a></th>
                 <td>{p.sqft.toLocaleString()}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
                 <td>{p.price ? `From ${usd(p.price)}` : 'Request pricing'}</td>
                 <td class="st">{p.status}</td>
@@ -61,7 +61,7 @@ const schema = [
         </table>
       </div>
       <p class="fine">Pricing and availability last confirmed {site.verified}. {disclaimer} Plans, dimensions, features and elevations may change.</p>
-      <p class="ctas"><a class="btn" href="/contact-us/?interest=semi">Request current pricing</a><a class="btn btn-ghost" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a></p>
+      <p class="ctas"><a class="btn" href="/contact/?interest=semi">Request current pricing</a><a class="btn btn-ghost" href="/available-homes/">See Sunset Retreat availability</a></p>
     </div>
   </section>
 </Layout>

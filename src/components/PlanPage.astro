@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
-import { site, plans, photos, blueprint, offer, usd, type Plan, theName } from '../data/site';
+import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
@@ -27,6 +27,7 @@ const facts = [
   ['Bedrooms', plan.beds],
   ['Bathrooms', plan.baths],
   ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
+  ...(plan.garage ? [['Garage', plan.garage]] : []),
 ];
 const qa: [string, string][] = [
   [`Is ${theName(plan.name)} one story or two?`, plan.stories === 2
@@ -44,7 +45,7 @@ const qa: [string, string][] = [
     : 'Pricing depends on the lot, design, finishes and options. Ask us for a current quote.'],
   ['Can the plan be changed?', 'Ask us about modifications. If you need something different, we also design fully custom homes.'],
 ];
-const path = `/${plan.slug}/`;
+const path = planUrl(plan);
 const schema = [
   webPage(path, title, description, og ? { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } } : {}),
   breadcrumb([['Home', '/'], ['Floor plans', '/floor-plans/'], [label, path]]),
@@ -64,7 +65,7 @@ const schema = [
         <p class="eyebrow">{plan.tagline}{plan.firstRelease && ` · ${offer.community}, ${offer.city}`}</p>
         <h1>{label}: <em>{spec}</em> New Home Plan</h1>
         <p class="lede">{plan.headline}</p>
-        {sr && <p class="note-sr">This is the floor plan being built in the <a href="/sunset-retreat-tehachapi/">{offer.community} first release in Tehachapi</a>.</p>}
+        {sr && <p class="note-sr">This is the floor plan being built in the <a href="/available-homes/">{offer.community} first release in Tehachapi</a>.</p>}
       </div>
       <div class="price-box reveal" style="animation-delay:.15s">
         <p class="mono">{plan.price ? 'Starting at' : 'Pricing'}</p>
@@ -80,7 +81,7 @@ const schema = [
     <dl class="facts">
       {facts.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
     </dl>
-    <p class="where mono">Where it's available: {sr ? <><a href="/sunset-retreat-tehachapi/">{offer.community}, Tehachapi</a> (first release) · other lots on request</> : <>on request across <a href="/#communities">Tehachapi and eastern Kern County</a>. Availability depends on the lot.</>}</p>
+    <p class="where mono">Where it's available: {sr ? <><a href="/available-homes/">{offer.community}, Tehachapi</a> (first release) · other lots on request</> : <>on request across <a href="/areas/">Tehachapi and eastern Kern County</a>. Availability depends on the lot.</>}</p>
   </section>
 
   {imgs.length > 0 && (
@@ -126,7 +127,7 @@ const schema = [
     <p class="eyebrow">{label} questions</p>
     <h2>Before you <em>ask.</em></h2>
     <div class="faq">{qa.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div>
-    <p class="ctas-row"><a class="btn btn-ghost" href="/floor-plans/#compare">Compare all models</a>{!sr && <a class="btn btn-ghost" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>}</p>
+    <p class="ctas-row"><a class="btn btn-ghost" href="/floor-plans/#compare">Compare all models</a>{!sr && <a class="btn btn-ghost" href="/available-homes/">See Sunset Retreat availability</a>}</p>
   </section>
 
   <section class="inquire" id="inquire">

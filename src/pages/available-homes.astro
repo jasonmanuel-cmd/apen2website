@@ -3,14 +3,14 @@ import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Gallery from '../components/Gallery.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, offer, plans, photos, financing, usd, disclaimer } from '../data/site';
+import { site, offer, plans, photos, financing, usd, disclaimer, planUrl } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 // The community page. The 1,715 sq ft floor plan of the same name lives at /sunset-retreat/.
 const model = plans.find((p) => p.slug === 'sunset-retreat')!;
 const imgs = photos(model.folder);
 const og = imgs[0] ? (await getImage({ src: imgs[0].src, width: 1200, format: 'jpg' })).src : undefined;
-const path = '/sunset-retreat-tehachapi/';
+const path = '/available-homes/';
 const title = `Sunset Retreat: New Homes in Tehachapi, CA From ${usd(offer.from)} | ${site.name}`;
 const description = `Sunset Retreat is ${site.name}' current release in Tehachapi, CA. First release from ${usd(offer.from)}: the ${model.sqft.toLocaleString()} sq ft Sunset Retreat model, ${model.beds} bed, ${model.baths} bath. Home 1 and Home 2 reserving.`;
 const qa: [string, string][] = [
@@ -52,7 +52,7 @@ const schema = [
       </div>
       <dl class="facts">
         <div><dt class="mono">Starting price</dt><dd>{usd(offer.from)}</dd></div>
-        <div><dt class="mono">Model</dt><dd><a href={`/${model.slug}/`}>Sunset Retreat model</a></dd></div>
+        <div><dt class="mono">Model</dt><dd><a href={planUrl(model)}>Sunset Retreat model</a></dd></div>
         <div><dt class="mono">Size</dt><dd>{model.sqft.toLocaleString()} sf · {model.beds} bd · {model.baths} ba</dd></div>
         <div><dt class="mono">Stories</dt><dd>Single</dd></div>
         <div><dt class="mono">Est. move-in</dt><dd>{offer.moveIn}*</dd></div>
@@ -68,7 +68,7 @@ const schema = [
     <p class="muted narrow">{model.summary}</p>
     <ul class="hl">{model.highlights.map((h) => <li>{h}</li>)}</ul>
     {imgs.length > 0 && <><p class="mono note">Photography of the Sunset Retreat model plan.</p><Gallery images={imgs} name="Sunset Retreat model" /></>}
-    <p class="ctas-row"><a class="btn btn-ghost" href={`/${model.slug}/`}>Floor plan & full specs</a><a class="btn btn-ghost" href={`/plans/${model.slug}.pdf`} target="_blank" rel="noopener">Floor plan PDF</a></p>
+    <p class="ctas-row"><a class="btn btn-ghost" href={planUrl(model)}>Floor plan & full specs</a><a class="btn btn-ghost" href={`/plans/${model.slug}.pdf`} target="_blank" rel="noopener">Floor plan PDF</a></p>
   </section>
 
   <section class="section money">

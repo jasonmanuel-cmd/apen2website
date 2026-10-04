@@ -3,4 +3,6 @@
 | Date | Phase | Entry |
 |---|---|---|
 | 2026-10-04 | 0 | Spec read. Repo, hosting, routes, assets, forms audited. 21 baseline screenshots captured (commit `67c8d84`). Conflicts D1–D11 recorded. Plan, acceptance tests, input list and draft redirect map written. Committed locally only; nothing pushed or deployed (spec item 16; production auto-deploys from the working branch). |
-| — | 1 | Waiting on D1, D2 and push authorization (D11). |
+| 2026-10-04 | 0 | Owner decided D1 keep green, D2 apex, D4 Supabase yes, D9 Vercel Analytics. D11 + push authorization still open. |
+| 2026-10-04 | 1 | Phase 1 built locally: canonical apex; spec routes (/floor-plans/<model>/, /areas/, /areas/tehachapi/, /available-homes/, /build-on-your-lot/, /semi-custom-homes/, /our-process/, /contact/, /accessibility/, interim /check-my-lot/); 28 permanent redirects (slash and no-slash) for old URLs; spec nav + Check My Lot button + mobile bar; build-time content validation (proven: a 0 sq ft record fails the build); self-hosted fonts (no Google Fonts). Non-Tehachapi areas held as draft. |
+| 2026-10-04 | 1 gate | astro check 0 errors; 23 pages built; lead tests 17/17; crawl: one H1, unique titles, apex self-canonical on every indexable page, JSON-LD parses, 0 broken internal links, 0 links to redirected URLs; sitemap 20 apex URLs all exist; no overflow or JS errors at 320-1440 px on 16 page types; before/after screenshots compared at 390/1440 (brand parity; fixed one stat wrap). Not pushed. Redirects untested against live (needs deploy + live crawl). |

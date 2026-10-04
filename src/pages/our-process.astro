@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { site, paths, offer, usd } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
-const path = '/how-it-works/';
+const path = '/our-process/';
 const title = `How Buying or Building With ${site.name} Works`;
 const description = `The steps to reserve a Sunset Retreat home, choose and customize one of six models, or plan a fully custom build with ${site.name} in Tehachapi and eastern Kern County.`;
 // Which stages apply to which path: reservation homes skip design work that custom builds need.
@@ -50,7 +50,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
     <ol class="stages">
       {stages.map(([t, d, a], i) => <li><span class="mono">Stage 0{i + 1}</span><h3>{t}</h3><p>{d}</p><p class="mono applies">{a}</p></li>)}
     </ol>
-    <p class="ctas"><a class="btn" href="/contact-us/">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href="/contact-us/?interest=lot">Build on your lot</a></p>
+    <p class="ctas"><a class="btn" href="/contact/">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href="/contact/?interest=lot">Build on your lot</a></p>
   </section>
 </Layout>
 

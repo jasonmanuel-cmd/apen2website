@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Gallery from '../components/Gallery.astro';
-import { site, plans, photos } from '../data/site';
+import { site, plans, photos, planUrl } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/gallery/';
@@ -22,7 +22,7 @@ const schema = [webPage(path, title, description, { '@type': 'CollectionPage' })
       <div class="head">
         <h2>{name}</h2>
         <p class="mono">{p.sqft.toLocaleString()} sf · {p.beds} bd · {p.baths} ba · {p.rendering ? 'Artist renderings' : 'Photography'}</p>
-        <a href={`/${p.slug}/`} class="mono more">Specs & floor plan →</a>
+        <a href={planUrl(p)} class="mono more">Specs & floor plan →</a>
       </div>
       <Gallery images={imgs} name={name} />
     </section>

@@ -2,16 +2,16 @@
 import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import LeadForm from './LeadForm.astro';
-import { site, plans, communities, offer, usd, type Community } from '../data/site';
+import { site, plans, communities, offer, usd, type Community, areaUrl } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 const { community: c } = Astro.props as { community: Community };
-const others = communities.filter((x) => x !== c);
+const others = communities.filter((x) => x !== c && x.published);
 const home = c.slug === 'tehachapi-home-builders';
-const path = `/${c.slug}/`;
+const path = areaUrl(c);
 const schema = [
   webPage(path, c.title, c.description, { about: { '@type': 'Place', name: `${c.name}, California` } }),
-  breadcrumb([['Home', '/'], ['Communities', '/#communities'], [c.name, path]]),
+  breadcrumb([['Home', '/'], ['Areas we serve', '/areas/'], [c.name, path]]),
   faqPage(c.faq),
 ];
 ---
@@ -22,13 +22,13 @@ const schema = [
 >
   <section class="hero">
     <div class="wrap">
-      <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#communities">Communities</a> / <span aria-current="page">{c.name}</span></nav>
+      <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/areas/">Areas we serve</a> / <span aria-current="page">{c.name}</span></nav>
       <p class="eyebrow reveal">{home ? 'Where we build' : 'Areas we serve'} · {c.name}, CA</p>
       <h1 class="reveal" style="animation-delay:.1s">{c.h1}</h1>
       <p class="lede reveal" style="animation-delay:.2s">{c.intro}</p>
       <ul class="points reveal" style="animation-delay:.3s">{c.points.map((p) => <li>{p}</li>)}</ul>
       <div class="ctas">
-        {home && <a class="btn" href="/sunset-retreat-tehachapi/">See Sunset Retreat availability</a>}
+        {home && <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>}
         <a class:list={['btn', { 'btn-ghost': home }]} href="#inquire">{home ? 'Build on your lot' : 'Ask about current availability'}</a>
       </div>
     </div>
@@ -61,7 +61,7 @@ const schema = [
         <p class="eyebrow">Building in {c.name}?</p>
         <h2>Tell us about <em>your lot.</em></h2>
         <p class="muted">Own land already, or still looking? Either way, we'll walk you through what it takes to build here.</p>
-        <p class="mono also">Also serving: {others.map((o, i) => <><a href={`/${o.slug}/`}>{o.name}</a>{i < others.length - 1 && ' · '}</>)}</p>
+        <p class="mono also">We also take inquiries from nearby communities. <a href="/areas/">See areas we serve</a></p>
       </div>
       <LeadForm community={c.name} source={`Community page: ${c.name}`} />
     </div>

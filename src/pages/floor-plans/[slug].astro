@@ -1,0 +1,10 @@
+---
+import PlanPage from '../../components/PlanPage.astro';
+import { plans } from '../../data/site';
+
+export function getStaticPaths() {
+  return plans.map((plan) => ({ params: { slug: plan.slug }, props: { plan } }));
+}
+const { plan } = Astro.props;
+---
+<PlanPage plan={plan} />

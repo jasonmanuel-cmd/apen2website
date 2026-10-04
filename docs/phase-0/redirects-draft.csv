@@ -1,15 +1,15 @@
 old_url,new_url,reason,status,test_result
-/sunset-retreat/,/floor-plans/sunset-retreat/,spec model route (D5),candidate,not tested
-/tranquil-oasis/,/floor-plans/tranquil-oasis/,spec model route (D5),candidate,not tested
-/the-tranquil-abode/,/floor-plans/the-tranquil-abode/,spec model route (D5),candidate,not tested
-/sunrise-view-residence/,/floor-plans/sunrise-view-residence/,spec model route (D5),candidate,not tested
-/enchanted-haven/,/floor-plans/enchanted-haven/,spec model route (D5),candidate,not tested
-/the-grand-haven/,/floor-plans/the-grand-haven/,spec model route (D5),candidate,not tested
-/tehachapi-home-builders/,/areas/tehachapi/,spec area route (D6),candidate,not tested
-/golden-hills-bear-valley-and-stallion-springs-home-builder/,/areas/,area pages in draft (D6),candidate,not tested
-/california-city-ca-home-builders/,/areas/,area page in draft (D6),candidate,not tested
-/ridgecrest-home-builders/,/areas/,area page in draft (D6),candidate,not tested
-/how-it-works/,/our-process/,spec route (D10),candidate,not tested
-/contact-us/,/contact/,spec route (D10),candidate,not tested
-/sunset-retreat-tehachapi/,/available-homes/,inventory lives under Available Homes (D8),candidate,not tested
+/sunset-retreat/,/floor-plans/sunset-retreat/,spec model route (D5),"configured (local, not deployed)",build: target exists; live test pending
+/tranquil-oasis/,/floor-plans/tranquil-oasis/,spec model route (D5),"configured (local, not deployed)",build: target exists; live test pending
+/the-tranquil-abode/,/floor-plans/the-tranquil-abode/,spec model route (D5),"configured (local, not deployed)",build: target exists; live test pending
+/sunrise-view-residence/,/floor-plans/sunrise-view-residence/,spec model route (D5),"configured (local, not deployed)",build: target exists; live test pending
+/enchanted-haven/,/floor-plans/enchanted-haven/,spec model route (D5),"configured (local, not deployed)",build: target exists; live test pending
+/the-grand-haven/,/floor-plans/the-grand-haven/,spec model route (D5),"configured (local, not deployed)",build: target exists; live test pending
+/tehachapi-home-builders/,/areas/tehachapi/,spec area route (D6),"configured (local, not deployed)",build: target exists; live test pending
+/golden-hills-bear-valley-and-stallion-springs-home-builder/,/areas/,area pages in draft (D6),"configured (local, not deployed)",build: target exists; live test pending
+/california-city-ca-home-builders/,/areas/,area page in draft (D6),"configured (local, not deployed)",build: target exists; live test pending
+/ridgecrest-home-builders/,/areas/,area page in draft (D6),"configured (local, not deployed)",build: target exists; live test pending
+/how-it-works/,/our-process/,spec route (D10),"configured (local, not deployed)",build: target exists; live test pending
+/contact-us/,/contact/,spec route (D10),"configured (local, not deployed)",build: target exists; live test pending
+/sunset-retreat-tehachapi/,/available-homes/,inventory lives under Available Homes (D8),"configured (local, not deployed)",build: target exists; live test pending
 /heroes-of-the-nation/,/financing/,program ended (D7),live,301 configured

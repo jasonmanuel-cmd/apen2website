@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { site, offer, plans, communities, usd, sqftRange } from '../data/site';
+import { site, offer, plans, communities, usd, sqftRange, areaUrl, serviceAreaNames } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/about/';
@@ -13,7 +13,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">About</span></nav>
     <p class="eyebrow">About us</p>
     <h1>The local builder of new and semi-custom homes in <em>Tehachapi.</em></h1>
-    <p class="lede">{site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County. Our current release is <a href="/sunset-retreat-tehachapi/">{offer.community}</a> in Tehachapi, from {usd(offer.from)}.</p>
+    <p class="lede">{site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County. Our current release is <a href="/available-homes/">{offer.community}</a> in Tehachapi, from {usd(offer.from)}.</p>
   </section>
 
   <section class="section facts-sec">
@@ -21,14 +21,15 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
       <div>
         <h2>What we <em>build.</em></h2>
         <ul class="list">
-          <li><a href="/sunset-retreat-tehachapi/">{offer.community}</a>: our current release in Tehachapi.</li>
+          <li><a href="/available-homes/">{offer.community}</a>: our current release in Tehachapi.</li>
           <li><a href="/floor-plans/">Six floor plans</a>, {sqftRange()} sq ft, every one semi-custom.</li>
-          <li>Fully custom homes, including on <a href="/contact-us/?interest=lot">land you already own</a>.</li>
+          <li>Fully custom homes, including on <a href="/contact/?interest=lot">land you already own</a>.</li>
         </ul>
       </div>
       <div>
         <h2>Where we <em>work.</em></h2>
-        <ul class="list">{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
+        <ul class="list">{serviceAreaNames.map((n) => { const c = communities.find((x) => x.published && x.name === n); return <li>{c ? <a href={areaUrl(c)}>{n}</a> : n}</li>; })}</ul>
+        <p class="muted">Outside Tehachapi, we confirm availability case by case. <a href="/areas/">Areas we serve</a></p>
       </div>
     </div>
   </section>
@@ -43,7 +44,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
       {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
     </dl>
     <p class="mono eho">Equal Housing Opportunity</p>
-    <p><a class="btn" href="/contact-us/">Talk with our team</a></p>
+    <p><a class="btn" href="/contact/">Talk with our team</a></p>
   </section>
 </Layout>
 

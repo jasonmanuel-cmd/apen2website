@@ -18,7 +18,7 @@ npm test         # lead form handler tests (Resend mocked)
 | Prices, plans, offers, FAQ, communities, contact info | `src/data/site.ts` (edit here, every page updates) |
 | Plan photos | `src/assets/photos/<plan>/` (captions in `src/data/captions.json`) |
 | Blueprint images / PDFs | `src/assets/blueprints/`, `public/plans/` |
-| Pages | `src/pages/` (plans & communities share `[slug].astro`) |
+| Pages | `src/pages/` (models: `floor-plans/[slug].astro`; areas: `areas/[area].astro`, published only when `published: true`) |
 | Lead email handler | `api/lead.js` |
 
 URLs match the old aspen2homes.com WordPress site so search rankings carry over.
@@ -64,7 +64,7 @@ Built pages say only what the data file can support. These items stay unpublishe
 
 ## Hosting checklist
 
-- Canonical host is `https://www.aspen2homes.com` (`site.url`, `astro.config.mjs`, `public/robots.txt`). Keep the apex domain as a single permanent redirect to www in Vercel > Domains.
+- Canonical host is `https://aspen2homes.com` (owner decision D2; `site.url`, `astro.config.mjs`, `public/robots.txt`). **At launch, change Vercel > Domains so `www` permanently redirects to the apex** (today it is the reverse).
 - Set `RESEND_API_KEY`, `NOTIFICATION_EMAIL` and `RESEND_FROM` in Vercel. Without the key, the form now tells visitors to call instead of pretending it sent.
 - Turn on Vercel > Analytics to start the cookieless page-view counts (the script is already in the layout).
-- After deploying, submit `https://www.aspen2homes.com/sitemap.xml` in Google Search Console and request indexing of the main pages.
+- After deploying, submit `https://aspen2homes.com/sitemap.xml` in Google Search Console and request indexing of the main pages.
