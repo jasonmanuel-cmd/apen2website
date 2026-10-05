@@ -11,7 +11,7 @@ import '@fontsource/source-serif-4/latin-400-italic.css';
 import '@fontsource/source-serif-4/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
-import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl, serviceAreaNames } from '../data/site';
+import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl, serviceAreaNames, profiles } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
@@ -22,6 +22,7 @@ const org = {
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
   areaServed: serviceAreaNames,
+  sameAs: profiles.map(([, href]) => href),
   openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '07:00', closes: '19:00' }],
 };
 const path = Astro.url.pathname;
@@ -121,6 +122,7 @@ const nav: [string, string, [string, string][]][] = [
         <!-- BuildZoom badge (owner-supplied embed). Loads an image and an impression pixel from BuildZoom; disclosed on /privacy/. -->
         <div class="bz-bdg"><a target="_blank" rel="noopener" title="BuildZoom.com" href="https://www.buildzoom.com/contractor/aspen-ii-homes-ca?ad_location=co_website"><img alt="Aspen II Homes on BuildZoom" width="230" height="auto" src="https://badges.buildzoom.com/2023/fon1.png" loading="lazy" /></a><a target="_blank" rel="noopener" href="https://www.buildzoom.com/tehachapi-ca/general-contractors?ad_location=co_website&bg_ref=88342094">General Contractors in Tehachapi</a><img src="https://track.buildzoom.com//badge_load?track_id=dYDNyw&entity=Contractor&event_type=impression&ad_type=contractor_badge" width="1" height="1" alt="" loading="lazy" /></div>
         <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}<br />{site.hours}</p>
+        <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}</a></>)}</p>
       </div>
       <div>
         <p class="mono head">Floor plans</p>
@@ -214,6 +216,7 @@ const nav: [string, string, [string, string][]][] = [
   .logo-badge { display: inline-block; background: var(--paper); padding: 1rem 1.2rem; border-radius: 4px; margin: 0 0 1.2rem; border-top: 4px solid; border-image: var(--roof) 1; }
   .logo-badge img { width: 220px; height: auto; }
   .footer em { color: var(--gold); }
+  .footer .profiles { font-size: .7rem; color: var(--on-dark-muted); line-height: 1.9; } .footer .profiles a { color: var(--sand); text-decoration: underline; text-underline-offset: 3px; }
   .bz-bdg { width: 230px; margin-top: 1.2rem; } .bz-bdg img { width: 230px; height: auto; } .bz-bdg > a { display: block; font: 500 9px Helvetica, Arial, sans-serif; text-align: center; margin-top: 4px; color: var(--on-dark-muted); line-height: 10px; }
   .promo { display: block; background: var(--gold); color: var(--ink); text-align: center; text-decoration: none; padding: .55rem var(--gutter); font: .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .promo strong { font-weight: 500; }
