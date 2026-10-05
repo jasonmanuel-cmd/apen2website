@@ -25,7 +25,7 @@ const reply = (req, res, code, body) => {
     `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request not sent | Aspen II Homes</title>` +
     `<body style="font:18px/1.6 Georgia,serif;max-width:36rem;margin:15vh auto;padding:0 20px;color:#15302A;background:#F7F2E8">` +
     `<h1>Your request didn't go through.</h1><p>${esc(body.error)}</p>` +
-    `<p><a href="tel:+16612383136">Call (661) 238-3136</a> or <a href="/contact-us/">go back to the form</a>.</p></body>`
+    `<p><a href="tel:+16612383136">Call (661) 238-3136</a> or <a href="/contact/">go back to the form</a>.</p></body>`
   );
 };
 
@@ -52,6 +52,19 @@ export default async function handler(req, res) {
     const plan = str(data.plan, 100);
     const notes = str(data.notes, 3000);
     const source = str(data.source, 100) || 'Website';
+    const contactPref = str(data.contactPref, 20);
+    const stage = str(data.stage, 60);
+    const when = str(data.when, 40);
+    const budget = str(data.budget, 40);
+    const firstTime = str(data.firstTime, 5) === 'yes';
+    const military = str(data.military, 5) === 'yes';
+    // Short routing tags for the subject line, so the team can sort leads at a glance.
+    const tags = [
+      /reserve/i.test(timeline) && 'Sunset Retreat',
+      /model/i.test(timeline) && 'Model pricing',
+      (/financ/i.test(timeline) || firstTime) && 'Financing',
+      (/military|\bVA\b/.test(timeline) || military) && 'Military/VA',
+    ].filter(Boolean);
 
     // 1. Bot trap: if the hidden honeypot field is filled, pretend success.
     if (str(data.honeypot)) {
@@ -81,37 +94,44 @@ export default async function handler(req, res) {
     let emailSent = false;
 
     if (resendKey) {
-      try {
-        const resendRes = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${resendKey}`
-          },
-          body: JSON.stringify({
-            from,
-            to: destinationEmail.split(',').map((s) => s.trim()),
-            ...(email && { reply_to: email }),
-            subject: `[New Lead] ${name} - ${plan || community || 'General Inquiry'}`,
-            html: `
-              <h2>New Aspen II Homes Lead</h2>
-              <p><strong>Name:</strong> ${esc(name)}</p>
-              <p><strong>Phone:</strong> <a href="tel:${esc(phone)}">${esc(phone)}</a></p>
-              <p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not provided'}</p>
-              <p><strong>Interested in:</strong> ${esc(timeline)}</p>
-              <p><strong>Model:</strong> ${esc(plan) || 'Not sure yet'}</p>
-              <p><strong>Community:</strong> ${esc(community) || 'Not sure yet'}</p>
-              <p><strong>Notes:</strong><br>${notes ? esc(notes).replace(/\n/g, '<br>') : 'None'}</p>
-              <hr>
-              <small>From ${esc(source)} at ${leadPayload.timestamp}. Reply to this email to answer the buyer directly.</small>
-            `
-          })
-        });
-        if (resendRes.ok) emailSent = true;
-        else console.error('Resend rejected the email:', resendRes.status, await resendRes.text());
-      } catch (err) {
-        console.error('Resend dispatch error:', err.message);
-      }
+      const message = {
+        from,
+        ...(email && { reply_to: email }),
+        subject: `[New Lead]${tags.map((t) => `[${t}]`).join('')} ${name} - ${plan || community || 'General Inquiry'}`,
+        html: `
+          <h2>New Aspen II Homes Lead</h2>
+          <p><strong>Name:</strong> ${esc(name)}</p>
+          <p><strong>Phone:</strong> <a href="tel:${esc(phone)}">${esc(phone)}</a></p>
+          <p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not provided'}</p>
+          <p><strong>Interested in:</strong> ${esc(timeline)}</p>
+          <p><strong>Model:</strong> ${esc(plan) || 'Not sure yet'}</p>
+          <p><strong>Community:</strong> ${esc(community) || 'Not sure yet'}</p>
+          <p><strong>Best way to reach:</strong> ${esc(contactPref) || 'Any'}</p>
+          <p><strong>Stage:</strong> ${esc(stage) || 'Not given'} · <strong>Timeline:</strong> ${esc(when) || 'Not given'} · <strong>Budget:</strong> ${esc(budget) || 'Not given'}</p>
+          <p><strong>Ask about:</strong> ${[firstTime && 'First-time buyer options', military && 'VA / military options'].filter(Boolean).join(', ') || 'Nothing extra'}</p>
+          <p><strong>Notes:</strong><br>${notes ? esc(notes).replace(/\n/g, '<br>') : 'None'}</p>
+          <hr>
+          <small>From ${esc(source)} at ${leadPayload.timestamp}. Reply to this email to answer the buyer directly.</small>
+        `
+      };
+      // One email per recipient, so one rejected address (e.g. Resend's test sender only
+      // reaches the account owner) can't block delivery to the others.
+      const recipients = destinationEmail.split(',').map((s) => s.trim()).filter(Boolean);
+      const results = await Promise.all(recipients.map(async (to) => {
+        try {
+          const resendRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+            body: JSON.stringify({ ...message, to: [to] })
+          });
+          if (!resendRes.ok) console.error('Resend rejected the email:', resendRes.status, await resendRes.text());
+          return resendRes.ok;
+        } catch (err) {
+          console.error('Resend dispatch error:', err.message);
+          return false;
+        }
+      }));
+      emailSent = results.some(Boolean);
 
       // Key is set but sending failed: tell the visitor to call rather than silently losing the lead.
       if (!emailSent) {

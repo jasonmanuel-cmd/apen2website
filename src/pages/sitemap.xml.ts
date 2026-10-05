@@ -1,7 +1,7 @@
-import { site, plans, communities } from '../data/site';
+import { site, plans, communities, planUrl, areaUrl } from '../data/site';
 
 export function GET() {
-  const paths = ['/', '/contact-us/', '/heroes-of-the-nation/', '/financing/', '/privacy/', ...plans.map((p) => `/${p.slug}/`), ...communities.map((c) => `/${c.slug}/`)];
+  const paths = ['/', '/available-homes/', '/floor-plans/', '/semi-custom-homes/', '/our-process/', '/financing/', '/about/', '/gallery/', '/areas/', '/contact/', '/privacy/', '/accessibility/', ...plans.map(planUrl), ...communities.filter((c) => c.published).map(areaUrl)];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${paths.map((p) => `  <url><loc>${site.url}${p}</loc></url>`).join('\n')}

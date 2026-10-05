@@ -1,0 +1,11 @@
+---
+import CommunityPage from '../../components/CommunityPage.astro';
+import { communities } from '../../data/site';
+
+// Only areas with confirmed coverage and distinct content get a page (spec §06).
+export function getStaticPaths() {
+  return communities.filter((c) => c.published).map((community) => ({ params: { area: community.area }, props: { community } }));
+}
+const { community } = Astro.props;
+---
+<CommunityPage community={community} />

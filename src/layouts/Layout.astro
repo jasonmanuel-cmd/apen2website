@@ -3,23 +3,51 @@ import { Image } from 'astro:assets';
 import logo from '../assets/logo.webp';
 import { site, plans, communities, offer, usd, disclaimer } from '../data/site';
 import SpeedInsights from '@vercel/speed-insights/astro';
+import logoMark from '../assets/logo-mark.png';
+import logoWord from '../assets/logo-wordmark.png';
+import logoFull from '../assets/logo-full.png';
+import '../data/validate';
+// Self-hosted fonts (spec §18): latin subsets only, font-display: swap.
+import '@fontsource/gloock/latin-400.css';
+import '@fontsource/source-serif-4/latin-400.css';
+import '@fontsource/source-serif-4/latin-400-italic.css';
+import '@fontsource/source-serif-4/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const org = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: site.name, url: site.url, telephone: site.phone, email: site.email,
+  name: site.name, url: site.url, logo: `${site.url}/logo.png`, telephone: site.phone, email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
+  ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
   areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
 };
 const path = Astro.url.pathname;
-const nav = [
-  ['/#plans', 'Models'],
-  ['/financing/', 'Financing'],
-  ['/#communities', 'Communities'],
-  ['/heroes-of-the-nation/', 'Military'],
-  ['/contact-us/', 'Contact'],
+// Spec §04 navigation, minus Build on Your Lot (owner decision D12: spec and semi-custom homes only).
+const nav: [string, string, [string, string][]][] = [
+  ['/floor-plans/', 'Floor Plans', [
+    ['/floor-plans/', 'All floor plans'],
+    ['/floor-plans/#compare', 'Compare plans'],
+    ...plans.map((p): [string, string] => [planUrl(p), p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name]),
+    ['/semi-custom-homes/', 'Semi-custom homes'],
+  ]],
+  ['/available-homes/', 'Available Homes', []],
+  ['/areas/', 'Areas We Serve', [
+    ['/areas/', 'All areas'],
+    ...communities.filter((c) => c.published).map((c): [string, string] => [areaUrl(c), c.name]),
+  ]],
+  ['/our-process/', 'Our Process', []],
+  ['/financing/', 'Resources', [
+    ['/financing/', 'Financing'],
+    ['/#faq', 'FAQ'],
+    ['/gallery/', 'Gallery'],
+    ['/about/', 'About'],
+  ]],
+  ['/contact/', 'Contact', []],
 ];
 ---
 <!doctype html>
@@ -35,12 +63,11 @@ const nav = [
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
   {image && <meta property="og:image" content={new URL(image, site.url).href} />}
-  <meta name="theme-color" content="#15302A" />
+  <meta name="theme-color" content="#0B3A06" />
   <link rel="icon" href="/favicon.webp" type="image/webp" />
+  <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="sitemap" href="/sitemap.xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   <!-- Vercel Web Analytics: cookieless page views. Enable it in Vercel > Project > Analytics. -->
@@ -52,16 +79,24 @@ const nav = [
     <strong>{offer.downPayment} down</strong> for first-time buyers <span aria-hidden="true">·</span> <strong>Save up to {usd(offer.earlyCredit)}</strong> early-buyer credit <span class="go">See details →</span>
   </a>
   <header class="nav">
-    <a href="/" class="logo" aria-label="Aspen II Homes, home"><Image src={logo} alt="" width={34} height={34} class="mark" loading="eager" />Aspen <em>II</em> Homes</a>
-    <nav aria-label="Main">
-      {nav.map(([href, label]) => <a href={href} aria-current={path === href ? 'page' : undefined}>{label}</a>)}
+    <a href="/" class="logo" aria-label="Aspen II Homes, home"><Image src={logoMark} alt="" height={44} class="mark" loading="eager" /><Image src={logoWord} alt="" height={26} class="word" loading="eager" /></a>
+    <nav aria-label="Main" class="main-nav">
+      {nav.map(([href, label, items]) => (
+        <div class="dd">
+          <a href={href} class="top" aria-current={(href === path || items.some(([h]) => h === path)) ? 'page' : undefined}>{label}</a>
+          {items.length > 0 && <div class="panel">{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>}
+        </div>
+      ))}
     </nav>
-    <a class="btn btn-sm nav-call" href={site.phoneHref}>{site.phone}</a>
+    <a class="btn btn-sm nav-cta" href="/contact/?interest=tour#form">Schedule a Tour</a>
     <details class="menu">
       <summary class="mono" aria-label="Menu">Menu</summary>
       <nav aria-label="Mobile">
-        {nav.map(([href, label]) => <a href={href}>{label}</a>)}
-        <a href={site.phoneHref}>Call {site.phone}</a>
+        <a href="/contact/?interest=tour#form" class="cml-m">Schedule a Tour</a>
+        {nav.map(([href, label, items]) => (items.length
+          ? <div class="group"><p class="mono">{label}</p>{items.map(([h, l]) => <a href={h}>{l}</a>)}</div>
+          : <a href={href} class="solo">{label}</a>))}
+        <a href={site.phoneHref} class="call">Call {site.phone}</a>
       </nav>
     </details>
   </header>
@@ -71,19 +106,19 @@ const nav = [
   <footer class="footer">
     <div class="wrap footer-grid">
       <div>
-        <p class="logo">Aspen <em>II</em> Homes</p>
+        <p class="logo-badge"><Image src={logoFull} alt="Aspen II Homes, Tehachapi, CA" width={220} /></p>
         <p class="muted">{site.tagline}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
         <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}</p>
       </div>
       <div>
         <p class="mono head">Floor plans</p>
-        <ul>{plans.map((p) => <li><a href={`/${p.slug}/`}>{p.name}</a></li>)}</ul>
+        <ul>{plans.map((p) => <li><a href={planUrl(p)}>{p.name}</a></li>)}</ul>
       </div>
       <div>
-        <p class="mono head">Communities</p>
-        <ul>{communities.map((c) => <li><a href={`/${c.slug}/`}>{c.name}</a></li>)}</ul>
+        <p class="mono head">Areas we serve</p>
+        <ul>{communities.filter((c) => c.published).map((c) => <li><a href={areaUrl(c)}>{c.name}</a></li>)}<li><a href="/areas/">All areas we serve</a></li></ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/financing/">Financing & incentives</a></li><li><a href="/heroes-of-the-nation/">Heroes of the Nation</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/privacy/">Privacy notice</a></li></ul>
+        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
@@ -95,8 +130,8 @@ const nav = [
 
   <div class="mobile-bar" aria-label="Quick contact">
     <a href={site.phoneHref}>Call</a>
-    <a href={site.sms()}>Text</a>
-    <a href="/contact-us/" class="primary">Schedule a tour</a>
+    <a href="/contact/">Contact</a>
+    <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
   </div>
   <SpeedInsights />
 </body>
@@ -104,13 +139,15 @@ const nav = [
 
 <style is:global>
   :root {
-    --ink: #15302A; --ink-rgb: 21 48 42; --ink-2: #1E4238; --bone: #F7F2E8; --bone-rgb: 247 242 232;
-    --bg: #F0E7D6; --paper: #FBF8F1; --sand: #E4D5BC; --sand-2: #DFE6D8;
-    --clay: #2A6150; --clay-hover: #1F4C3E; --gold: #C9A24E; --sage: #6E8263; --muted: #5E594D; --on-dark-muted: #B8C3B5;
+    /* Brand palette sampled from the logo: forest #064101 → olive #505C01 wordmark, russet #681E00 → amber #C88A00 roof. */
+    --ink: #10280B; --ink-rgb: 16 40 11; --ink-2: #1B3A10; --bone: #F8F3E7; --bone-rgb: 248 243 231;
+    --bg: #F2E9D6; --paper: #FCF9F1; --sand: #E8D7B5; --sand-2: #E4E8D2;
+    --clay: #0E4A06; --clay-hover: #073602; --gold: #C98A00; --gold-hover: #DDA11E; --rust: #7A3300; --olive: #505C01; --sage: #5E6B1E; --muted: #5C5546; --on-dark-muted: #C3C9AE;
+    --roof: linear-gradient(180deg, #681E00, #C88A00);
     --line: rgb(var(--ink-rgb) / .14);
     /* Faint topographic contour lines: dark on light sections, light on dark ones. */
-    --topo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' fill='none' stroke='%2315302A' stroke-opacity='.07' stroke-width='1.2'%3E%3Cpath d='M0 30C80 0 140 70 240 40S400 0 480 30'/%3E%3Cpath d='M0 90C90 60 150 130 250 100S410 60 480 90'/%3E%3Cpath d='M0 150C70 120 170 190 260 150S420 120 480 150'/%3E%3Cpath d='M0 210C100 180 160 250 240 215S400 180 480 210'/%3E%3Cpath d='M0 275C80 240 150 310 250 280S410 245 480 275'/%3E%3Cpath d='M0 340C90 305 170 375 260 340S420 310 480 340'/%3E%3Cpath d='M0 405C70 370 160 440 250 405S400 375 480 405'/%3E%3Cpath d='M0 465C90 435 150 500 240 470S410 435 480 465'/%3E%3C/svg%3E");
-    --topo-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' fill='none' stroke='%23F7F2E8' stroke-opacity='.06' stroke-width='1.2'%3E%3Cpath d='M0 30C80 0 140 70 240 40S400 0 480 30'/%3E%3Cpath d='M0 90C90 60 150 130 250 100S410 60 480 90'/%3E%3Cpath d='M0 150C70 120 170 190 260 150S420 120 480 150'/%3E%3Cpath d='M0 210C100 180 160 250 240 215S400 180 480 210'/%3E%3Cpath d='M0 275C80 240 150 310 250 280S410 245 480 275'/%3E%3Cpath d='M0 340C90 305 170 375 260 340S420 310 480 340'/%3E%3Cpath d='M0 405C70 370 160 440 250 405S400 375 480 405'/%3E%3Cpath d='M0 465C90 435 150 500 240 470S410 435 480 465'/%3E%3C/svg%3E");
+    --topo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' fill='none' stroke='%2310280B' stroke-opacity='.07' stroke-width='1.2'%3E%3Cpath d='M0 30C80 0 140 70 240 40S400 0 480 30'/%3E%3Cpath d='M0 90C90 60 150 130 250 100S410 60 480 90'/%3E%3Cpath d='M0 150C70 120 170 190 260 150S420 120 480 150'/%3E%3Cpath d='M0 210C100 180 160 250 240 215S400 180 480 210'/%3E%3Cpath d='M0 275C80 240 150 310 250 280S410 245 480 275'/%3E%3Cpath d='M0 340C90 305 170 375 260 340S420 310 480 340'/%3E%3Cpath d='M0 405C70 370 160 440 250 405S400 375 480 405'/%3E%3Cpath d='M0 465C90 435 150 500 240 470S410 435 480 465'/%3E%3C/svg%3E");
+    --topo-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480' fill='none' stroke='%23F8F3E7' stroke-opacity='.06' stroke-width='1.2'%3E%3Cpath d='M0 30C80 0 140 70 240 40S400 0 480 30'/%3E%3Cpath d='M0 90C90 60 150 130 250 100S410 60 480 90'/%3E%3Cpath d='M0 150C70 120 170 190 260 150S420 120 480 150'/%3E%3Cpath d='M0 210C100 180 160 250 240 215S400 180 480 210'/%3E%3Cpath d='M0 275C80 240 150 310 250 280S410 245 480 275'/%3E%3Cpath d='M0 340C90 305 170 375 260 340S420 310 480 340'/%3E%3Cpath d='M0 405C70 370 160 440 250 405S400 375 480 405'/%3E%3Cpath d='M0 465C90 435 150 500 240 470S410 435 480 465'/%3E%3C/svg%3E");
     --display: "Gloock", serif; --serif: "Source Serif 4", Georgia, serif; --mono: "IBM Plex Mono", monospace;
     --max: 1260px; --gutter: clamp(16px, 4vw, 36px); --ease: cubic-bezier(.2,.7,.35,1);
   }
@@ -128,12 +165,12 @@ const nav = [
   .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
   .section { padding: clamp(64px, 10vw, 120px) 0; }
   .eyebrow, .mono { font-family: var(--mono); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
-  .eyebrow { color: var(--clay); margin: 0 0 1rem; }
+  .eyebrow { color: var(--rust); margin: 0 0 1rem; }
   .muted { color: var(--muted); }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5em; background: var(--gold); color: var(--ink); text-decoration: none; border: 0; cursor: pointer;
          font: 500 .82rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 1em 1.6em; border-radius: 2px;
          transition: background .25s var(--ease), transform .25s var(--ease); }
-  .btn:hover { background: #B58E3E; transform: translateY(-2px); }
+  .btn:hover { background: var(--gold-hover); transform: translateY(-2px); }
   .btn-green, .nav-call { background: var(--clay); color: var(--bone); }
   .btn-green:hover, .nav-call:hover { background: var(--clay-hover); }
   .btn-ghost { background: transparent; border: 1px solid currentColor; color: inherit; }
@@ -145,17 +182,30 @@ const nav = [
 
   .nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
          padding: .85rem var(--gutter); background: rgb(var(--bone-rgb) / .92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-  .nav nav { display: flex; gap: 1.8rem; }
-  .nav nav a { text-decoration: none; font: .74rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-  .nav nav a:hover, .nav nav a[aria-current] { color: var(--clay); }
+  .main-nav { display: flex; gap: 1.2rem; }
+  .nav-cta { white-space: nowrap; }
+  .nav .menu .solo { border-bottom: 1px solid var(--line); }
+  .nav .menu .cml-m { background: var(--gold); font: 500 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+  .dd { position: relative; }
+  .dd .top { display: block; padding: .5rem 0; text-decoration: none; font: .72rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+  .dd .top:hover, .dd .top[aria-current] { color: var(--clay); }
+  .dd .panel { position: absolute; left: -1rem; top: 100%; min-width: 240px; display: none; flex-direction: column; background: var(--paper);
+               border: 1px solid var(--line); box-shadow: 0 16px 40px rgb(var(--ink-rgb) / .15); padding: .4rem 0; z-index: 30; }
+  .dd:hover .panel, .dd:focus-within .panel { display: flex; }
+  .dd .panel a { padding: .6rem 1rem; text-decoration: none; font-size: .95rem; }
+  .dd .panel a:hover, .dd .panel a:focus-visible { background: var(--sand-2); color: var(--clay); }
   .logo { font-family: var(--display); font-size: 1.45rem; text-decoration: none; margin: 0; white-space: nowrap; display: inline-flex; align-items: center; gap: .55rem; }
-  .logo .mark { width: 34px; height: 34px; border-radius: 4px; }
-  .logo em { font-weight: 700; letter-spacing: -.04em; }
+  .logo { gap: .6rem; }
+  .logo .mark { height: 44px; width: auto; }
+  .logo .word { height: 26px; width: auto; }
+  @media (max-width: 420px) { .logo .mark { height: 36px; } .logo .word { height: 21px; } }
+  .logo-badge { display: inline-block; background: var(--paper); padding: 1rem 1.2rem; border-radius: 4px; margin: 0 0 1.2rem; border-top: 4px solid; border-image: var(--roof) 1; }
+  .logo-badge img { width: 220px; height: auto; }
   .footer em { color: var(--gold); }
   .promo { display: block; background: var(--gold); color: var(--ink); text-align: center; text-decoration: none; padding: .55rem var(--gutter); font: .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .promo strong { font-weight: 500; }
   .promo .go { margin-left: .8rem; border-bottom: 1px solid currentColor; }
-  .promo:hover { background: #B58E3E; }
+  .promo:hover { background: var(--gold-hover); }
   @media (max-width: 600px) { .promo .go { display: none; } }
   .fine p { margin: 0 0 .7rem; }
   .eho { font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; border: 1px solid var(--on-dark-muted); padding: .15em .5em; margin-right: .6rem; }
@@ -163,11 +213,14 @@ const nav = [
   .menu summary { list-style: none; cursor: pointer; border: 1px solid var(--ink); padding: .55em 1em; font-size: .72rem; }
   .menu summary::-webkit-details-marker { display: none; }
   .menu[open] summary { background: var(--ink); color: var(--bone); }
-  .nav .menu nav { display: flex; flex-direction: column; gap: 0; position: absolute; right: 0; top: calc(100% + 10px); min-width: 230px;
+  .nav .menu nav { display: flex; flex-direction: column; gap: 0; position: absolute; right: 0; top: calc(100% + 10px); min-width: 260px; max-height: 75vh; overflow-y: auto;
                    background: var(--bone); border: 1px solid var(--line); box-shadow: 0 16px 40px rgb(var(--ink-rgb) / .15); }
-  .nav .menu nav a { padding: 1rem 1.2rem; border-bottom: 1px solid var(--line); font-size: .78rem; }
-  @media (max-width: 900px) { .nav > nav { display: none; } .menu { display: block; } }
-  @media (max-width: 480px) { .nav-call { display: none; } }
+  .nav .menu nav a { display: block; padding: .75rem 1.2rem; text-decoration: none; font-size: 1rem; }
+  .nav .menu .group { border-bottom: 1px solid var(--line); padding: .4rem 0; }
+  .nav .menu .group p { margin: .6rem 1.2rem .2rem; font-size: .66rem; color: var(--muted); }
+  .nav .menu .call { font: 500 .78rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 1rem 1.2rem; }
+  @media (max-width: 1180px) { .nav > nav { display: none; } .menu { display: block; } }
+  @media (max-width: 480px) { .nav-cta { display: none; } }
 
   .footer { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--sand); padding: 72px 0 110px; }
   .footer a { text-decoration: none; } .footer a:hover { color: var(--gold); }

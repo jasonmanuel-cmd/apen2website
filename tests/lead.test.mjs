@@ -24,6 +24,10 @@ assert.equal(sent.from, 'Aspen II Homes <onboarding@resend.dev>');
 assert.deepEqual(sent.to, ['Aspen2homes@gmail.com']);
 assert.equal(sent.reply_to, 'buyer@example.com');
 assert.ok(sent.html.includes('Test &lt;b&gt;Buyer&lt;/b&gt;') && !sent.html.includes('<b>Buyer'));
+// Routing tags and optional fields reach the email.
+r = await run({ ...lead, timeline: 'Reserve & customize a Sunset Retreat home', military: 'yes', budget: '$400K to $500K' });
+assert.ok(sent.subject.startsWith('[New Lead][Sunset Retreat][Military/VA] Test'));
+assert.ok(sent.html.includes('$400K to $500K'));
 // 4. key set, Resend fails: visitor told to call
 globalThis.fetch = async () => ({ ok: false, status: 403, text: async () => 'forbidden' });
 r = await run(lead); assert.equal(r.code, 502);
@@ -41,6 +45,12 @@ const hdrs = {}; let code;
 await handler({ method: 'OPTIONS' }, { setHeader(k, v) { hdrs[k] = v; }, status(c) { code = c; return this; }, json() { return this; }, end() { return this; } });
 assert.equal(code, 405); assert.equal(Object.keys(hdrs).length, 0);
 
+// Several recipients: each gets its own email; one rejected address doesn't block the rest.
+process.env.NOTIFICATION_EMAIL = 'owner@example.com, partner@example.com';
+const tos = []; globalThis.fetch = async (_u, o) => { const t = JSON.parse(o.body).to[0]; tos.push(t); return { ok: t === 'owner@example.com', status: 403, text: async () => 'test sender' }; };
+r = await run(lead); assert.equal(r.code, 200); assert.deepEqual(tos.sort(), ['owner@example.com', 'partner@example.com']);
+delete process.env.NOTIFICATION_EMAIL;
+
 // Plain HTML form post (no JavaScript): success redirects to the thank-you page, failure returns a readable page.
 const FORM = { 'content-type': 'application/x-www-form-urlencoded' };
 globalThis.fetch = async () => ({ ok: true });
@@ -48,4 +58,4 @@ r = await run(lead, FORM); assert.equal(r.code, 303); assert.equal(r.headers.Loc
 r = await run({ name: 'x' }, FORM); assert.equal(r.code, 400); assert.ok(r.html.includes('(661) 238-3136'));
 r = await run({ ...lead, honeypot: 'bot' }, FORM); assert.equal(r.code, 303);
 
-log('ALL LEAD TESTS PASSED (15 cases)');
+log('ALL LEAD TESTS PASSED (17 cases)');

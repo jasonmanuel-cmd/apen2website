@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PlanCard from '../components/PlanCard.astro';
+import { site, plans, sqftRange } from '../data/site';
+import { breadcrumb, webPage } from '../data/schema';
+
+const path = '/semi-custom-homes/';
+const title = `Semi-Custom Homes in Tehachapi | ${site.name}`;
+const description = `Start from one of six ${site.name} floor plans (${sqftRange()} sq ft) and choose finishes such as flooring, paint colors and cabinetry. Tehachapi and eastern Kern County.`;
+const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['Semi-custom homes', path]])];
+---
+<Layout title={title} description={description} schema={schema}>
+  <section class="section wrap">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Semi-custom homes</span></nav>
+    <p class="eyebrow">Semi-custom homes</p>
+    <h1>Semi-Custom Homes: a Proven Plan, <em>Your Finishes</em></h1>
+    <p class="lede">Pick one of six floor plans, {sqftRange()} sq ft, and personalize the details that matter most. A guided path to a brand-new home without designing from a blank page.</p>
+  </section>
+
+  <section class="section opts">
+    <div class="wrap two">
+      <div>
+        <h2>What you can <em>choose.</em></h2>
+        <ul class="list">
+          <li>Flooring</li>
+          <li>Paint colors</li>
+          <li>Cabinetry</li>
+          <li>Kitchen layout details on plans that allow it, such as Enchanted Haven</li>
+        </ul>
+        <p class="muted">We confirm the full list of choices for your plan and homesite during your consultation.</p>
+      </div>
+      <div>
+        <h2>The <em>limits.</em></h2>
+        <ul class="list">
+          <li>Available choices depend on the plan and the construction stage. Earlier means more options.</li>
+          <li>Structural changes are discussed case by case and may change price and timing.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <p class="eyebrow">Start from a plan</p>
+    <h2>Six plans, <em>made yours.</em></h2>
+    <div class="grid">{plans.map((p) => <PlanCard plan={p} />)}</div>
+    <p class="ctas"><a class="btn" href="/contact/?interest=semi#form">Request a design consultation</a><a class="btn btn-ghost" href="/our-process/">See the process</a></p>
+  </section>
+</Layout>
+
+<style>
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  h1 { font-size: clamp(2.3rem, 5.5vw, 4.4rem); max-width: 20ch; }
+  .lede { max-width: 60ch; font-size: 1.15rem; color: var(--muted); }
+  .opts { background: var(--sand-2); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 5rem); }
+  @media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+  .list { padding-left: 1.2rem; } .list li { margin: .5rem 0; } .list a { color: var(--clay); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin: 2rem 0; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
+</style>
