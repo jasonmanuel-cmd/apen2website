@@ -20,8 +20,9 @@ const sr = plan.slug === 'sunset-retreat';
 const label = sr ? `${plan.name} Model` : plan.name;
 const story = plan.stories === 2 ? 'two-story' : 'single-story';
 const spec = `${plan.sqft.toLocaleString()} Sq Ft, ${plan.beds} Bed, ${plan.baths} Bath`;
-const title = `${label} | ${plan.sqft.toLocaleString()} Sq Ft ${plan.beds}-Bed New Home Plan | ${site.name}`;
-const description = `${label}: ${plan.sqft.toLocaleString()} sq ft, ${plan.beds} bed, ${plan.baths} bath ${story} new home plan${plan.price ? ` from ${usd(plan.price)}` : ''} by ${site.name}, Tehachapi & eastern Kern County. Photos, floor plan PDF, availability.`;
+const baseTitle = `${plan.name} Floor Plan | ${plan.sqft.toLocaleString()} Sq Ft`;
+const title = baseTitle.length + site.name.length + 3 <= 60 ? `${baseTitle} | ${site.name}` : baseTitle;
+const description = `${plan.name} floor plan: ${plan.sqft.toLocaleString()} sq ft, ${plan.beds} bed, ${plan.baths} bath ${story}${plan.price ? ` from ${usd(plan.price)}` : ''}. Built by ${site.name} in Tehachapi, CA. Photos, PDF and availability.`;
 const facts = [
   ['Living area', `${plan.sqft.toLocaleString()} sf`],
   ['Bedrooms', plan.beds],

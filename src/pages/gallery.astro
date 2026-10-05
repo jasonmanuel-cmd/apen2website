@@ -5,7 +5,7 @@ import { site, plans, photos, planUrl } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/gallery/';
-const title = `Home Photo Gallery | ${site.name}`;
+const title = `New Home Photos & Renderings | ${site.name}`;
 const description = `Photos and artist renderings of ${site.name} floor plans, labeled by model, with links to each plan's specs and floor plan.`;
 const sets = plans.map((p) => ({ p, imgs: photos(p.folder), name: p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name })).filter((x) => x.imgs.length);
 const schema = [webPage(path, title, description, { '@type': 'CollectionPage' }), breadcrumb([['Home', '/'], ['Gallery', path]])];
@@ -14,7 +14,7 @@ const schema = [webPage(path, title, description, { '@type': 'CollectionPage' })
   <section class="section wrap">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Gallery</span></nav>
     <p class="eyebrow">Gallery</p>
-    <h1>Inside the <em>floor plans.</em></h1>
+    <h1>New Home Photos: <em>Inside the Floor Plans</em></h1>
     <p class="lede">Every set is labeled by model. Artist renderings are marked and may differ from completed construction.</p>
   </section>
   {sets.map(({ p, imgs, name }) => (

@@ -18,7 +18,7 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
 const org = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: site.name, url: site.url, logo: `${site.url}/logo.png`, telephone: site.phone, email: site.email,
+  name: site.name, url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `From ${usd(offer.from)}`, telephone: site.phone, email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
   areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
@@ -59,7 +59,9 @@ const nav: [string, string, [string, string][]][] = [
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
-  {image && <meta property="og:image" content={new URL(image, site.url).href} />}
+  <meta property="og:image" content={new URL(image ?? '/og-default.png', site.url).href} />
+  <meta property="og:site_name" content={site.name} />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#0B3A06" />
   <link rel="icon" href="/favicon.webp" type="image/webp" />
   <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
@@ -159,7 +161,7 @@ const nav: [string, string, [string, string][]][] = [
   p { text-wrap: pretty; }
   em { font-style: italic; color: var(--clay); }
   .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
-  .section { padding: clamp(64px, 10vw, 120px) 0; }
+  .section { padding-block: clamp(64px, 10vw, 120px); }
   .eyebrow, .mono { font-family: var(--mono); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
   .eyebrow { color: var(--rust); margin: 0 0 1rem; }
   .muted { color: var(--muted); }

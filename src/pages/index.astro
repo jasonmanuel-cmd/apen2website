@@ -43,7 +43,7 @@ const steps = [
 const faqSchema = faqPage(faq);
 ---
 <Layout
-  title={`New Homes in Tehachapi from ${usd(offer.from)} | ${site.name}`}
+  title={`Tehachapi Home Builder: New Homes $${Math.round(offer.from / 1000)}K+ | ${site.name}`}
   description={`New homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down for first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings.`}
   image={og.src}
   schema={faqSchema}

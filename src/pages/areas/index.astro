@@ -4,8 +4,8 @@ import { site, communities, serviceAreaNames, areaUrl, offer, usd } from '../../
 import { breadcrumb, webPage } from '../../data/schema';
 
 const path = '/areas/';
-const title = `Areas We Serve | ${site.name}`;
-const description = `${site.name} builds in Tehachapi, home of the Sunset Retreat release, and takes inquiries from buyers across eastern Kern County. Ask us to confirm availability in your area.`;
+const title = `Areas We Serve in Eastern Kern County | ${site.name}`;
+const description = `${site.name} builds in Tehachapi, home of Sunset Retreat, and works with buyers across eastern Kern County. Ask us about availability in your area.`;
 const published = communities.filter((c) => c.published);
 const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['Areas we serve', path]])];
 ---
@@ -13,7 +13,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
   <section class="section wrap">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Areas we serve</span></nav>
     <p class="eyebrow">Areas we serve</p>
-    <h1>Where Aspen II Homes <em>builds.</em></h1>
+    <h1>Areas We Serve in <em>Eastern Kern County</em></h1>
     <p class="lede">We're based in Tehachapi, home of our current <a href="/available-homes/">{offer.community} release</a> from {usd(offer.from)}. We also take inquiries from buyers in nearby communities; availability is confirmed case by case.</p>
   </section>
 

@@ -11,8 +11,8 @@ const model = plans.find((p) => p.slug === 'sunset-retreat')!;
 const imgs = photos(model.folder);
 const og = imgs[0] ? (await getImage({ src: imgs[0].src, width: 1200, format: 'jpg' })).src : undefined;
 const path = '/available-homes/';
-const title = `Sunset Retreat: New Homes in Tehachapi, CA From ${usd(offer.from)} | ${site.name}`;
-const description = `Sunset Retreat is ${site.name}' current release in Tehachapi, CA. First release from ${usd(offer.from)}: the ${model.sqft.toLocaleString()} sq ft Sunset Retreat model, ${model.beds} bed, ${model.baths} bath. Home 1 and Home 2 reserving.`;
+const title = `Sunset Retreat Homes for Sale in Tehachapi | ${site.name}`;
+const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString()} sq ft, ${model.beds} bed, ${model.baths} bath single-story homes from ${usd(offer.from)}. Home 1 and Home 2 now reserving.`;
 const qa: [string, string][] = [
   ['What is Sunset Retreat?', `Sunset Retreat is ${site.name}' current new-home release in Tehachapi, California. The first release homes are the Sunset Retreat model: ${model.sqft.toLocaleString()} sq ft, ${model.beds} bedrooms, ${model.baths} bathrooms, single-story.`],
   ['How much do Sunset Retreat homes cost?', `The first release starts at ${usd(offer.from)}. Ask us what the starting price includes. Pricing and availability are subject to change.`],
