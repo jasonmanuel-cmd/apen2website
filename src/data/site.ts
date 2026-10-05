@@ -13,6 +13,8 @@ export const site = {
   email: 'Aspen2homes@gmail.com',
   address: '785 Tucker Road G295, Tehachapi, CA 93561',
   followUp: 'within 30 minutes during business hours',
+  // Owner-confirmed 2026-10-05; matches the Google Business Profile.
+  hours: 'Open daily, 7:00 AM – 7:00 PM',
   license: 'CSLB #1004058', // Owner-confirmed 2026-10-05 (also on the logo). Shows in footer, trust bar, About, Contact and schema.
   // Month the prices, availability and incentives below were last confirmed. Update it whenever you re-check them.
   verified: 'September 2026',
@@ -197,7 +199,7 @@ export const communities: Community[] = [
 
 // [question, answer, page with the full answer]
 export const faq: [string, string, string][] = [
-  ['Where does Aspen II Homes build?', 'Our current release is Sunset Retreat in Tehachapi. We also serve buyers in Golden Hills, Bear Valley Springs, Stallion Springs, California City and Ridgecrest. Contact us to confirm current lot availability and construction status.', '/areas/'],
+  ['Where does Aspen II Homes build?', 'Our current release is Sunset Retreat in Tehachapi. We also serve buyers in Golden Hills, Bear Valley Springs, Stallion Springs, Cummings Valley, California City, Mojave and Ridgecrest. Contact us to confirm current lot availability and construction status.', '/areas/'],
   ['How much do the new homes cost?', 'The Sunset Retreat first release starts at $459,000. Pricing for other models depends on the home, lot, design, finishes and options. Ask us for a current quote.', '/available-homes/'],
   ['Which home models can I choose from?', 'Six: Tranquil Oasis, Sunset Retreat, The Tranquil Abode, Sunrise View Residence, Enchanted Haven and The Grand Haven, from 1,507 to 2,348 sq ft. Each model page has photos and a downloadable blueprint.', '/floor-plans/'],
   ['Can I customize my new home?', 'Yes. Reserve a Sunset Retreat home and choose your finishes, or pick one of six semi-custom models. Available choices depend on the model and construction stage.', '/our-process/'],
@@ -212,7 +214,8 @@ export const disclaimer = 'Renderings are artist concepts and may differ from co
 export const planUrl = (p: { slug: string }) => `/floor-plans/${p.slug}/`;
 export const areaUrl = (c: Community) => (c.published ? `/areas/${c.area}/` : '/areas/');
 // Every area name the business takes inquiries from (shown on /areas/ without separate pages until confirmed).
-export const serviceAreaNames = ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'];
+// Owner-confirmed 2026-10-05 (matches the Google Business Profile service area).
+export const serviceAreaNames = ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'Cummings Valley', 'California City', 'Mojave', 'Ridgecrest'];
 
 export const usd = (n: number) => '$' + n.toLocaleString('en-US');
 // "the Sunset Retreat" but "The Grand Haven", never "the The Grand Haven".

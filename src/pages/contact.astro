@@ -33,6 +33,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
           <div><dt class="mono">Text</dt><dd><a href={site.sms()}>Text HOMES</a></dd></div>
           <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
           <div><dt class="mono">Address</dt><dd>{site.address}</dd></div>
+          <div><dt class="mono">Hours</dt><dd>{site.hours}</dd></div>
           {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
         </dl>
         <p class="mono serving">Serving {communities.map((c) => c.name).join(' · ')}</p>

@@ -11,7 +11,7 @@ import '@fontsource/source-serif-4/latin-400-italic.css';
 import '@fontsource/source-serif-4/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
-import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl } from '../data/site';
+import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl, serviceAreaNames } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
@@ -21,7 +21,8 @@ const org = {
   name: site.name, url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `From ${usd(offer.from)}`, telephone: site.phone, email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
-  areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
+  areaServed: serviceAreaNames,
+  openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '07:00', closes: '19:00' }],
 };
 const path = Astro.url.pathname;
 // Spec §04 navigation, minus Build on Your Lot (owner decision D12: spec and semi-custom homes only).
@@ -108,7 +109,7 @@ const nav: [string, string, [string, string][]][] = [
       <div>
         <p class="logo-badge"><Image src={logoFull} alt="Aspen II Homes, Tehachapi, CA" width={220} /></p>
         <p class="muted">{site.tagline}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
-        <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}</p>
+        <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}<br />{site.hours}</p>
       </div>
       <div>
         <p class="mono head">Floor plans</p>
