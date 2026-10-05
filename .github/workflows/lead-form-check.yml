@@ -1,0 +1,29 @@
+name: Live lead form check
+on:
+  push:
+    branches: [test/lead-form-check]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Live site checks
+        run: |
+          set -u
+          echo "== apex homepage =="
+          curl -sS -o home.html -w "status %{http_code}\n" https://aspen2homes.com/
+          grep -c "CSLB #1004058" home.html | sed 's/^/license mentions: /'
+          grep -o 'logo-mark[^"]*' home.html | head -1 | sed 's/^/logo asset: /'
+          grep -o '<link rel="canonical" href="[^"]*"' home.html
+          echo "== www redirect =="
+          curl -sS -o /dev/null -w "%{http_code} -> %{redirect_url}\n" https://www.aspen2homes.com/
+          echo "== old URL redirect =="
+          curl -sS -o /dev/null -w "%{http_code} -> %{redirect_url}\n" https://aspen2homes.com/heroes-of-the-nation
+          echo "== contact page =="
+          curl -sS -o /dev/null -w "%{http_code}\n" https://aspen2homes.com/contact/
+      - name: Submit test lead (JSON, same as the site's form)
+        run: |
+          curl -sS -X POST https://aspen2homes.com/api/lead \
+            -H 'Content-Type: application/json' \
+            -H 'Origin: https://aspen2homes.com' \
+            -d '{"name":"TEST - Jason (automated form check)","phone":"(661) 000-0000","email":"","timeline":"Schedule a tour","notes":"Automated end-to-end test of the website contact form. Please ignore.","source":"Website test","honeypot":""}' \
+            -w "\nHTTP %{http_code}\n"
