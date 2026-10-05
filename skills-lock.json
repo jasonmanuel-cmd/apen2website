@@ -1,11 +1,29 @@
 {
   "version": 1,
   "skills": {
+    "ai-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-seo/SKILL.md",
+      "computedHash": "6b2adec43ada5ebf3793b0cbadc72f9b4ce84f62daf70da7b28d7a9a4a2703fb"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "913b9d37d0d54047dd65222bb8c67b2bf04e3cb87dcad1729068d7a8b2c8c396"
+    },
+    "seo-audit": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "skillPath": "skills/seo-audit/SKILL.md",
+      "computedHash": "01f9f8a3feb3ea69c6c212d61189c610f96ef2cc363adc27fd314d78254bf6ae"
+    },
+    "seo-local": {
+      "source": "agricidaniel/claude-seo",
+      "sourceType": "github",
+      "skillPath": "skills/seo-local/SKILL.md",
+      "computedHash": "eb20ed34404e9a5840020627d0d0f8a758bf872ce570c3ce234cff198c710c11"
     }
   }
 }
