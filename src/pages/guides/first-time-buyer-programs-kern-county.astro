@@ -1,0 +1,71 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import { site, offer, usd } from '../../data/site';
+
+const path = '/guides/first-time-buyer-programs-kern-county/';
+const myhomeFha = usd(Math.round(offer.from * 0.035));
+const myhomeConv = usd(Math.round(offer.from * 0.03));
+const summary = [
+  'Most first-time buyers in Tehachapi pair a <strong>low-down-payment first loan</strong> (FHA, VA for veterans, or conventional) with <strong>state down payment help</strong> from CalHFA.',
+  `CalHFA <strong>MyHome</strong> lends up to <strong>3.5%</strong> of the price with an FHA loan or <strong>3%</strong> with a conventional loan, as a deferred-payment second loan. On a ${usd(offer.from)} home, that is up to about ${myhomeFha} (FHA) or ${myhomeConv} (conventional).`,
+  'CalHFA <strong>Dream For All</strong> gives up to <strong>20%, capped at $150,000</strong>, to first-time, first-generation buyers picked by random drawing. You repay it plus a share of the home\'s appreciation when you sell or refinance.',
+  'Veterans: a <strong>VA purchase loan needs no down payment</strong> when the price isn\'t above the appraised value, and has no mortgage insurance.',
+  `On top of loan programs, ${site.name} offers up to <strong>${usd(offer.earlyCredit)}</strong> in early-buyer savings at Sunset Retreat (terms apply).`,
+];
+const faq: [string, string][] = [
+  ['Do I have to be a first-time buyer for these programs?', 'MyHome and Dream For All require first-time buyers, and Dream For All also needs at least one first-generation buyer. VA and FHA loans do not require you to be a first-time buyer. Each program defines "first-time" its own way, so your lender confirms whether you qualify.'],
+  ['Is there an income limit?', 'Yes for the CalHFA programs. Limits are set by county and household, and Kern County has its own figures. A CalHFA-approved lender checks your household against the current limits.'],
+  ['Can I combine CalHFA help with the builder\'s early-buyer credit?', 'Often a builder credit and down payment assistance can be used together, but the lender and program rules decide how. Ask us and your lender to run the numbers together before you reserve.'],
+  ['Can I use a USDA loan in Tehachapi?', 'USDA home loans are limited to areas USDA designates as rural and to buyers under its income limits. Eligibility depends on the exact address, so check it with USDA\'s eligibility tool or ask your lender.'],
+  ['Do I need to take a homebuyer class?', 'CalHFA requires homebuyer education for its first-time buyer assistance. At least one first-time borrower on the loan completes an approved course.'],
+];
+const sources: [string, string][] = [
+  ['CalHFA: MyHome Assistance Program', 'https://cloud.calhfa.ca.gov/homebuyer/programs/myhome.htm'],
+  ['CalHFA: California Dream For All Shared Appreciation Loan', 'https://www.calhfa.ca.gov/dream/'],
+  ['U.S. Department of Veterans Affairs: VA purchase loan', 'https://www.va.gov/housing-assistance/home-loans/loan-types/purchase-loan/'],
+  ['USDA: property and income eligibility tool', 'https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do'],
+  [`${site.name}: financing and incentives`, `${site.url}/financing/`],
+];
+---
+<GuidePage path={path} crumb="First-time buyer programs"
+  title={`First-Time Buyer Programs in Kern County | ${site.name}`}
+  description={`How first-time buyers in Tehachapi and Kern County use CalHFA MyHome, Dream For All, VA and FHA loans to buy a new home, with real numbers.`}
+  h1="First-Time Home Buyer Programs" em="in Kern County, 2026" reviewed="October 2026" summary={summary} faq={faq} sources={sources}>
+
+  <h2>The programs at a glance</h2>
+  <table>
+    <thead><tr><th>Program</th><th>What you get</th><th>Who it's for</th><th>The catch</th></tr></thead>
+    <tbody>
+      <tr><td><strong>CalHFA MyHome</strong></td><td>Deferred-payment second loan: up to 3.5% of price (FHA) or 3% (conventional)</td><td>First-time buyers under CalHFA income limits</td><td>Used with a CalHFA first mortgage; homebuyer education required</td></tr>
+      <tr><td><strong>CalHFA Dream For All</strong></td><td>Up to 20% of price, max $150,000, for down payment or closing costs</td><td>First-time buyers; at least one first-generation buyer</td><td>Random drawing; repay the amount plus 20% of appreciation (15% if income is at or below 80% of area median)</td></tr>
+      <tr><td><strong>VA purchase loan</strong></td><td>No down payment if the price isn't above appraised value; no mortgage insurance</td><td>Eligible veterans and service members</td><td>A VA funding fee may apply</td></tr>
+      <tr><td><strong>FHA loan</strong></td><td>A low down payment first loan</td><td>Buyers with smaller savings or lighter credit history</td><td>Mortgage insurance is added to the payment</td></tr>
+      <tr><td><strong>USDA loan</strong></td><td>Home loans in areas USDA designates as rural</td><td>Buyers under USDA income limits</td><td>Depends on the exact address; check USDA's map</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What this looks like on a Sunset Retreat home</h2>
+  <p>Sunset Retreat homes start at {usd(offer.from)}. Here is the most the MyHome program could cover at that price. Your real amount depends on the appraisal, the loan type and the program's current terms.</p>
+  <table>
+    <thead><tr><th>Loan type</th><th>MyHome rate</th><th>Up to</th></tr></thead>
+    <tbody>
+      <tr><td>FHA first loan</td><td>3.5% of price</td><td>{myhomeFha}</td></tr>
+      <tr><td>Conventional first loan</td><td>3% of price</td><td>{myhomeConv}</td></tr>
+    </tbody>
+  </table>
+  <p class="callout">CalHFA's handbook may also set a dollar cap and exceptions to it. A CalHFA-approved lender gives you the exact figure for your purchase.</p>
+
+  <h2>How Dream For All works</h2>
+  <p>Dream For All is the largest help available, and also the hardest to get. Buyers register during an application window, and a randomized drawing picks who receives a voucher. It is not first come, first served. The 2026 portal closed on March 16, 2026; watch CalHFA's page for the next round.</p>
+  <p>It is a shared-appreciation loan, not a gift. When you sell, transfer the home or pay off the first mortgage, you repay what you borrowed plus a share of the increase in the home's value.</p>
+
+  <h2>Steps to get started</h2>
+  <ol>
+    <li><strong>Take a homebuyer education course</strong> if you'll use CalHFA help. One first-time borrower on the loan completes it.</li>
+    <li><strong>Talk to a CalHFA-approved lender.</strong> CalHFA programs are offered only through approved, trained loan officers.</li>
+    <li><strong>Get pre-approved</strong> so you know your price range and which programs fit.</li>
+    <li><strong>Tour the homes</strong> and compare floor plans.</li>
+    <li><strong>Reserve early.</strong> At Sunset Retreat, early buyers can apply up to {usd(offer.earlyCredit)} toward their home (terms apply).</li>
+  </ol>
+  <p>More on what we offer: <a href="/financing/">financing and incentives</a> · <a href="/available-homes/">Sunset Retreat availability</a>.</p>
+</GuidePage>

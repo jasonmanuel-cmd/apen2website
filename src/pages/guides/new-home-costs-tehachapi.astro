@@ -1,0 +1,81 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import { site, offer, usd } from '../../data/site';
+
+const path = '/guides/new-home-costs-tehachapi/';
+const perSqft = usd(Math.round(offer.from / offer.sqft));
+const exemption = 7000;
+const baseTax = usd(Math.round((offer.from - exemption) * 0.01));
+const summary = [
+  `A new Sunset Retreat home starts at <strong>${usd(offer.from)}</strong> for ${offer.sqft.toLocaleString()} sq ft, about <strong>${perSqft} per square foot</strong>.`,
+  'Beyond the price, budget for your <strong>down payment</strong>, <strong>closing costs</strong>, <strong>homeowners insurance</strong> and <strong>property tax</strong>.',
+  `California property tax is <strong>1% of assessed value</strong> plus voter-approved local bonds. After the $7,000 homeowners' exemption, the 1% base on a ${usd(offer.from)} home is about <strong>${baseTax} a year</strong>.`,
+  'Expect a <strong>supplemental tax bill</strong> after you buy a newly built home. It covers the jump from the land\'s old value to the finished home\'s value, and it is separate from your regular bill.',
+  'File for the <strong>homeowners\' exemption</strong> (form BOE-266) with the Kern County Assessor by <strong>February 15</strong> to get the full year\'s reduction.',
+];
+const faq: [string, string][] = [
+  ['Why did I get a second property tax bill?', 'That is the supplemental tax bill. When new construction is completed or a home changes owners, the Kern County Assessor reassesses it, and the change takes effect the first of the following month instead of waiting for the next annual bill. The supplemental bill covers that gap, in addition to the annual bill.'],
+  ['Does my mortgage payment cover the supplemental bill?', 'Not automatically. Supplemental bills are mailed to the assessed owner. Ask your lender whether your escrow account will pay them, and set money aside in case it won\'t.'],
+  ['How much will my property tax go up each year?', 'Under Proposition 13, the assessed value can rise by no more than 2% a year while you own the home, unless you add new construction. Voter-approved bond rates can change separately.'],
+  ['Is solar included on a new home?', 'California\'s energy code requires a solar photovoltaic system on newly built single-family homes, with some exceptions. Ask us how it applies to the home you are looking at.'],
+  ['Are there HOA dues?', 'It depends on the community. Ask us whether the home you are considering has HOA dues or any special tax district before you reserve.'],
+];
+const sources: [string, string][] = [
+  ['Kern County Treasurer-Tax Collector: supplemental taxes', 'https://www.kcttc.co.kern.ca.us/index.cfm?fuseaction=kcttcinternet.showSupplementalTaxes'],
+  ['Kern County Assessor-Recorder: supplemental assessments and tax bills', 'https://www.kerncounty.com/government/departments/assessor-recorder/property/supplemental-assessments-supplemental-tax-bills'],
+  ['California State Board of Equalization: homeowners\' exemption', 'https://boe.ca.gov/proptaxes/homeowners_exemption.htm'],
+  ['California Energy Commission: single-family solar PV requirements', 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards/energy-code-support-center/2022-0'],
+  [`${site.name}: Sunset Retreat availability`, `${site.url}/available-homes/`],
+];
+---
+<GuidePage path={path} crumb="New home costs"
+  title={`What a New Home in Tehachapi Costs | ${site.name}`}
+  description={`The real costs of buying a new home in Tehachapi: price per square foot, property tax, the supplemental tax bill and the homeowners' exemption, with examples.`}
+  h1="What a New Home in Tehachapi" em="Really Costs" reviewed="October 2026" summary={summary} faq={faq} sources={sources}>
+
+  <h2>The price</h2>
+  <p>Sunset Retreat is our current release in Tehachapi: {offer.sqft.toLocaleString()} sq ft, 3 bedrooms, 2 baths, single-story, from {usd(offer.from)}. That works out to about {perSqft} per square foot. Prices for our other floor plans depend on the homesite, finishes and options. See <a href="/floor-plans/">all floor plans</a>.</p>
+
+  <h2>Costs beyond the price</h2>
+  <table>
+    <thead><tr><th>Cost</th><th>When you pay</th><th>What to know</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Down payment</strong></td><td>At closing</td><td>Depends on your loan. Some programs lower it to little or nothing; see <a href="/guides/first-time-buyer-programs-kern-county/">first-time buyer programs</a>.</td></tr>
+      <tr><td><strong>Closing costs</strong></td><td>At closing</td><td>Lender, title and escrow fees. Your lender's Loan Estimate lists them. Ask us about closing-cost credits.</td></tr>
+      <tr><td><strong>Property tax</strong></td><td>Twice a year</td><td>1% of assessed value plus voter-approved bonds. Usually paid through your mortgage.</td></tr>
+      <tr><td><strong>Supplemental tax bill</strong></td><td>Once, after you buy</td><td>Covers the reassessment of a newly built home. Mailed to you; ask whether escrow pays it.</td></tr>
+      <tr><td><strong>Homeowners insurance</strong></td><td>Yearly or monthly</td><td>Your lender requires it. Get quotes early.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Property tax, with an example</h2>
+  <p>Proposition 13 limits California's property tax rate to 1% of assessed value, plus whatever local voters approved for bonds. A newly built home is assessed at its value when construction is completed or when it changes owners. After that, the assessed value can rise by no more than 2% a year.</p>
+  <table>
+    <thead><tr><th>Step</th><th>Amount</th></tr></thead>
+    <tbody>
+      <tr><td>Purchase price (assessed value)</td><td>{usd(offer.from)}</td></tr>
+      <tr><td>Minus homeowners' exemption</td><td>−{usd(exemption)}</td></tr>
+      <tr><td>Taxable value</td><td>{usd(offer.from - exemption)}</td></tr>
+      <tr><td><strong>1% base tax per year</strong></td><td><strong>{baseTax}</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="callout">Voter-approved bonds add to the 1% base, and the rate differs by location. Your title officer or the Kern County Treasurer-Tax Collector can tell you the full rate for a specific address.</p>
+
+  <h2>The supplemental tax bill</h2>
+  <p>This catches many new-home buyers off guard. When new construction is completed or a home changes owners, the Kern County Assessor reassesses it, and the new value takes effect on the first of the following month. You then receive one or more supplemental bills, in addition to the regular annual bill. Plan for it, and ask your lender whether escrow will pay it.</p>
+
+  <h2>Don't miss the homeowners' exemption</h2>
+  <p>If the home is your main residence, California takes $7,000 off its taxable value. File form BOE-266 with the Kern County Assessor once. To get the full exemption for a year, file by February 15. The home must be your main residence on January 1 of that year.</p>
+
+  <h2>New home or resale?</h2>
+  <table>
+    <thead><tr><th></th><th>New home</th><th>Resale home</th></tr></thead>
+    <tbody>
+      <tr><td>Energy code</td><td>Built to California's current energy code, which requires solar on new single-family homes (with exceptions)</td><td>Built to the code of its year</td></tr>
+      <tr><td>Finishes</td><td>You can often choose flooring, paint and cabinetry</td><td>What's there, unless you remodel</td></tr>
+      <tr><td>Warranty</td><td>New-home warranty from the builder; ask for the document</td><td>Usually none, unless you buy a home warranty</td></tr>
+      <tr><td>Property tax</td><td>Assessed at the new value, plus a supplemental bill</td><td>Reassessed at your purchase price, plus a supplemental bill</td></tr>
+      <tr><td>Move-in timing</td><td>Depends on build stage; Sunset Retreat estimated {offer.moveIn}</td><td>Set by the purchase contract and your loan</td></tr>
+    </tbody>
+  </table>
+</GuidePage>

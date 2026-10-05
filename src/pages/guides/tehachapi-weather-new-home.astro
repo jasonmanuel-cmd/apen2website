@@ -1,0 +1,63 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import { site } from '../../data/site';
+
+const path = '/guides/tehachapi-weather-new-home/';
+const summary = [
+  'Tehachapi sits at <strong>3,970 feet</strong> in the Tehachapi Mountains, about 35 miles east-southeast of Bakersfield on Highway 58.',
+  'It gets <strong>15 to 20 inches of snow</strong> in a typical winter, with winter temperatures from about <strong>29 to 52°F</strong>.',
+  'It is <strong>windy year-round</strong>; the area is home to about <strong>4,500 wind turbines</strong>.',
+  'A home here should be built for wind, snow, big day-to-night temperature swings and strong sun. Use the checklist below to compare any builder, including us.',
+];
+const faq: [string, string][] = [
+  ['Does it really snow in Tehachapi?', 'Yes. The city typically gets 15 to 20 inches of snow each winter, so roofs, driveways and walkways should be planned for snow and ice.'],
+  ['How windy is it?', 'Wind is a defining feature of Tehachapi, which is why thousands of wind turbines line the pass. Wind affects roofing, garage doors, windows, fencing and even where you put outdoor furniture.'],
+  ['Do new homes in California have to have solar?', 'California\'s energy code requires a solar photovoltaic system on newly built single-family homes, with some exceptions. At Tehachapi\'s elevation and sun, solar can make a real dent in power bills. Ask us how it applies to a specific home.'],
+  ['Where can I see how an Aspen II home is built?', 'Ask us for the spec sheet for the plan you like, and tour Sunset Retreat in person. We are glad to walk you through roofing, insulation, windows and heating and cooling.'],
+];
+const sources: [string, string][] = [
+  ['Wikipedia: Tehachapi, California (elevation, climate, snowfall, wind energy, location)', 'https://en.wikipedia.org/wiki/Tehachapi,_California'],
+  ['California Energy Commission: single-family solar PV requirements', 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards/energy-code-support-center/2022-0'],
+  [`${site.name}: floor plans`, `${site.url}/floor-plans/`],
+];
+---
+<GuidePage path={path} crumb="Tehachapi weather"
+  title={`New Homes Built for Tehachapi Weather | ${site.name}`}
+  description={`Tehachapi sits at 3,970 feet with snow, strong wind and big temperature swings. What that means for a new home, and what to ask any builder.`}
+  h1="Building a Home for" em="Tehachapi's Weather" reviewed="October 2026" summary={summary} faq={faq} sources={sources}>
+
+  <h2>Tehachapi's climate in numbers</h2>
+  <table>
+    <thead><tr><th>Measure</th><th>Tehachapi</th></tr></thead>
+    <tbody>
+      <tr><td>Elevation</td><td>3,970 ft</td></tr>
+      <tr><td>Typical snow per winter</td><td>15–20 in</td></tr>
+      <tr><td>Winter temperatures</td><td>About 29–52°F</td></tr>
+      <tr><td>Summer temperatures</td><td>About 58–88°F</td></tr>
+      <tr><td>Wind</td><td>Windy year-round; about 4,500 wind turbines in the area (2019)</td></tr>
+      <tr><td>Location</td><td>35 mi east-southeast of Bakersfield, 20 mi west of Mojave, on State Route 58</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What it means for a house</h2>
+  <h3>Wind</h3>
+  <p>Steady wind and strong gusts test roofing, garage doors, windows and exterior doors. Well-fastened roofing, sealed windows and solid weatherstripping keep out dust and drafts and cut noise.</p>
+  <h3>Snow and ice</h3>
+  <p>California's building code sets the snow loads a roof must carry for its location. Day to day, think about driveway slope, where snow slides off the roof, and covered entries that keep walkways safer when it freezes.</p>
+  <h3>Big temperature swings</h3>
+  <p>Cold nights and warm days make insulation, window quality and a properly sized heating and cooling system matter more here than in the valley. Together they decide your comfort and your power bills.</p>
+  <h3>Strong sun at elevation</h3>
+  <p>California's energy code requires solar on newly built single-family homes, with some exceptions. Shade on the west side, a covered patio and good attic ventilation help in summer.</p>
+
+  <h2>Questions to ask any builder</h2>
+  <ul class="checklist">
+    <li>What roofing do you use, and how is it fastened for wind?</li>
+    <li>What insulation goes in the walls and attic?</li>
+    <li>What windows and exterior doors do you install, and how are they sealed?</li>
+    <li>How is the heating and cooling system sized for this home?</li>
+    <li>Does this home have solar? If so, how big is the system and who owns it?</li>
+    <li>How does the driveway handle snow and ice, and where does roof snow land?</li>
+    <li>What does the new-home warranty cover, and for how long? Can I see the document?</li>
+  </ul>
+  <p>Ask us these same questions. We will answer them for the exact plan and homesite you are looking at. Start with the <a href="/floor-plans/sunset-retreat/">Sunset Retreat floor plan</a> or <a href="/floor-plans/">compare all six plans</a>.</p>
+</GuidePage>

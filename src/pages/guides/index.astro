@@ -1,0 +1,39 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { site } from '../../data/site';
+import { breadcrumb, webPage } from '../../data/schema';
+
+const path = '/guides/';
+const title = `New Home Buyer Guides for Tehachapi | ${site.name}`;
+const description = `Plain-English guides for buying a new home in Tehachapi and Kern County: first-time buyer programs, real costs and property tax, and building for local weather.`;
+const guides: [string, string, string][] = [
+  ['/guides/first-time-buyer-programs-kern-county/', 'First-time buyer programs in Kern County', 'CalHFA MyHome, Dream For All, VA and FHA loans, with real numbers on a Sunset Retreat home.'],
+  ['/guides/new-home-costs-tehachapi/', 'What a new home in Tehachapi really costs', 'Price per square foot, property tax, the supplemental tax bill and the homeowners\' exemption.'],
+  ['/guides/tehachapi-weather-new-home/', 'Building a home for Tehachapi\'s weather', 'Snow, wind, elevation and sun, and the questions to ask any builder.'],
+];
+const schema = [webPage(path, title, description, { '@type': 'CollectionPage' }), breadcrumb([['Home', '/'], ['Buyer guides', path]])];
+---
+<Layout title={title} description={description} schema={schema}>
+  <section class="section wrap">
+    <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Buyer guides</span></nav>
+    <p class="eyebrow">Buyer guides</p>
+    <h1>New Home Buyer Guides <em>for Tehachapi</em></h1>
+    <p class="lede">Straight answers to the questions buyers ask us most, with sources for every number.</p>
+    <ul class="cards">
+      {guides.map(([href, t, d]) => <li><a href={href}><h2>{t}</h2><p>{d}</p><span class="mono">Read the guide →</span></a></li>)}
+    </ul>
+  </section>
+</Layout>
+
+<style>
+  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); max-width: 18ch; }
+  .lede { max-width: 56ch; font-size: 1.15rem; color: var(--muted); }
+  .cards { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .cards a { display: flex; flex-direction: column; height: 100%; background: var(--paper); border: 1px solid var(--line); border-top: 4px solid; border-image: var(--roof) 1; padding: 1.6rem; text-decoration: none; transition: transform .25s var(--ease); }
+  .cards a:hover { transform: translateY(-3px); }
+  .cards h2 { font-size: 1.45rem; margin: 0 0 .6rem; }
+  .cards p { color: var(--muted); margin: 0 0 1.2rem; flex: 1; }
+  .cards .mono { color: var(--clay); font-size: .7rem; }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+</style>

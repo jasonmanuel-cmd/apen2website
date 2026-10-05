@@ -285,6 +285,26 @@
       "source": "/areas/tehachapi",
       "destination": "/areas/tehachapi/",
       "permanent": true
+    },
+    {
+      "source": "/guides",
+      "destination": "/guides/",
+      "permanent": true
+    },
+    {
+      "source": "/guides/first-time-buyer-programs-kern-county",
+      "destination": "/guides/first-time-buyer-programs-kern-county/",
+      "permanent": true
+    },
+    {
+      "source": "/guides/new-home-costs-tehachapi",
+      "destination": "/guides/new-home-costs-tehachapi/",
+      "permanent": true
+    },
+    {
+      "source": "/guides/tehachapi-weather-new-home",
+      "destination": "/guides/tehachapi-weather-new-home/",
+      "permanent": true
     }
   ]
 }
