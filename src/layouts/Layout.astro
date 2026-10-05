@@ -18,7 +18,7 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
 const org = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: site.name, url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `From ${usd(offer.from)}`, telephone: site.phone, email: site.email,
+  name: site.name, foundingDate: String(site.since), url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `From ${usd(offer.from)}`, telephone: site.phone, email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
   areaServed: serviceAreaNames,
@@ -117,7 +117,9 @@ const nav: [string, string, [string, string][]][] = [
     <div class="wrap footer-grid">
       <div>
         <p class="logo-badge"><Image src={logoFull} alt="Aspen II Homes, Tehachapi, CA" width={220} /></p>
-        <p class="muted">{site.tagline}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
+        <p class="muted">{site.tagline}. Building in Tehachapi since {site.since}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
+        <!-- BuildZoom badge (owner-supplied embed). Loads an image and an impression pixel from BuildZoom; disclosed on /privacy/. -->
+        <div class="bz-bdg"><a target="_blank" rel="noopener" title="BuildZoom.com" href="https://www.buildzoom.com/contractor/aspen-ii-homes-ca?ad_location=co_website"><img alt="Aspen II Homes on BuildZoom" width="230" height="auto" src="https://badges.buildzoom.com/2023/fon1.png" loading="lazy" /></a><a target="_blank" rel="noopener" href="https://www.buildzoom.com/tehachapi-ca/general-contractors?ad_location=co_website&bg_ref=88342094">General Contractors in Tehachapi</a><img src="https://track.buildzoom.com//badge_load?track_id=dYDNyw&entity=Contractor&event_type=impression&ad_type=contractor_badge" width="1" height="1" alt="" loading="lazy" /></div>
         <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}<br />{site.hours}</p>
       </div>
       <div>
@@ -212,6 +214,7 @@ const nav: [string, string, [string, string][]][] = [
   .logo-badge { display: inline-block; background: var(--paper); padding: 1rem 1.2rem; border-radius: 4px; margin: 0 0 1.2rem; border-top: 4px solid; border-image: var(--roof) 1; }
   .logo-badge img { width: 220px; height: auto; }
   .footer em { color: var(--gold); }
+  .bz-bdg { width: 230px; margin-top: 1.2rem; } .bz-bdg img { width: 230px; height: auto; } .bz-bdg > a { display: block; font: 500 9px Helvetica, Arial, sans-serif; text-align: center; margin-top: 4px; color: var(--on-dark-muted); line-height: 10px; }
   .promo { display: block; background: var(--gold); color: var(--ink); text-align: center; text-decoration: none; padding: .55rem var(--gutter); font: .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .promo strong { font-weight: 500; }
   .promo .go { margin-left: .8rem; border-bottom: 1px solid currentColor; }

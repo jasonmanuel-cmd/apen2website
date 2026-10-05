@@ -29,6 +29,7 @@ const why = [
   ['Equal Housing Opportunity', 'A fair, transparent process and honest disclosures at every step.'],
 ];
 const trust = [
+  `Building in Tehachapi since ${site.since}`,
   'Local Tehachapi builder',
   'Six-model collection',
   'Serving Tehachapi & eastern Kern County',
@@ -181,7 +182,7 @@ const faqSchema = faqPage(faq);
           <p class="eyebrow">Where we build</p>
           <h2>Based in Tehachapi. <em>Serving the region.</em></h2>
         </div>
-        <p class="muted">{site.name} is a local new home builder based in Tehachapi{site.license && ` (${site.license})`}. We know each area's building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
+        <p class="muted">{site.name} is a local new home builder based in Tehachapi, building homes there since {site.since}{site.license && ` (${site.license})`}. We know each area's building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
       </div>
       <div class="comm-grid">
         {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore →</span></a>)}

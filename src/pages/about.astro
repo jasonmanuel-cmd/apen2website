@@ -13,7 +13,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">About</span></nav>
     <p class="eyebrow">About us</p>
     <h1>The local builder of new and semi-custom homes in <em>Tehachapi.</em></h1>
-    <p class="lede">{site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County. Our current release is <a href="/available-homes/">{offer.community}</a> in Tehachapi, from {usd(offer.from)}.</p>
+    <p class="lede">{site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County, and the same owners have been building here since {site.since}. Our current release is <a href="/available-homes/">{offer.community}</a> in Tehachapi, from {usd(offer.from)}.</p>
   </section>
 
   <section class="section facts-sec">
@@ -41,6 +41,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
       <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
       <div><dt class="mono">Address</dt><dd>{site.address}</dd></div>
       {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
+      <div><dt class="mono">Building since</dt><dd>{site.since}, as Aspen Homes, Inc.; Aspen II Homes, Inc. since 2015</dd></div>
     </dl>
     <p class="mono eho">Equal Housing Opportunity</p>
     <p><a class="btn" href="/contact/">Talk with our team</a></p>
