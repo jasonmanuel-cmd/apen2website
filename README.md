@@ -33,10 +33,6 @@ Set these in Vercel > Project > Settings > Environment Variables (see `.env.exam
 
 Without `RESEND_API_KEY`, leads are accepted and only written to the Vercel function logs.
 
-## Before launch
-
-- Add the CSLB license number to `site.license` in `src/data/site.ts` (required on CA builder ads).
-
 ## Waiting on the owner (from the 2026-10-02 audit)
 
 Code changes can't settle these; each needs a written answer from the owner or lender before the copy changes.
@@ -45,14 +41,14 @@ Code changes can't settle these; each needs a written answer from the owner or l
 - **Warranty:** one place says 10-year builder warranty, another 1-year systems/appliances. Confirm coverage, provider and exclusions.
 - **Offer terms:** Sunset Retreat price, "first two homes", move-in estimate, 0% down eligibility, $15,000 credit, 2-1 buydown.
 - **Lender:** officer name, NMLS number, company spelling.
-- **Business facts:** legal name, whether the Tucker Road address is a staffed office, CSLB license (`site.license`).
+- **Business facts:** legal name, whether the Tucker Road address is a staffed office.
 - **Privacy notice** (`src/pages/privacy.astro`): written from what the site does today. Owner to approve the wording, data retention and SMS consent.
 
 ## Still needed from the owner (2026-10-04 architecture brief)
 
 Built pages say only what the data file can support. These items stay unpublished until confirmed in writing:
 
-- **Legal/public name, CSLB license, staffed office or service-area only, business hours.** Then set `site.license` and align Google Business Profile, BBB, BuildZoom and social profiles to the same name, address and phone.
+- **Legal/public name, staffed office or service-area only, business hours.** Then align Google Business Profile, BBB, BuildZoom and social profiles to the same name, address and phone.
 - **One reply-time promise.** The site uses `site.followUp` everywhere; the old WordPress copy said 1 to 2 business days.
 - **Warranty.** The site said both "1-year" and "10-year"; both are now neutral ("ask for coverage details") until the real document is linked.
 - **Incentive terms:** start/end dates, eligible homes/lots, who funds each credit, combinability; lender-approved wording. Update `site.verified` whenever re-checked.

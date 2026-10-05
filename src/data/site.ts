@@ -13,7 +13,7 @@ export const site = {
   email: 'Aspen2homes@gmail.com',
   address: '785 Tucker Road G295, Tehachapi, CA 93561',
   followUp: 'within 30 minutes during business hours',
-  license: '', // Not published on either site. Add the CSLB # here and it appears in the footer and trust bar.
+  license: 'CSLB #1004058', // Owner-confirmed 2026-10-05 (also on the logo). Shows in footer, trust bar, About, Contact and schema.
   // Month the prices, availability and incentives below were last confirmed. Update it whenever you re-check them.
   verified: 'September 2026',
 };

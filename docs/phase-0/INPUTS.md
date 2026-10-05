@@ -11,7 +11,7 @@ Work continues without these; only the dependent claims or integrations wait.
 | Approved spec sheet per model: garage, dimensions, customization limits | Model pages beyond current specs | Phase 1 |
 | Areas actually served + distinct local facts (per area) | Publishing each `/areas/<slug>/` | Phase 3 |
 | Verified inventory: public address (or none), status, price approval date, listing rights for Sunset Retreat Home 1/2 | `/available-homes/` detail + tour requests | Phase 1–2 |
-| Legal name, CSLB license, staffed office vs mailing address, hours | About, footer, LocalBusiness schema, listings | Phase 1 |
+| Legal name, staffed office vs mailing address, hours | About, footer, LocalBusiness schema, listings | Phase 1 |
 | Response-time promise staff will keep | Form confirmation copy | Phase 2 |
 | Consent wording; privacy/retention policy approval | Forms, analytics, Check My Lot | Phase 2 |
 | Who reviews leads daily; staff emails + roles (sales/reviewer/admin) | Staff inbox accounts | Phase 2 |
