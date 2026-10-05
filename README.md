@@ -29,7 +29,7 @@ Set these in Vercel > Project > Settings > Environment Variables (see `.env.exam
 
 - `RESEND_API_KEY`: from resend.com
 - `NOTIFICATION_EMAIL`: who receives leads. Before the domain is verified in Resend, this must be your Resend account email.
-- `RESEND_FROM`: keep `onboarding@resend.dev` until the domain is verified, then e.g. `Aspen II Homes <leads@aspen2homes.com>`.
+- `RESEND_FROM`: `Aspen II Homes <leads@aspen2homes.com>` (aspen2homes.com is verified in Resend). Without it the code falls back to `onboarding@resend.dev`, which only delivers to the Resend account owner.
 
 Without `RESEND_API_KEY`, leads are accepted and only written to the Vercel function logs.
 
