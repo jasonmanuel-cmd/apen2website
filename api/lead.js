@@ -1,6 +1,9 @@
 // Vercel Serverless Function: /api/lead.js
-// Receives the website's consultation form and emails it via Resend.
+// Receives the website's consultation form, stores it in Neon (public.leads), then emails it via Resend.
+// The database write comes first, so a lead survives an email outage. Both are best effort
+// individually; the visitor only sees a failure when the lead could be neither stored nor emailed.
 // Same-origin only: no CORS headers, so other websites can't post leads through it.
+import { neon } from '@neondatabase/serverless';
 
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -10,6 +13,35 @@ const str = (v, max = 200) => (v == null ? '' : String(v)).trim().slice(0, max);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const CALL = 'Please call (661) 238-3136.';
+
+// Database calls must never hold the form hostage: give up after a few seconds and fall through to email.
+const DB_TIMEOUT_MS = 4000;
+const DB_RECORD_TIMEOUT_MS = 2500; // bookkeeping after the email; must not eat the function's time budget
+const withTimeout = (promise, ms = DB_TIMEOUT_MS) => {
+  let timer;
+  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Database timed out')), ms); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+};
+// Database errors can echo submitted values, so logs only get the error code or name, never the message.
+const errTag = (err) => String(err?.code || err?.name || 'error');
+const orNull = (v) => (v === '' || v == null ? null : v);
+
+const saveLead = async (sql, l) => {
+  const rows = await sql`
+    insert into public.leads
+      (name, phone, email, interest, plan, community, contact_pref, stage, buy_window, budget,
+       first_time, military, notes, source, origin_domain, raw)
+    values
+      (${l.name}, ${l.phone}, ${orNull(l.email)}, ${orNull(l.timeline)}, ${orNull(l.plan)}, ${orNull(l.community)},
+       ${orNull(l.contactPref)}, ${orNull(l.stage)}, ${orNull(l.when)}, ${orNull(l.budget)},
+       ${l.firstTime}, ${l.military}, ${orNull(l.notes)}, ${l.source}, ${orNull(l.originDomain)},
+       ${JSON.stringify({ tags: l.tags })}::jsonb)
+    returning id`;
+  return rows[0]?.id || null;
+};
+
+const recordEmail = (sql, id, sent, error) =>
+  sql`update public.leads set email_sent = ${sent}, email_error = ${error} where id = ${id}`;
 
 // A plain HTML form post (JavaScript off or blocked) gets a page back instead of raw JSON.
 const isFormPost = (req) => /application\/x-www-form-urlencoded|multipart\/form-data/i.test(req.headers?.['content-type'] || '');
@@ -84,7 +116,33 @@ export default async function handler(req, res) {
     // Log only non-identifying fields; names, phones, emails and notes stay out of hosting logs.
     console.log('[ASPEN II LEAD]', JSON.stringify({ timestamp: leadPayload.timestamp, source, plan, community }));
 
-    // 3. Email the lead via Resend (see .env.example).
+    // 3. Store the lead first (Neon, see .env.example). If this fails the lead can still reach the
+    // team by email, so a database problem is logged and the request carries on.
+    const dbUrl = process.env.DATABASE_URL;
+    let sql = null;
+    if (dbUrl) {
+      try {
+        sql = neon(dbUrl);
+      } catch (err) {
+        console.error('DATABASE_URL is invalid; lead will not be stored:', errTag(err));
+      }
+    }
+    let leadId = null;
+    if (sql) {
+      try {
+        const originDomain = str(req.headers?.host, 100).toLowerCase().replace(/:\d+$/, '');
+        leadId = await withTimeout(saveLead(sql, {
+          name, phone, email, timeline, plan, community, contactPref, stage, when, budget,
+          firstTime, military, notes, source, originDomain, tags
+        }));
+      } catch (err) {
+        console.error('Lead NOT stored in database:', errTag(err));
+      }
+    } else if (!dbUrl) {
+      console.error('DATABASE_URL is not set; lead will not be stored.');
+    }
+
+    // 4. Email the lead via Resend (see .env.example).
     // Until the domain is verified in Resend, RESEND_FROM must stay onboarding@resend.dev,
     // and Resend only delivers to the email address that owns the Resend account.
     const resendKey = process.env.RESEND_API_KEY;
@@ -92,6 +150,7 @@ export default async function handler(req, res) {
     const from = process.env.RESEND_FROM || 'Aspen II Homes <onboarding@resend.dev>';
 
     let emailSent = false;
+    let emailError = null;
 
     if (resendKey) {
       const message = {
@@ -132,21 +191,34 @@ export default async function handler(req, res) {
         }
       }));
       emailSent = results.some(Boolean);
-
-      // Key is set but sending failed: tell the visitor to call rather than silently losing the lead.
-      if (!emailSent) {
-        return reply(req, res, 502, { success: false, error: `Could not deliver your request. ${CALL}` });
-      }
+      if (!emailSent) emailError = 'Resend rejected or unreachable';
     } else {
-      // No RESEND_API_KEY: nothing can be delivered, so don't tell the visitor it was.
-      console.error('RESEND_API_KEY is not set; lead not delivered.');
-      return reply(req, res, 503, { success: false, error: `Our form is temporarily unavailable. ${CALL}` });
+      console.error('RESEND_API_KEY is not set; lead not emailed.');
+      emailError = 'RESEND_API_KEY not set';
     }
+
+    // 5. Record how the email went on the stored lead, so unsent ones are easy to find.
+    if (sql && leadId) {
+      try {
+        await withTimeout(recordEmail(sql, leadId, emailSent, emailError), DB_RECORD_TIMEOUT_MS);
+      } catch (err) {
+        console.error('Could not record email outcome:', errTag(err));
+      }
+    }
+
+    // 6. Only tell the visitor it failed when the lead was neither stored nor emailed.
+    if (!emailSent && !leadId) {
+      return resendKey
+        ? reply(req, res, 502, { success: false, error: `Could not deliver your request. ${CALL}` })
+        : reply(req, res, 503, { success: false, error: `Our form is temporarily unavailable. ${CALL}` });
+    }
+    if (!emailSent) console.error('Lead stored but NOT emailed. Find it with: select * from public.leads where not email_sent;');
 
     return reply(req, res, 200, {
       success: true,
       message: 'Consultation request received successfully.',
-      emailDispatched: emailSent
+      emailDispatched: emailSent,
+      saved: Boolean(leadId)
     });
   } catch (error) {
     console.error('Lead processing error:', error);
