@@ -39,12 +39,12 @@ const schema = [
     <section class="wrap body cta">
       <h2>Talk it through with us</h2>
       <p>Tell us your budget and timeline, and we'll walk through which programs and homes fit. Call or text <a href={site.phoneHref}>{site.phone}</a>.</p>
-      <p class="ctas"><a class="btn" href="/contact/?interest=tour#form">Schedule a Tour</a><a class="btn btn-ghost" href="/guides/">More buyer guides</a></p>
+      <p class="ctas"><a class="btn" href="/contact/?interest=tour#form">Schedule a Tour</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a><a class="btn btn-ghost" href="/guides/">More buyer guides</a></p>
     </section>
 
     <footer class="wrap body sources">
       <h2 class="mono">Sources</h2>
-      <ol>{sources.map(([label, url]) => <li><a href={url} rel="noopener" target="_blank">{label}</a></li>)}</ol>
+      <ol>{sources.map(([label, url]) => <li><a href={url} rel="noopener" target="_blank">{label}<span class="sr-only"> (opens in a new tab)</span></a></li>)}</ol>
       <p class="mono note">Last reviewed {reviewed}. Programs, rates, taxes and codes change. This guide is general information, not legal, tax or financial advice; confirm details with a licensed lender, the county or the program before you rely on them. {site.name} is a home builder, not a lender. {site.license}.</p>
     </footer>
   </article>
@@ -52,10 +52,10 @@ const schema = [
 
 <style>
   .head { padding-bottom: 2rem; }
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.3rem, 5.5vw, 4.2rem); max-width: 20ch; }
   .answer { background: var(--paper); border: 1px solid var(--line); border-top: 4px solid; border-image: var(--roof) 1; padding: 1.4rem 1.6rem; max-width: 70ch; margin-top: 1.5rem; }
-  .answer .mono { color: var(--rust); font-size: .7rem; margin: 0 0 .6rem; }
+  .answer .mono { color: var(--rust); font-size: .75rem; margin: 0 0 .6rem; }
   .answer ul { margin: 0; padding-left: 1.2rem; }
   .answer li { margin: .35rem 0; }
   .body { max-width: calc(76ch + 2 * var(--gutter)); padding-bottom: 2.5rem; }
@@ -63,11 +63,12 @@ const schema = [
   .body :global(h3) { font-size: 1.3rem; margin-top: 1.8rem; }
   .body :global(table) { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: .95rem; display: block; overflow-x: auto; }
   .body :global(th), .body :global(td) { text-align: left; vertical-align: top; padding: .65rem .7rem; border-bottom: 1px solid var(--line); }
-  .body :global(th) { font: 500 .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .body :global(th) { font: 500 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .body :global(tbody th) { font: inherit; font-weight: 600; letter-spacing: 0; text-transform: none; color: inherit; }
   .body :global(.callout) { background: var(--sand-2); padding: 1rem 1.2rem; border-left: 4px solid var(--clay); }
   .body :global(.checklist) { list-style: none; padding: 0; }
   .body :global(.checklist li) { padding: .45rem 0 .45rem 1.8rem; position: relative; border-bottom: 1px solid var(--line); }
-  .body :global(.checklist li)::before { content: "✓"; position: absolute; left: .2rem; color: var(--clay); font-weight: 700; }
+  .body :global(.checklist li)::before { content: "✓" / ""; position: absolute; left: .2rem; color: var(--clay); font-weight: 700; }
   .faq details { border-bottom: 1px solid var(--line); padding: .9rem 0; }
   .faq summary { cursor: pointer; font-weight: 600; }
   .faq details p { margin: .6rem 0 0; }
@@ -76,5 +77,5 @@ const schema = [
   .sources h2 { font-size: .75rem; color: var(--muted); margin-top: 1rem; }
   .sources ol { font-size: .9rem; padding-left: 1.2rem; }
   .sources li { margin: .3rem 0; overflow-wrap: anywhere; }
-  .note { font-size: .64rem; color: var(--muted); line-height: 1.6; margin-top: 1.5rem; }
+  .note { font-size: .82rem; color: var(--muted); line-height: 1.6; margin-top: 1.5rem; }
 </style>
