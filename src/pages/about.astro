@@ -1,11 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { site, offer, plans, communities, usd, sqftRange, areaUrl, serviceAreaNames } from '../data/site';
+import { site, offer, communities, usd, sqftRange, areaUrl, serviceAreaNames, profiles } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/about/';
 const title = `About ${site.name} | Local Home Builder in Tehachapi, CA`;
 const description = `${site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County: the Sunset Retreat release and six semi-custom floor plans.`;
+const mapHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
 const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), breadcrumb([['Home', '/'], ['About', path]])];
 ---
 <Layout title={title} description={description} schema={schema}>
@@ -39,17 +40,18 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
       <div><dt class="mono">Business</dt><dd>{site.name}</dd></div>
       <div><dt class="mono">Phone</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
       <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-      <div><dt class="mono">Address</dt><dd>{site.address}</dd></div>
+      <div><dt class="mono">Address</dt><dd><a href={mapHref} target="_blank" rel="noopener">{site.address}</a></dd></div>
       {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
-      <div><dt class="mono">Building since</dt><dd>{site.since}, as Aspen Homes, Inc.; Aspen II Homes, Inc. since 2015</dd></div>
+      <div><dt class="mono">Building since</dt><dd>{site.since}, as {site.originalEntity}; {site.currentEntity} since {site.incorporated}</dd></div>
     </dl>
     <p class="mono eho">Equal Housing Opportunity</p>
-    <p><a class="btn" href="/contact/">Talk with our team</a></p>
+    <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}</a></>)}</p>
+    <div class="ctas"><a class="btn" href="/contact/">Talk with our team</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></div>
   </section>
 </Layout>
 
 <style>
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); max-width: 20ch; }
   .lede { max-width: 60ch; font-size: 1.2rem; color: var(--muted); } .lede a { color: var(--clay); }
   .facts-sec { background: var(--sand-2); }
@@ -57,6 +59,8 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
   @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
   .list { padding-left: 1.2rem; } .list li { margin: .6rem 0; } .list a { color: var(--clay); }
   .nap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin: 1.5rem 0; }
-  .nap dt { font-size: .66rem; color: var(--muted); } .nap dd { margin: .3rem 0 0; font-size: 1.1rem; } .nap a { color: var(--clay); }
-  .eho { font-size: .7rem; border: 1px solid var(--muted); display: inline-block; padding: .3em .7em; }
+  .nap dt { font-size: .75rem; color: var(--muted); } .nap dd { margin: .3rem 0 0; font-size: 1.1rem; } .nap a { color: var(--clay); }
+  .profiles { font-size: .75rem; line-height: 2; margin: 1.5rem 0; } .profiles a { color: var(--clay); }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+  .eho { font-size: .75rem; border: 1px solid var(--muted); display: inline-block; padding: .3em .7em; }
 </style>

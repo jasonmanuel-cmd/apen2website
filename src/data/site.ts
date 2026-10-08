@@ -18,6 +18,10 @@ export const site = {
   // Owner-confirmed 2026-10-05: same owners as Aspen Homes, Inc. (CSLB #693832, issued 1994-08-03, Tehachapi).
   // Aspen II Homes, Inc. holds CSLB #1004058 (issued 2015-05-29). Public CSLB records checked 2026-10-05.
   since: 1994,
+  // Aspen II Homes, Inc. was incorporated in 2015 (CSLB issue date above); the original company was Aspen Homes, Inc.
+  incorporated: 2015,
+  originalEntity: 'Aspen Homes, Inc.',
+  currentEntity: 'Aspen II Homes, Inc.',
   license: 'CSLB #1004058', // Owner-confirmed 2026-10-05 (also on the logo). Shows in footer, trust bar, About, Contact and schema.
   // Month the prices, availability and incentives below were last confirmed. Update it whenever you re-check them.
   verified: 'September 2026',
