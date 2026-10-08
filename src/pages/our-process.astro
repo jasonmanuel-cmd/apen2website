@@ -4,7 +4,7 @@ import { site, paths, offer, usd } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/our-process/';
-const title = `How Buying or Building With ${site.name} Works`;
+const title = `How Buying a New Home in Tehachapi Works | ${site.name}`;
 const description = `The steps to reserve a Sunset Retreat home, or choose and customize one of six semi-custom models with ${site.name} in Tehachapi and eastern Kern County.`;
 // Which stages apply to which path.
 const stages: [string, string, string][] = [
@@ -17,12 +17,12 @@ const stages: [string, string, string][] = [
 ];
 const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['How it works', path]])];
 ---
-<Layout title={`How Buying a New Home in Tehachapi Works | ${site.name}`} description={description} schema={schema}>
+<Layout title={title} description={description} schema={schema}>
   <section class="section wrap">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">How it works</span></nav>
     <p class="eyebrow">Build with us</p>
-    <h1>How Buying or Building With <em>Aspen II Homes Works</em></h1>
-    <p class="lede">Two ways in, one team. Your exact steps depend on the path you choose; we'll walk you through each one.</p>
+    <h1>How Buying or Building With <em>{site.name} Works</em></h1>
+    <p class="lede">Two ways in, one team. Your exact steps depend on the path you choose; we’ll walk you through each one.</p>
   </section>
 
   <section class="section paths-sec" id="paths">
@@ -37,6 +37,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
             <p class="mono meta">{p.meta}</p>
             <p>{p.text}</p>
             <p class="price">{p.price}</p>
+            <a class="btn" href={p.cta[1]}>{p.cta[0]}</a>
           </article>
         ))}
       </div>
@@ -47,31 +48,32 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
   <section class="section wrap">
     <p class="eyebrow">Step by step</p>
     <h2>From first call to <em>keys.</em></h2>
-    <ol class="stages">
+    <ol class="stages" role="list">
       {stages.map(([t, d, a], i) => <li><span class="mono">Stage 0{i + 1}</span><h3>{t}</h3><p>{d}</p><p class="mono applies">{a}</p></li>)}
     </ol>
-    <p class="ctas"><a class="btn" href="/contact/">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a></p>
+    <p class="ctas"><a class="btn" href="/contact/?interest=tour#form">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></p>
   </section>
 </Layout>
 
 <style>
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); max-width: 18ch; }
   .lede { max-width: 56ch; font-size: 1.15rem; color: var(--muted); }
   .paths-sec { background: var(--sand-2); }
   .paths { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 2rem; }
   .paths article { background: var(--paper); border: 1px solid var(--line); padding: 1.8rem; }
-  .paths .n { color: var(--clay); font-size: .64rem; }
-  .paths .meta { font-size: .66rem; color: var(--muted); }
-  .paths .price { font: 1.4rem var(--display); margin: 1rem 0 0; }
+  .paths .n { color: var(--clay); font-size: .75rem; }
+  .paths .meta { font-size: .75rem; color: var(--muted); }
+  .paths .price { font: 1.4rem var(--display); margin: 1rem 0 1.2rem; }
+  .paths .btn { margin-top: .2rem; }
   @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
-  .note { font-size: .68rem; color: var(--muted); margin-top: 1.5rem; }
+  .note { font-size: .75rem; color: var(--muted); margin-top: 1.5rem; }
   .stages { list-style: none; padding: 0; margin: 2.5rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
   .stages li { border-top: 2px solid var(--ink); padding-top: 1.2rem; }
-  .stages .mono { color: var(--clay); font-size: .7rem; }
+  .stages .mono { color: var(--clay); font-size: .75rem; }
   .stages h3 { margin: .5rem 0; }
   .stages p { margin: 0 0 .6rem; }
-  .stages .applies { color: var(--muted); font-size: .64rem; }
+  .stages .applies { color: var(--muted); font-size: .75rem; }
   @media (max-width: 860px) { .stages { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 520px) { .stages { grid-template-columns: 1fr; } }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2.5rem; }
