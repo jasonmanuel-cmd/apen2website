@@ -120,7 +120,7 @@ const nav: [string, string, [string, string][]][] = [
         <p class="logo-badge"><Image src={logoFull} alt="Aspen II Homes, Tehachapi, CA" width={220} /></p>
         <p class="muted">{site.tagline}. Building in Tehachapi since {site.since}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
         <!-- BuildZoom badge (owner-supplied embed). Loads an image and an impression pixel from BuildZoom; disclosed on /privacy/. -->
-        <div class="bz-bdg"><a target="_blank" rel="noopener" title="BuildZoom.com" href="https://www.buildzoom.com/contractor/aspen-ii-homes-ca?ad_location=co_website"><img alt="Aspen II Homes on BuildZoom" width="230" height="auto" src="https://badges.buildzoom.com/2023/fon1.png" loading="lazy" /></a><a target="_blank" rel="noopener" href="https://www.buildzoom.com/tehachapi-ca/general-contractors?ad_location=co_website&bg_ref=88342094">General Contractors in Tehachapi</a><img src="https://track.buildzoom.com//badge_load?track_id=dYDNyw&entity=Contractor&event_type=impression&ad_type=contractor_badge" width="1" height="1" alt="" loading="lazy" /></div>
+        <div class="bz-bdg"><a target="_blank" rel="noopener" title="BuildZoom.com" href="https://www.buildzoom.com/contractor/aspen-ii-homes-ca?ad_location=co_website"><img alt="Aspen II Homes on BuildZoom" width="230" height="74" src="https://badges.buildzoom.com/2023/fon1.png" loading="lazy" /></a><a target="_blank" rel="noopener" href="https://www.buildzoom.com/tehachapi-ca/general-contractors?ad_location=co_website&bg_ref=88342094">General Contractors in Tehachapi</a><img src="https://track.buildzoom.com//badge_load?track_id=dYDNyw&entity=Contractor&event_type=impression&ad_type=contractor_badge" width="1" height="1" alt="" loading="lazy" /></div>
         <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}<br />{site.hours}</p>
         <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}</a></>)}</p>
       </div>
@@ -142,11 +142,20 @@ const nav: [string, string, [string, string][]][] = [
     </div>
   </footer>
 
-  <div class="mobile-bar" aria-label="Quick contact">
+  <nav class="mobile-bar" aria-label="Quick contact">
     <a href={site.phoneHref}>Call</a>
     <a href="/contact/">Contact</a>
     <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
-  </div>
+  </nav>
+  <script is:inline>
+    // Esc dismisses an open nav dropdown (WCAG 1.4.13); it reopens on the next hover or focus entry.
+    document.querySelectorAll('.dd').forEach(function (dd) {
+      ['mouseenter', 'focusin'].forEach(function (t) { dd.addEventListener(t, function () { dd.classList.remove('closed'); }); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') document.querySelectorAll('.dd').forEach(function (dd) { dd.classList.add('closed'); });
+    });
+  </script>
 </body>
 </html>
 
@@ -165,7 +174,7 @@ const nav: [string, string, [string, string][]][] = [
     --max: 1260px; --gutter: clamp(16px, 4vw, 36px); --ease: cubic-bezier(.2,.7,.35,1);
   }
   *, *::before, *::after { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; scroll-padding-bottom: 80px; }
   body { margin: 0; background: var(--bg) var(--topo); background-size: 480px; color: var(--ink); font: 400 1.075rem/1.65 var(--serif); -webkit-font-smoothing: antialiased; }
   img { max-width: 100%; height: auto; display: block; }
   a { color: inherit; }
@@ -190,7 +199,8 @@ const nav: [string, string, [string, string][]][] = [
   .btn-ghost { background: transparent; border: 1px solid currentColor; color: inherit; }
   .btn-ghost:hover { background: rgba(127,127,127,.12); }
   .btn-sm { padding: .7em 1.1em; }
-  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  /* Two-tone ring: green line on a bone halo. Passes 3:1 on every light surface and on the dark ink sections (gold alone was 2.1-2.8:1 on light). */
+  :focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; box-shadow: 0 0 0 5px var(--bone); }
   .skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: var(--bone); padding: .6em 1em; z-index: 100; }
   .skip:focus { left: 8px; }
 
@@ -206,6 +216,7 @@ const nav: [string, string, [string, string][]][] = [
   .dd .panel { position: absolute; left: -1rem; top: 100%; min-width: 240px; display: none; flex-direction: column; background: var(--paper);
                border: 1px solid var(--line); box-shadow: 0 16px 40px rgb(var(--ink-rgb) / .15); padding: .4rem 0; z-index: 30; }
   .dd:hover .panel, .dd:focus-within .panel { display: flex; }
+  .dd.closed .panel { display: none; }
   .dd .panel a { padding: .6rem 1rem; text-decoration: none; font-size: .95rem; }
   .dd .panel a:hover, .dd .panel a:focus-visible { background: var(--sand-2); color: var(--clay); }
   .logo { font-family: var(--display); font-size: 1.45rem; text-decoration: none; margin: 0; white-space: nowrap; display: inline-flex; align-items: center; gap: .55rem; }

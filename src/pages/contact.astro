@@ -38,7 +38,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
         </dl>
         <p class="mono serving">Serving {communities.map((c) => c.name).join(' · ')}</p>
       </div>
-      <div class="card" id="form">
+      <div class="card" id="form" tabindex="-1">
         <p class="mono k">Quick form · we reply {site.followUp}</p>
         <LeadForm source="Contact page" interest="tour" />
       </div>
@@ -52,11 +52,11 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
   .lede { font-size: 1.2rem; color: var(--muted); max-width: 44ch; }
   h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
   .choices { list-style: none; padding: 0; margin: 1.2rem 0 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .choices a { display: inline-block; border: 1px solid var(--ink); padding: .6em 1em; text-decoration: none; font: .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .choices a { display: inline-flex; align-items: center; min-height: 44px; border: 1px solid var(--ink); padding: .6em 1.1em; text-decoration: none; font: .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .choices a:hover { background: var(--ink); color: var(--bone); }
   .reasons { list-style: none; padding: 0; margin: 1.5rem 0; }
   .reasons li { padding: .6rem 0 .6rem 1.8rem; position: relative; }
-  .reasons li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); }
+  .reasons li::before { content: "✓" / ""; position: absolute; left: 0; color: var(--sage); }
   .info { margin: 2rem 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
   .info dt { font-size: .66rem; color: var(--muted); }
   .info dd { margin: .2rem 0 0; font-family: var(--display); font-size: 1.25rem; }
@@ -64,5 +64,6 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
   @media (max-width: 480px) { .info { grid-template-columns: 1fr; } }
   .serving { font-size: .66rem; color: var(--muted); line-height: 2; }
   .card { background: var(--sand-2); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid var(--line); }
+  #form:focus { outline: none; box-shadow: none; }
   .k { color: var(--clay); font-size: .66rem; margin: 0 0 1.2rem; }
 </style>
