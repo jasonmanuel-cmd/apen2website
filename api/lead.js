@@ -1,10 +1,8 @@
 // Vercel Serverless Function: /api/lead.js
-// Receives the website's consultation form, stores it in Neon (public.leads), then emails it via Resend.
+// Receives the website's consultation form, stores it in Supabase (public.leads), then emails it via Resend.
 // The database write comes first, so a lead survives an email outage. Both are best effort
 // individually; the visitor only sees a failure when the lead could be neither stored nor emailed.
 // Same-origin only: no CORS headers, so other websites can't post leads through it.
-import { neon } from '@neondatabase/serverless';
-
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -14,34 +12,70 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const CALL = 'Please call (661) 238-3136.';
 
+// Supabase over its REST API (PostgREST), so no database driver is needed. The service-role key bypasses
+// row level security and must only ever live in server-side environment variables (see .env.example).
 // Database calls must never hold the form hostage: give up after a few seconds and fall through to email.
 const DB_TIMEOUT_MS = 4000;
 const DB_RECORD_TIMEOUT_MS = 2500; // bookkeeping after the email; must not eat the function's time budget
-const withTimeout = (promise, ms = DB_TIMEOUT_MS) => {
-  let timer;
-  const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Database timed out')), ms); });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
-};
-// Database errors can echo submitted values, so logs only get the error code or name, never the message.
+// Error responses can echo submitted values, so logs only get a short tag, never a message or body.
 const errTag = (err) => String(err?.code || err?.name || 'error');
 const orNull = (v) => (v === '' || v == null ? null : v);
 
-const saveLead = async (sql, l) => {
-  const rows = await sql`
-    insert into public.leads
-      (name, phone, email, interest, plan, community, contact_pref, stage, buy_window, budget,
-       first_time, military, notes, source, origin_domain, raw)
-    values
-      (${l.name}, ${l.phone}, ${orNull(l.email)}, ${orNull(l.timeline)}, ${orNull(l.plan)}, ${orNull(l.community)},
-       ${orNull(l.contactPref)}, ${orNull(l.stage)}, ${orNull(l.when)}, ${orNull(l.budget)},
-       ${l.firstTime}, ${l.military}, ${orNull(l.notes)}, ${l.source}, ${orNull(l.originDomain)},
-       ${JSON.stringify({ tags: l.tags })}::jsonb)
-    returning id`;
-  return rows[0]?.id || null;
+const supabaseConfig = () => {
+  const url = str(process.env.SUPABASE_URL, 300).replace(/\/+$/, '');
+  const key = str(process.env.SUPABASE_SERVICE_ROLE_KEY, 600);
+  return url && key ? { url, key } : null;
 };
 
-const recordEmail = (sql, id, sent, error) =>
-  sql`update public.leads set email_sent = ${sent}, email_error = ${error} where id = ${id}`;
+const supabase = async (db, path, init, ms) => {
+  const res = await fetch(`${db.url}/rest/v1/${path}`, {
+    ...init,
+    headers: {
+      apikey: db.key,
+      // Legacy service_role keys are JWTs and go in both headers; newer sb_secret_ keys go in apikey only.
+      ...(db.key.startsWith('eyJ') && { Authorization: `Bearer ${db.key}` }),
+      'Content-Type': 'application/json',
+      ...init.headers
+    },
+    signal: AbortSignal.timeout(ms)
+  });
+  if (!res.ok) throw Object.assign(new Error('Supabase request failed'), { code: `HTTP_${res.status}` });
+  return res;
+};
+
+const saveLead = async (db, l) => {
+  const res = await supabase(db, 'leads?select=id', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      name: l.name,
+      phone: l.phone,
+      email: orNull(l.email),
+      interest: orNull(l.timeline),
+      plan: orNull(l.plan),
+      community: orNull(l.community),
+      contact_pref: orNull(l.contactPref),
+      stage: orNull(l.stage),
+      buy_window: orNull(l.when),
+      budget: orNull(l.budget),
+      first_time: l.firstTime,
+      military: l.military,
+      notes: orNull(l.notes),
+      source: l.source,
+      origin_domain: orNull(l.originDomain),
+      raw: { tags: l.tags }
+    })
+  }, DB_TIMEOUT_MS);
+  const rows = await res.json();
+  return rows?.[0]?.id || null;
+};
+
+const recordEmail = (db, id, sent, error) =>
+  supabase(db, `leads?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ email_sent: sent, email_error: error })
+  }, DB_RECORD_TIMEOUT_MS);
 
 // A plain HTML form post (JavaScript off or blocked) gets a page back instead of raw JSON.
 const isFormPost = (req) => /application\/x-www-form-urlencoded|multipart\/form-data/i.test(req.headers?.['content-type'] || '');
@@ -116,30 +150,22 @@ export default async function handler(req, res) {
     // Log only non-identifying fields; names, phones, emails and notes stay out of hosting logs.
     console.log('[ASPEN II LEAD]', JSON.stringify({ timestamp: leadPayload.timestamp, source, plan, community }));
 
-    // 3. Store the lead first (Neon, see .env.example). If this fails the lead can still reach the
+    // 3. Store the lead first (Supabase, see .env.example). If this fails the lead can still reach the
     // team by email, so a database problem is logged and the request carries on.
-    const dbUrl = process.env.DATABASE_URL;
-    let sql = null;
-    if (dbUrl) {
-      try {
-        sql = neon(dbUrl);
-      } catch (err) {
-        console.error('DATABASE_URL is invalid; lead will not be stored:', errTag(err));
-      }
-    }
+    const db = supabaseConfig();
     let leadId = null;
-    if (sql) {
+    if (db) {
       try {
         const originDomain = str(req.headers?.host, 100).toLowerCase().replace(/:\d+$/, '');
-        leadId = await withTimeout(saveLead(sql, {
+        leadId = await saveLead(db, {
           name, phone, email, timeline, plan, community, contactPref, stage, when, budget,
           firstTime, military, notes, source, originDomain, tags
-        }));
+        });
       } catch (err) {
         console.error('Lead NOT stored in database:', errTag(err));
       }
-    } else if (!dbUrl) {
-      console.error('DATABASE_URL is not set; lead will not be stored.');
+    } else {
+      console.error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set; lead will not be stored.');
     }
 
     // 4. Email the lead via Resend (see .env.example).
@@ -198,9 +224,9 @@ export default async function handler(req, res) {
     }
 
     // 5. Record how the email went on the stored lead, so unsent ones are easy to find.
-    if (sql && leadId) {
+    if (db && leadId) {
       try {
-        await withTimeout(recordEmail(sql, leadId, emailSent, emailError), DB_RECORD_TIMEOUT_MS);
+        await recordEmail(db, leadId, emailSent, emailError);
       } catch (err) {
         console.error('Could not record email outcome:', errTag(err));
       }

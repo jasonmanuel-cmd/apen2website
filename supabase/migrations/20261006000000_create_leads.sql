@@ -1,9 +1,8 @@
 -- Aspen II Homes: leads table.
 -- Written to the field list in api/lead.js. Every site lead gets stored here
 -- before any email goes out, so a lost email no longer means a lost lead.
--- Database: Neon Postgres (project aspen2-leads, aws-us-west-2).
--- Access: server only. The Neon connection string is the credential, so keep it in a
--- server-side Vercel env var (DATABASE_URL) and never expose it to the browser.
+-- Access: server only. RLS is on with no policies, so the anon and authenticated
+-- keys can read or write nothing. api/lead.js must use the service-role key.
 
 create table public.leads (
   id            uuid primary key default gen_random_uuid(),
@@ -44,7 +43,7 @@ create table public.leads (
   staff_notes   text
 );
 
-comment on table public.leads is 'Aspen II Homes form and listing leads. Accessed server-side only via the Neon connection string.';
+comment on table public.leads is 'Aspen II Homes form and listing leads. Server-side access only (service role).';
 comment on column public.leads.origin_domain is 'Site that captured the lead, e.g. aspen2homes.com or aspen2bakersfield.store.';
 comment on column public.leads.source is 'Channel: Website, Contact page, BuildZoom, Houzz, Open house, etc.';
 
@@ -69,3 +68,6 @@ create trigger leads_updated_at
 before update on public.leads
 for each row execute function public.leads_set_updated_at();
 
+alter table public.leads enable row level security;
+revoke all on public.leads from anon, authenticated;
+revoke all on function public.leads_set_updated_at() from public, anon, authenticated;
