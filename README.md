@@ -43,6 +43,15 @@ How `api/lead.js` handles a submission:
 
 Without the two Supabase variables the form still emails leads but stores nothing. Without `RESEND_API_KEY` leads are stored but not emailed; with neither, the form tells visitors to call.
 
+## Supabase keep-alive
+
+The leads database runs on Supabase's free plan, and free projects can be paused after a stretch with no activity. A paused project would keep emailing leads but silently stop storing them.
+
+- `api/keepalive.js` reads one row from `public.leads` and returns only `{ "ok": true }`. Vercel Cron calls it once a day (`crons` in `vercel.json`, 14:17 UTC, production only).
+- It uses the same `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as the lead form. Optionally set `CRON_SECRET` in Vercel so only the cron job can call it (Vercel sends it automatically).
+- A failing run (database unreachable, keys missing) shows as a non-200 in Vercel > the project > Settings > Cron Jobs, and in the function logs. That is the early warning that leads are not being stored.
+- Upgrading the Supabase plan removes the need for this, but the check is still a cheap health signal.
+
 ## Waiting on the owner (from the 2026-10-02 audit)
 
 Code changes can't settle these; each needs a written answer from the owner or lender before the copy changes.

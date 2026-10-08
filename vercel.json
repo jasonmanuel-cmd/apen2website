@@ -306,5 +306,11 @@
       "destination": "/guides/tehachapi-weather-new-home/",
       "permanent": true
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/keepalive",
+      "schedule": "17 14 * * *"
+    }
   ]
 }
