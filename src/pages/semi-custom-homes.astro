@@ -1,12 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
-import { site, plans, sqftRange } from '../data/site';
+import { site, plans, sqftRange, planUrl } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/semi-custom-homes/';
 const title = `Semi-Custom Homes in Tehachapi | ${site.name}`;
 const description = `Pick one of six ${site.name} floor plans (${sqftRange()} sq ft), then choose flooring, paint and cabinetry. Tehachapi and eastern Kern County.`;
+const enchanted = plans.find((p) => p.slug === 'enchanted-haven');
 const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['Semi-custom homes', path]])];
 ---
 <Layout title={title} description={description} schema={schema}>
@@ -15,6 +16,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
     <p class="eyebrow">Semi-custom homes</p>
     <h1>Semi-Custom Homes: a Proven Plan, <em>Your Finishes</em></h1>
     <p class="lede">Pick one of six floor plans, {sqftRange()} sq ft, and personalize the details that matter most. A guided path to a brand-new home without designing from a blank page.</p>
+    <div class="ctas top"><a class="btn" href="/contact/?interest=semi#form">Request a design consultation</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></div>
   </section>
 
   <section class="section opts">
@@ -25,7 +27,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
           <li>Flooring</li>
           <li>Paint colors</li>
           <li>Cabinetry</li>
-          <li>Kitchen layout details on plans that allow it, such as Enchanted Haven</li>
+          <li>Kitchen layout details on plans that allow it{enchanted && <>, such as <a href={planUrl(enchanted)}>{enchanted.name}</a></>}</li>
         </ul>
         <p class="muted">We confirm the full list of choices for your plan and homesite during your consultation.</p>
       </div>
@@ -48,7 +50,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
 </Layout>
 
 <style>
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.3rem, 5.5vw, 4.4rem); max-width: 20ch; }
   .lede { max-width: 60ch; font-size: 1.15rem; color: var(--muted); }
   .opts { background: var(--sand-2); }
@@ -57,4 +59,5 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
   .list { padding-left: 1.2rem; } .list li { margin: .5rem 0; } .list a { color: var(--clay); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin: 2rem 0; }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .ctas.top { margin-top: 1.5rem; }
 </style>
