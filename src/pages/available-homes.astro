@@ -12,9 +12,9 @@ const imgs = photos(model.folder);
 const og = imgs[0] ? (await getImage({ src: imgs[0].src, width: 1200, format: 'jpg' })).src : undefined;
 const path = '/available-homes/';
 const title = `Sunset Retreat Homes for Sale in Tehachapi | ${site.name}`;
-const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString()} sq ft, ${model.beds} bed, ${model.baths} bath single-story homes from ${usd(offer.from)}. Home 1 and Home 2 now reserving.`;
+const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bed, ${model.baths} bath single-story homes from ${usd(offer.from)}. Home 1 and Home 2 now reserving.`;
 const qa: [string, string][] = [
-  ['What is Sunset Retreat?', `Sunset Retreat is ${site.name}' current new-home release in Tehachapi, California. The first release homes are the Sunset Retreat model: ${model.sqft.toLocaleString()} sq ft, ${model.beds} bedrooms, ${model.baths} bathrooms, single-story.`],
+  ['What is Sunset Retreat?', `Sunset Retreat is ${site.name}’ current new-home release in Tehachapi, California. The first release homes are the Sunset Retreat model: ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bedrooms, ${model.baths} bathrooms, single-story.`],
   ['How much do Sunset Retreat homes cost?', `The first release starts at ${usd(offer.from)}. Ask us what the starting price includes. Pricing and availability are subject to change.`],
   ['How many homes are available?', 'Two homes are in the first release: Home 1 and Home 2 are reserving now. Phase 2 has a waitlist.'],
   ['How long until move-in?', 'First-release homes are estimated at roughly three months to move-in, subject to construction conditions.'],
@@ -24,7 +24,7 @@ const qa: [string, string][] = [
 ];
 const schema = [
   webPage(path, title, description, { about: { '@type': 'Place', name: 'Sunset Retreat, Tehachapi, California' }, ...(og && { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } }) }),
-  breadcrumb([['Home', '/'], ['New homes', path], ['Sunset Retreat, Tehachapi', path]]),
+  breadcrumb([['Home', '/'], ['Sunset Retreat, Tehachapi', path]]),
   faqPage(qa),
 ];
 ---
@@ -33,8 +33,8 @@ const schema = [
     <div class="wrap">
       <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Sunset Retreat, Tehachapi</span></nav>
       <p class="eyebrow reveal">Current release · {offer.city}</p>
-      <h1 class="reveal" style="animation-delay:.1s">New Homes at Sunset Retreat in <em>Tehachapi, California</em></h1>
-      <p class="lede reveal" style="animation-delay:.2s">The first two homes at Sunset Retreat are reserving now, from {usd(offer.from)}. Each is the {model.sqft.toLocaleString()} sq ft Sunset Retreat model, and reserving early lets you choose your finishes before it's built.</p>
+      <h1>New Homes at Sunset Retreat in <em>Tehachapi, California</em></h1>
+      <p class="lede">The first two homes at Sunset Retreat are reserving now, from {usd(offer.from)}. Each is the {model.sqft.toLocaleString('en-US')} sq ft Sunset Retreat model, and reserving early lets you choose your finishes before it’s built.</p>
       <div class="ctas"><a class="btn" href="#reserve">Reserve a home</a><a class="btn btn-ghost" href="#availability">See availability</a></div>
     </div>
   </section>
@@ -46,14 +46,14 @@ const schema = [
         <h2>First release: <em>two homes.</em></h2>
         <table>
           <caption class="mono">Last confirmed {site.verified}. Subject to change without notice.</caption>
-          <thead><tr><th>Home</th><th>Status</th></tr></thead>
+          <thead><tr><th scope="col">Home</th><th scope="col">Status</th></tr></thead>
           <tbody>{offer.release.map(([h, st]) => <tr><th scope="row">{h}</th><td class:list={[{ live: st === 'Reserving' }]}>{st}</td></tr>)}</tbody>
         </table>
       </div>
       <dl class="facts">
         <div><dt class="mono">Starting price</dt><dd>{usd(offer.from)}</dd></div>
         <div><dt class="mono">Model</dt><dd><a href={planUrl(model)}>Sunset Retreat model</a></dd></div>
-        <div><dt class="mono">Size</dt><dd>{model.sqft.toLocaleString()} sf · {model.beds} bd · {model.baths} ba</dd></div>
+        <div><dt class="mono">Size</dt><dd>{model.sqft.toLocaleString('en-US')} sf · {model.beds} bd · {model.baths} ba</dd></div>
         <div><dt class="mono">Stories</dt><dd>Single</dd></div>
         <div><dt class="mono">Est. move-in</dt><dd>{offer.moveIn}*</dd></div>
         <div><dt class="mono">Location</dt><dd>{offer.city}</dd></div>
@@ -93,7 +93,7 @@ const schema = [
       <div>
         <p class="eyebrow">Reserve or ask</p>
         <h2>Request current <em>availability.</em></h2>
-        <p class="muted">Reserve a home, ask what's included or schedule a call. We reply {site.followUp}.</p>
+        <p class="muted">Reserve a home, ask what’s included or schedule a call. We reply {site.followUp}.</p>
         <p class="fine">{disclaimer}</p>
       </div>
       <LeadForm plan="Sunset Retreat" community="Tehachapi" interest="reserve" source="Sunset Retreat community page" />
@@ -106,20 +106,20 @@ const schema = [
   .hero .eyebrow, .hero em { color: var(--gold); }
   .hero h1 { max-width: 20ch; font-size: clamp(2.4rem, 6vw, 4.6rem); }
   .hero h1 em { display: block; }
-  .crumbs { color: var(--on-dark-muted); font-size: .68rem; margin-bottom: 2.5rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--on-dark-muted); font-size: .75rem; margin-bottom: 2.5rem; } .crumbs a { text-decoration: none; }
   .lede { max-width: 56ch; font-size: 1.2rem; opacity: .92; }
   .ctas, .ctas-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
   .avail { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
   table { width: 100%; border-collapse: collapse; }
-  caption { caption-side: bottom; text-align: left; font-size: .66rem; color: var(--muted); padding-top: .8rem; }
+  caption { caption-side: bottom; text-align: left; font-size: .75rem; color: var(--muted); padding-top: .8rem; }
   th, td { text-align: left; padding: .9rem 0; border-bottom: 1px solid var(--line); }
-  thead th { font: .68rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  thead th { font: .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   tbody th { font: 400 1.2rem var(--display); }
   td { font: .8rem var(--mono); text-transform: uppercase; letter-spacing: .08em; }
-  .live { color: var(--clay); } .live::before { content: "● "; }
+  .live { color: var(--clay); } .live::before { content: "● " / ""; }
   .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; margin: 0; background: var(--paper); border: 1px solid var(--line); padding: 1rem 1.5rem; }
   .facts div { padding: .8rem 0; border-bottom: 1px solid var(--line); }
-  .facts dt { color: var(--muted); font-size: .64rem; }
+  .facts dt { color: var(--muted); font-size: .75rem; }
   .facts dd { margin: .3rem 0 0; font: 1.2rem var(--display); }
   .facts a { color: var(--clay); }
   .fine { font-size: .8rem; color: var(--muted); margin-top: 1rem; }
@@ -127,12 +127,12 @@ const schema = [
   .narrow { max-width: 60ch; font-size: 1.1rem; }
   .hl { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0 2rem; }
   .hl li { border: 1px solid var(--line); background: var(--paper); padding: .45em .9em; font-size: .95rem; }
-  .note { font-size: .68rem; color: var(--muted); }
+  .note { font-size: .75rem; color: var(--muted); }
   .money { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--bone); }
   .money em, .money .eyebrow { color: var(--gold); }
   .money p:not(.eyebrow) { max-width: 70ch; color: var(--on-dark-muted); font-size: .95rem; }
   .programs { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0; }
-  .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .68rem; }
+  .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .75rem; }
   .faq { max-width: 860px; margin-top: 1.5rem; }
   .faq details { border-top: 1px solid var(--line); } .faq details:last-child { border-bottom: 1px solid var(--line); }
   .faq summary { cursor: pointer; padding: 1.1rem 0; font: 1.15rem var(--display); }
