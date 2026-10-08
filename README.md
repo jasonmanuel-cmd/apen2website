@@ -23,7 +23,7 @@ npm test         # lead form handler tests (Resend mocked)
 
 URLs match the old aspen2homes.com WordPress site so search rankings carry over.
 
-## Lead storage (Neon) and emails (Resend)
+## Lead storage (Supabase) and emails (Resend)
 
 Set these in Vercel > Project > Settings > Environment Variables (see `.env.example`):
 
@@ -31,7 +31,8 @@ Set these in Vercel > Project > Settings > Environment Variables (see `.env.exam
 - `NOTIFICATION_EMAIL`: who receives leads. Before the domain is verified in Resend, this must be your Resend account email.
 - `RESEND_FROM`: `Aspen II Homes <leads@aspen2homes.com>` (aspen2homes.com is verified in Resend). Without it the code falls back to `onboarding@resend.dev`, which only delivers to the Resend account owner.
 
-- `DATABASE_URL`: the Neon connection string for project `aspen2-leads` (copy it from the Neon console; server-side only, never commit it). Schema: `db/migrations/20261006000000_create_leads.sql`.
+- `SUPABASE_URL`: the API URL of Supabase project `aspen2-leads` (Dashboard > Project Settings > API).
+- `SUPABASE_SERVICE_ROLE_KEY`: the secret / service_role key from the same page. It bypasses row level security, so it is server-side only: Vercel env vars, never committed, never sent to the browser. Schema: `supabase/migrations/20261006000000_create_leads.sql` (RLS is on with no policies, so the public keys can read and write nothing).
 
 How `api/lead.js` handles a submission:
 
@@ -40,7 +41,7 @@ How `api/lead.js` handles a submission:
 3. The email goes out, and the result is written back to the row (`email_sent`, `email_error`).
 4. The visitor sees an error only if the lead could be neither stored nor emailed. A stored lead whose email failed still counts as received; find those with `select * from public.leads where not email_sent;`.
 
-Without `DATABASE_URL` the form still emails leads but stores nothing. Without `RESEND_API_KEY` leads are stored but not emailed; with neither, the form tells visitors to call.
+Without the two Supabase variables the form still emails leads but stores nothing. Without `RESEND_API_KEY` leads are stored but not emailed; with neither, the form tells visitors to call.
 
 ## Waiting on the owner (from the 2026-10-02 audit)
 
