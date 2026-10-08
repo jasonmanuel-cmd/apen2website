@@ -201,6 +201,7 @@ const nav: [string, string, [string, string][]][] = [
   .btn-sm { padding: .7em 1.1em; }
   /* Two-tone ring: green line on a bone halo. Passes 3:1 on every light surface and on the dark ink sections (gold alone was 2.1-2.8:1 on light). */
   :focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; box-shadow: 0 0 0 5px var(--bone); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: var(--bone); padding: .6em 1em; z-index: 100; }
   .skip:focus { left: 8px; }
 
