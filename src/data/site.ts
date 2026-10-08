@@ -103,6 +103,7 @@ export type Plan = {
   headline: string;
   summary: string;
   highlights: string[];
+  layout?: { text: string; rooms: string[] }; // room-by-room text of the blueprint; owner-approved only
 };
 
 export const plans: Plan[] = [
@@ -116,11 +117,15 @@ export const plans: Plan[] = [
   },
   {
     slug: 'sunset-retreat', folder: 'sunset-retreat', name: 'Sunset Retreat', sqft: 1715, beds: 3, baths: 2, stories: 1, price: 459000, firstRelease: true, tagline: 'Everyday comfort',
-    garage: '2-car garage', dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
+    garage: '2-car garage', dimensions: '52′ × 58′ overall', specSource: 'Sunset Retreat blueprint; layout text approved by owner', specReviewedAt: '2026-10-08',
     status: 'Now reserving in the Sunset Retreat first release',
     headline: 'Now selling in Tehachapi.',
     summary: 'A welcoming open-concept layout connects the great room, dining area and kitchen, with a breakfast nook opening to a covered patio. The primary suite is a quiet retreat with its own bath and wardrobe.',
     highlights: ['Great room with breakfast nook', 'Kitchen with pantry', 'Primary suite with private bath', 'Rear patio', '2-car garage'],
+    layout: {
+      text: 'Single-story, three-bedroom, two-bath plan with a two-car garage. The overall footprint is about 52 feet wide by 58 feet deep. You enter through a covered porch into the entry. The great room opens to the dining area and the kitchen, which has a pantry and a breakfast nook. The nook opens to a rear patio. The primary bedroom sits at one end of the house with its own bath and walk-in wardrobe. Bedrooms 2 and 3 share a hall bath on the opposite side. The laundry is off the garage entry. The garage fits two cars, has a 16-foot sectional door, and houses the tankless water heater. The home is fire-sprinklered.',
+      rooms: ['Entry with covered porch', 'Great room, open to dining and kitchen', 'Kitchen with pantry and breakfast nook, patio access', 'Primary bedroom with private bath and walk-in wardrobe', 'Bedrooms 2 and 3 sharing a hall bath', 'Laundry', '2-car garage, 16′ sectional door, tankless water heater'],
+    },
   },
   {
     slug: 'the-tranquil-abode', folder: 'tranquil-abode', name: 'The Tranquil Abode', sqft: 1736, beds: 3, baths: 2.5, stories: 2, tagline: 'Two-story living',

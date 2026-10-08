@@ -113,13 +113,20 @@ const schema = [
           <h2>See every room <em>before it’s built.</em></h2>
           <p class="muted">The full {plan.name} floor plan, {plan.sqft.toLocaleString('en-US')} sq ft. Open the PDF to zoom into dimensions. Confirm current specifications with our team.</p>
           <p class="muted">Building in the mountains? Read <a href="/guides/tehachapi-weather-new-home/">how Tehachapi’s snow and wind shape a new home</a>.</p>
+          {plan.layout && (
+            <div class="layout">
+              <h3>The layout in words</h3>
+              <p>{plan.layout.text}</p>
+              <ul>{plan.layout.rooms.map((r) => <li>{r}</li>)}</ul>
+            </div>
+          )}
           <div class="bp-ctas">
             <a class="btn" href={pdf} target="_blank" rel="noopener">Open blueprint PDF</a>
             <a class="btn btn-ghost" href={pdf} download>Download</a>
           </div>
         </div>
         <a class="bp-img" href={pdf} target="_blank" rel="noopener" tabindex="-1" aria-label={`Open ${plan.name} blueprint PDF`}>
-          <Image src={bp} alt={`${label} ${plan.sqft.toLocaleString('en-US')}-square-foot ${plan.beds}-bedroom floor plan by ${site.name}`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
+          <Image src={bp} alt={`${label} ${plan.sqft.toLocaleString('en-US')}-square-foot ${plan.beds}-bedroom floor plan by ${site.name}${plan.layout ? '. A written description of the layout is beside the image.' : ''}`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
         </a>
       </div>
     </section>
@@ -195,6 +202,10 @@ const schema = [
   @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
   .blueprint { background: var(--sand-2); padding: clamp(64px, 9vw, 110px) 0; }
   .bp-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+  .layout { margin: 1.5rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--line); }
+  .layout h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+  .layout p { margin: 0 0 .8rem; }
+  .layout ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
   .bp-ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
   .bp-img { display: block; background: #fff; padding: 1rem; border: 1px solid var(--line); box-shadow: 0 20px 50px rgb(var(--ink-rgb) / .1); cursor: zoom-in; transition: transform .4s var(--ease); }
   .bp-img:hover { transform: translateY(-4px); }
