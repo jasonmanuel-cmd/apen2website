@@ -14,7 +14,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Areas we serve</span></nav>
     <p class="eyebrow">Areas we serve</p>
     <h1>Areas We Serve in <em>Eastern Kern County</em></h1>
-    <p class="lede">We're based in Tehachapi, home of our current <a href="/available-homes/">{offer.community} release</a> from {usd(offer.from)}. We also take inquiries from buyers in nearby communities; availability is confirmed case by case.</p>
+    <p class="lede">We’re based in Tehachapi, home of our current <a href="/available-homes/">{offer.community} release</a> from {usd(offer.from)}. We also take inquiries from buyers in nearby communities; availability is confirmed case by case.</p>
   </section>
 
   <section class="section areas">
@@ -24,31 +24,33 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
           <p class="mono k">Building now</p>
           <h2>{c.name}</h2>
           <p>{c.short}</p>
-          <span class="mono">Explore {c.name} →</span>
+          <span class="mono">Explore {c.name} <span aria-hidden="true">→</span></span>
         </a>
       ))}
       <div class="area">
         <p class="mono k">Inquiries welcome</p>
         <h2>Nearby communities</h2>
         <ul>{serviceAreaNames.filter((n) => !published.some((c) => c.name === n)).map((n) => <li>{n}</li>)}</ul>
-        <p>Tell us where you'd like to live and we'll confirm what's available there.</p>
-        <a class="btn" href="/floor-plans/">See floor plans</a>
+        <p>Tell us where you’d like to live and we’ll confirm what’s available there.</p>
+        <a class="btn" href="/contact/?interest=unsure#form">Ask about my area</a>
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); }
   .lede { max-width: 60ch; font-size: 1.15rem; color: var(--muted); } .lede a { color: var(--clay); }
   .areas { background: var(--sand-2); }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 1.25rem; }
   .area { background: var(--paper); border: 1px solid var(--line); padding: 2rem; display: flex; flex-direction: column; gap: .4rem; text-decoration: none; }
   .area.live { background: var(--ink); color: var(--bone); }
-  .area .k { font-size: .64rem; color: var(--clay); margin: 0; } .area.live .k { color: var(--gold); }
+  .area .k { font-size: .75rem; color: var(--clay); margin: 0; } .area.live .k { color: var(--gold); }
   .area h2 { font-size: 1.8rem; margin: .2rem 0; }
   .area ul { padding-left: 1.1rem; margin: .4rem 0; }
   .area .btn { align-self: start; margin-top: .8rem; }
-  .area.live .mono:last-child { color: var(--gold); margin-top: auto; font-size: .7rem; }
+  .area.live .mono:last-child { color: var(--gold); margin-top: auto; font-size: .75rem; }
+  .area.live { transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+  .area.live:hover, .area.live:focus-visible { transform: translateY(-4px); box-shadow: 0 18px 40px rgb(var(--ink-rgb) / .2); }
 </style>
