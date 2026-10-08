@@ -234,5 +234,5 @@ export const usd = (n: number) => '$' + n.toLocaleString('en-US');
 export const theName = (name: string) => (/^the /i.test(name) ? name : `the ${name}`);
 export const sqftRange = () => {
   const s = plans.map((p) => p.sqft);
-  return `${Math.min(...s).toLocaleString()}–${Math.max(...s).toLocaleString()}`;
+  return `${Math.min(...s).toLocaleString('en-US')}–${Math.max(...s).toLocaleString('en-US')}`;
 };

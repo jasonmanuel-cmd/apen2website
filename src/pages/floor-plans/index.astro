@@ -37,6 +37,7 @@ const schema = [
         <div data-tags={`beds-${p.beds} stories-${p.stories} size-${p.sqft < 1800 ? 'small' : 'large'}`}><PlanCard plan={p} /></div>
       ))}
     </div>
+    <p class="mono count" role="status" aria-live="polite">Showing all 6 plans</p>
     <p class="mono empty" hidden>No plans match that filter.</p>
   </section>
 
@@ -51,7 +52,7 @@ const schema = [
             {plans.map((p) => (
               <tr>
                 <th scope="row"><a href={planUrl(p)}>{name(p.slug, p.name)}</a></th>
-                <td>{p.sqft.toLocaleString()}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
+                <td>{p.sqft.toLocaleString('en-US')}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
                 <td>{p.price ? `From ${usd(p.price)}` : 'Request pricing'}</td>
                 <td class="st">{p.status}</td>
                 <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener" aria-label={`${name(p.slug, p.name)} floor plan PDF`}>PDF</a></td>
@@ -70,6 +71,7 @@ const schema = [
   const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
   const cards = [...document.querySelectorAll<HTMLElement>('[data-tags]')];
   const empty = document.querySelector<HTMLElement>('.empty')!;
+  const count = document.querySelector<HTMLElement>('.count')!;
   chips.forEach((chip) => chip.addEventListener('click', () => {
     const f = chip.dataset.filter!;
     chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
@@ -79,26 +81,27 @@ const schema = [
       card.hidden = !on; if (on) shown++;
     });
     empty.hidden = shown > 0;
+    count.textContent = shown === cards.length ? `Showing all ${shown} plans` : `Showing ${shown} of ${cards.length} plans`;
   }));
 </script>
 
 <style>
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   .intro h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); max-width: 18ch; }
   .lede { max-width: 62ch; font-size: 1.15rem; color: var(--muted); }
   .lede a { color: var(--clay); }
   .filters { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 2rem 0 1.5rem; }
-  .filters .mono { font-size: .68rem; margin-right: .3rem; }
-  .chip { font: .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: .55em 1em; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; min-height: 40px; }
+  .filters .mono { font-size: .75rem; margin-right: .3rem; }
+  .chip { font: .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: .55em 1em; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; min-height: 44px; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--bone); }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 1.25rem; }
   .grid > div { display: flex; } .grid > div[hidden] { display: none; } .grid > div > :global(*) { flex: 1; }
-  .empty { color: var(--muted); }
+  .empty, .count { color: var(--muted); font-size: .75rem; }
   .compare { background: var(--sand-2); }
   .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
   table { width: 100%; border-collapse: collapse; min-width: 760px; }
   th, td { text-align: left; padding: .9rem 1rem .9rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  thead th { font: .68rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  thead th { font: .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   tbody th { font: 400 1.15rem var(--display); }
   tbody a { color: var(--clay); }
   .st { font-size: .9rem; color: var(--muted); max-width: 22ch; }
