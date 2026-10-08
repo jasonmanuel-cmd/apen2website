@@ -3,7 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames } from '../data/site';
+import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort } from '../data/site';
 import { faqPage } from '../data/schema';
 
 // Each section uses a different photo; exteriors already appear on the model cards.
@@ -15,7 +15,7 @@ const kitchen = pick('sunset-retreat', 'Kitchen');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
 
 const stats = [
-  ['$459K', 'Plans from'],
+  [fromShort, 'Plans from'],
   [offer.sqft.toLocaleString('en-US'), 'Sq ft · Sunset Retreat'],
   ['6', 'Home models'],
   [offer.downPayment, 'Down option'],
@@ -36,11 +36,7 @@ const trust = [
   'Equal Housing Opportunity',
   ...(site.license ? [site.license] : []),
 ];
-const steps = [
-  ['Tell us your goals', "Share your budget, timeline and whether you’re a first-time buyer. A quick call or form is all it takes."],
-  ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
-  ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
-];
+const steps = buyingSteps;
 const faqSchema = faqPage(faq);
 ---
 <Layout

@@ -221,6 +221,15 @@ export const faq: [string, string, string][] = [
   ['Do you work with VA loans?', 'Yes. We work with VA, FHA and conventional financing. Eligibility, lender approval and program terms apply.', '/financing/'],
 ];
 
+// "How it works" steps, shared by the homepage and the financing page.
+export const buyingSteps = [
+  ['Tell us your goals', 'Share your budget, timeline and whether you’re a first-time buyer. A quick call or form is all it takes.'],
+  ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
+  ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
+];
+// Short price for stat tiles, derived so it can't drift from offer.from.
+export const fromShort = `$${Math.round(offer.from / 1000)}K`;
+
 export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';
 
 export const planUrl = (p: { slug: string }) => `/floor-plans/${p.slug}/`;
