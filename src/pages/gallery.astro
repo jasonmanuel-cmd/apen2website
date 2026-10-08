@@ -16,27 +16,33 @@ const schema = [webPage(path, title, description, { '@type': 'CollectionPage' })
     <p class="eyebrow">Gallery</p>
     <h1>New Home Photos: <em>Inside the Floor Plans</em></h1>
     <p class="lede">Every set is labeled by model. Artist renderings are marked and may differ from completed construction.</p>
+    <nav class="jump" aria-label="Jump to a model"><span class="mono">Jump to:</span>{sets.map(({ p, name }) => <a class="chip mono" href={`#${p.slug}`}>{name}</a>)}</nav>
   </section>
-  {sets.map(({ p, imgs, name }) => (
-    <section class="wrap set">
+  {sets.map(({ p, imgs, name }, n) => (
+    <section class="wrap set" id={p.slug}>
       <div class="head">
         <h2>{name}</h2>
-        <p class="mono">{p.sqft.toLocaleString()} sf · {p.beds} bd · {p.baths} ba · {p.rendering ? 'Artist renderings' : 'Photography'}</p>
-        <a href={planUrl(p)} class="mono more">Specs & floor plan →</a>
+        <p class="mono">{p.sqft.toLocaleString('en-US')} sf · {p.beds} bd · {p.baths} ba · {p.rendering ? 'Artist renderings' : 'Photography'}</p>
+        <a href={planUrl(p)} class="mono more" aria-label={`Specs and floor plan for ${name}`}>Specs & floor plan <span aria-hidden="true">→</span></a>
       </div>
-      <Gallery images={imgs} name={name} />
+      <Gallery images={imgs} name={name} eagerFirst={n === 0} />
     </section>
   ))}
-  <section class="section wrap"><p><a class="btn" href="/floor-plans/">Compare all floor plans</a></p></section>
+  <section class="section wrap"><p class="ctas"><a class="btn" href="/contact/?interest=semi#form">Request pricing</a><a class="btn btn-ghost" href="/floor-plans/">Compare all floor plans</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></p></section>
 </Layout>
 
 <style>
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); }
   .lede { max-width: 60ch; font-size: 1.15rem; color: var(--muted); }
   .set { margin-bottom: clamp(48px, 7vw, 88px); }
+  .jump { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1.5rem 0 0; }
+  .jump .mono { font-size: .75rem; color: var(--muted); margin-right: .3rem; }
+  .chip { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; padding: .55em 1em; min-height: 44px; display: inline-flex; align-items: center; border: 1px solid var(--ink); color: var(--ink); }
+  .chip:hover { background: var(--ink); color: var(--bone); }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1rem; }
   .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1.5rem; margin-bottom: 1rem; }
   .head h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
-  .head .mono { font-size: .7rem; color: var(--muted); margin: 0; }
+  .head .mono { font-size: .75rem; color: var(--muted); margin: 0; }
   .head .more { color: var(--clay); text-decoration: none; }
 </style>

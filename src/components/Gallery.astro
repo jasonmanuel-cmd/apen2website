@@ -1,8 +1,8 @@
 ---
 import { Image, getImage } from 'astro:assets';
 import type { Photo } from '../data/site';
-interface Props { images: Photo[]; name: string }
-const { images, name } = Astro.props;
+interface Props { images: Photo[]; name: string; eagerFirst?: boolean }
+const { images, name, eagerFirst = false } = Astro.props;
 const full = await Promise.all(images.map((p) => getImage({ src: p.src, width: 1600 })));
 const shown = 9; // big tile + two rows of four fills the grid evenly; the rest open in the lightbox
 ---
@@ -10,7 +10,7 @@ const shown = 9; // big tile + two rows of four fills the grid evenly; the rest 
   {images.map((p, i) => (
     <button type="button" class:list={['tile', { big: i === 0, hidden: i >= shown }]} data-full={full[i].src} data-caption={p.caption}
       aria-label={`${p.caption || `Photo ${i + 1} of ${images.length}`}, open photo`}>
-      <Image src={p.src} alt={`${name}: ${p.caption}`} widths={[400, 800]} sizes={i === 0 ? '(max-width: 700px) 100vw, 66vw' : '(max-width: 700px) 50vw, 33vw'} />
+      <Image src={p.src} alt={`${name}: ${p.caption}`} widths={[400, 800]} sizes={i === 0 ? '(max-width: 700px) 100vw, 66vw' : '(max-width: 700px) 50vw, 33vw'} {...(eagerFirst && i === 0 && { loading: 'eager', fetchpriority: 'high' })} />
       {p.caption && <span class="cap mono">{p.caption}</span>}
       {i === shown - 1 && images.length > shown && <span class="more mono">+{images.length - shown} photos</span>}
     </button>
