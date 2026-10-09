@@ -1,0 +1,304 @@
+---
+// Staff lead inbox. Standalone on purpose: no site layout, so no Google Analytics, no site chrome, no search
+// indexing. Not linked anywhere. All data comes from /api/staff/leads and needs the STAFF_TOKEN password.
+import '@fontsource/gloock/latin-400.css';
+import '@fontsource/source-serif-4/latin-400.css';
+import '@fontsource/source-serif-4/latin-600.css';
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lead Inbox | Aspen II Homes Staff</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <link rel="icon" href="/favicon.png" />
+</head>
+<body>
+  <main id="app">
+    <header class="top">
+      <h1>Lead Inbox</h1>
+      <p class="mono who">Aspen II Homes · staff only</p>
+    </header>
+
+    <section id="login" aria-labelledby="login-h">
+      <h2 id="login-h">Staff sign-in</h2>
+      <form id="login-form">
+        <label>Password
+          <input id="token" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="btn" type="submit">Open inbox</button>
+        <p id="login-msg" class="msg" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="inbox" hidden aria-label="Leads">
+      <div class="bar">
+        <p id="counts" class="mono" role="status" aria-live="polite"></p>
+        <div class="bar-btns">
+          <button class="btn ghost" id="refresh" type="button">Refresh</button>
+          <button class="btn ghost" id="logout" type="button">Sign out</button>
+        </div>
+      </div>
+      <div class="filters" role="group" aria-label="Filter by status" id="status-filters"></div>
+      <div class="search-row">
+        <label class="grow">Search name, email or phone
+          <input id="q" type="search" autocomplete="off" spellcheck="false" />
+        </label>
+        <label class="check"><input id="unsent" type="checkbox" /> Email not sent</label>
+      </div>
+      <p id="list-msg" class="msg" role="status" aria-live="polite"></p>
+      <ul id="list" role="list"></ul>
+      <button class="btn ghost" id="more" type="button" hidden>Load more</button>
+    </section>
+  </main>
+
+  <script>
+    // @ts-nocheck
+    // Every value from the database is written with textContent, never as HTML, so a lead can't inject markup here.
+    const STATUSES = ['new', 'contacted', 'qualified', 'nurturing', 'won', 'lost', 'spam', 'test'];
+    const LABEL = { new: 'New', contacted: 'Contacted', qualified: 'Qualified', nurturing: 'Nurturing', won: 'Won', lost: 'Lost', spam: 'Spam', test: 'Test', all: 'All' };
+    const KEY = 'aspen_staff_inbox';
+    const $ = (id) => document.getElementById(id);
+    const state = { status: 'new', unsent: false, q: '', offset: 0, leads: [], total: 0, limit: 50 };
+    let token = '';
+    try { token = sessionStorage.getItem(KEY) || ''; } catch {}
+
+    const el = (tag, props = {}, ...kids) => {
+      const n = document.createElement(tag);
+      for (const [k, v] of Object.entries(props)) {
+        if (v == null || v === false) continue;
+        if (k === 'class') n.className = v;
+        else if (k === 'text') n.textContent = v;
+        else if (k === 'on') for (const [ev, fn] of Object.entries(v)) n.addEventListener(ev, fn);
+        else n.setAttribute(k, v === true ? '' : v);
+      }
+      for (const kid of kids.flat()) if (kid != null) n.append(kid);
+      return n;
+    };
+
+    const when = (iso) => iso ? new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+    const day = (iso) => iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }) : '';
+    const dateValue = (iso) => (iso ? String(iso).slice(0, 10) : '');
+    const phoneDigits = (p) => String(p || '').replace(/[^\d+]/g, '');
+    const EMAIL = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/;
+
+    class AuthError extends Error {}
+    const api = async (path, init = {}) => {
+      const res = await fetch(`/api/staff/leads${path}`, {
+        ...init,
+        headers: { Authorization: `Bearer ${token}`, ...(init.body ? { 'Content-Type': 'application/json' } : {}) }
+      });
+      let data = null;
+      try { data = await res.json(); } catch {}
+      if (res.status === 401) throw new AuthError(data?.error || 'Wrong password.');
+      if (!res.ok || !data?.ok) throw new Error(data?.error || 'Something went wrong. Try again.');
+      return data;
+    };
+
+    const show = (signedIn) => { $('login').hidden = signedIn; $('inbox').hidden = !signedIn; };
+    const signOut = (msg = '') => {
+      token = '';
+      try { sessionStorage.removeItem(KEY); } catch {}
+      state.leads = []; $('list').replaceChildren(); $('token').value = '';
+      $('login-msg').textContent = msg;
+      show(false);
+      if (msg) $('token').focus();
+    };
+
+    const buildFilters = () => {
+      $('status-filters').replaceChildren(...['new', 'contacted', 'qualified', 'nurturing', 'won', 'lost', 'spam', 'test', 'all'].map((s) =>
+        el('button', { type: 'button', class: 'chip', 'aria-pressed': String(state.status === s), text: LABEL[s], on: { click: () => { state.status = s; buildFilters(); load(); } } })));
+    };
+
+    const field = (label, value) => value ? el('div', {}, el('dt', { class: 'mono', text: label }), el('dd', { text: value })) : null;
+
+    const buildItem = (lead, open) => {
+      const unsent = !lead.email_sent;
+      const summary = el('summary', {},
+        el('span', { class: 'row-main' },
+          el('strong', { text: lead.name }),
+          el('span', { class: 'mono sub', text: [when(lead.created_at), lead.plan || lead.community || lead.interest, lead.source].filter(Boolean).join(' · ') })),
+        el('span', { class: 'badges' },
+          el('span', { class: `badge s-${lead.status}`, text: LABEL[lead.status] || lead.status }),
+          unsent && el('span', { class: 'badge warn', text: 'Email not sent' }),
+          lead.follow_up_at && el('span', { class: 'badge', text: `Follow up ${day(lead.follow_up_at)}` })));
+
+      const email = lead.email && EMAIL.test(lead.email) ? lead.email : '';
+      const actions = el('p', { class: 'actions' },
+        el('a', { class: 'btn', href: `tel:${phoneDigits(lead.phone)}`, text: `Call ${lead.phone}` }),
+        el('a', { class: 'btn ghost', href: `sms:${phoneDigits(lead.phone)}`, text: 'Text' }),
+        email && el('a', { class: 'btn ghost', href: `mailto:${email}`, text: 'Email' }));
+
+      const details = el('dl', { class: 'details' },
+        field('Phone', lead.phone), field('Email', lead.email), field('Interested in', lead.interest), field('Model', lead.plan),
+        field('Community', lead.community), field('Best way to reach', lead.contact_pref), field('Stage', lead.stage),
+        field('Timeline', lead.buy_window), field('Budget', lead.budget),
+        field('Asked about', [lead.first_time && 'First-time buyer options', lead.military && 'VA / military options'].filter(Boolean).join(', ')),
+        field('Source', [lead.source, lead.origin_domain].filter(Boolean).join(' · ')),
+        field('Contacted', when(lead.contacted_at)),
+        unsent && lead.email_error ? field('Email problem', lead.email_error) : null,
+        lead.notes ? el('div', { class: 'wide' }, el('dt', { class: 'mono', text: 'What they wrote' }), el('dd', { class: 'notes', text: lead.notes })) : null);
+
+      const status = el('p', { class: 'msg', role: 'status', 'aria-live': 'polite' });
+      const sel = el('select', { name: 'status' }, STATUSES.map((s) => el('option', { value: s, text: LABEL[s], selected: s === lead.status })));
+      const who = el('input', { name: 'assigned_to', maxlength: '60', autocomplete: 'off', value: lead.assigned_to || '' });
+      const fu = el('input', { name: 'follow_up_at', type: 'date', value: dateValue(lead.follow_up_at) });
+      const notes = el('textarea', { name: 'staff_notes', rows: '4', maxlength: '3000' });
+      notes.value = lead.staff_notes || '';
+      const save = el('button', { class: 'btn', type: 'submit', text: 'Save changes' });
+      const form = el('form', { class: 'edit', on: { submit: async (e) => {
+        e.preventDefault();
+        save.disabled = true; status.textContent = 'Saving…';
+        try {
+          const data = await api(`?id=${encodeURIComponent(lead.id)}`, { method: 'PATCH', body: JSON.stringify({
+            status: sel.value, assigned_to: who.value, follow_up_at: fu.value || null, staff_notes: notes.value }) });
+          const i = state.leads.findIndex((l) => l.id === lead.id);
+          if (i >= 0) state.leads[i] = data.lead;
+          const fresh = buildItem(data.lead, true);
+          li.replaceWith(fresh);
+          fresh.querySelector('.edit .msg').textContent = 'Saved.';
+        } catch (err) {
+          if (err instanceof AuthError) return signOut('Your session ended. Sign in again.');
+          status.textContent = err.message; save.disabled = false;
+        }
+      } } },
+        el('label', {}, 'Status', sel),
+        el('label', {}, 'Assigned to', who),
+        el('label', {}, 'Follow up on', fu),
+        el('label', { class: 'wide' }, 'Team notes', notes),
+        el('div', { class: 'wide' }, save, status));
+
+      const li = el('li', { class: 'lead' }, el('details', { open }, summary, actions, details, form));
+      return li;
+    };
+
+    const renderList = () => {
+      $('list').replaceChildren(...state.leads.map((l) => buildItem(l, false)));
+      $('more').hidden = state.leads.length >= state.total;
+      $('list-msg').textContent = state.leads.length ? '' : 'No leads match.';
+    };
+
+    const counts = (d) => {
+      const parts = [];
+      if (d.newCount != null) parts.push(`${d.newCount} new`);
+      if (d.unsentCount) parts.push(`${d.unsentCount} email not sent`);
+      parts.push(d.total != null ? `showing ${state.leads.length} of ${d.total}` : `showing ${state.leads.length}`);
+      $('counts').textContent = parts.join(' · ');
+    };
+
+    const query = () => {
+      const p = new URLSearchParams({ status: state.status, limit: String(state.limit), offset: String(state.offset) });
+      if (state.unsent) p.set('unsent', '1');
+      if (state.q) p.set('q', state.q);
+      return `?${p}`;
+    };
+
+    let seq = 0;
+    const load = async (append = false, fromLogin = false) => {
+      const mine = ++seq;
+      if (!append) state.offset = 0;
+      $('list-msg').textContent = 'Loading…';
+      try {
+        const d = await api(query());
+        if (mine !== seq) return;
+        state.total = d.total ?? d.leads.length;
+        state.leads = append ? state.leads.concat(d.leads) : d.leads;
+        renderList(); counts(d);
+        show(true);
+      } catch (err) {
+        if (mine !== seq) return;
+        if (err instanceof AuthError) { if (!fromLogin) signOut('Your session ended. Sign in again.'); throw err; }
+        $('list-msg').textContent = err.message;
+        throw err;
+      }
+    };
+
+    $('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.submitter || e.target.querySelector('button');
+      token = $('token').value.trim();
+      if (!token) return;
+      btn.disabled = true; $('login-msg').textContent = 'Checking…';
+      try {
+        await load(false, true);
+        try { sessionStorage.setItem(KEY, token); } catch {}
+        $('login-msg').textContent = '';
+      } catch (err) {
+        if (!(err instanceof AuthError)) { $('login-msg').textContent = err.message; show(false); }
+        else { token = ''; $('login-msg').textContent = err.message; $('token').focus(); }
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    $('logout').addEventListener('click', () => signOut());
+    $('refresh').addEventListener('click', () => load().catch(() => {}));
+    $('more').addEventListener('click', () => { state.offset = state.leads.length; load(true).catch(() => {}); });
+    $('unsent').addEventListener('change', (e) => { state.unsent = e.target.checked; load().catch(() => {}); });
+    let timer;
+    $('q').addEventListener('input', (e) => { clearTimeout(timer); timer = setTimeout(() => { state.q = e.target.value.trim(); load().catch(() => {}); }, 300); });
+
+    buildFilters();
+    if (token) { show(true); load().catch(() => {}); }
+  </script>
+
+  <style is:global>
+    :root { --ink: #10280B; --ink-rgb: 16 40 11; --bone: #F8F3E7; --bg: #F2E9D6; --paper: #FCF9F1; --sand-2: #E4E8D2; --clay: #0E4A06; --clay-hover: #073602; --gold: #C98A00; --rust: #7A3300; --muted: #5C5546; --line: rgb(16 40 11 / .14); --display: "Gloock", serif; --serif: "Source Serif 4", Georgia, serif; --mono: "IBM Plex Mono", monospace; }
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 1.0625rem/1.55 var(--serif); }
+    #app { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+    h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .mono { font-family: var(--mono); font-size: .75rem; letter-spacing: .04em; }
+    .top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .who { color: var(--muted); margin: 0; }
+    :focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; box-shadow: 0 0 0 5px var(--bone); }
+    #login { max-width: 420px; background: var(--paper); border: 1px solid var(--line); padding: 1.5rem; }
+    label { display: block; font: 600 .875rem var(--serif); }
+    input, select, textarea { display: block; width: 100%; margin-top: .3rem; font: 1rem var(--serif); color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 2px; padding: .7em .8em; min-height: 44px; }
+    textarea { resize: vertical; }
+    #login-form { display: grid; gap: 1rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .6em 1.2em; background: var(--clay); color: var(--bone); border: 1px solid var(--clay); font: 500 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; cursor: pointer; }
+    .btn:hover { background: var(--clay-hover); }
+    .btn:disabled { opacity: .6; cursor: default; }
+    .btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+    .btn.ghost:hover { background: var(--ink); color: var(--bone); }
+    .msg { min-height: 1.4em; margin: 0; font-size: .9rem; color: var(--muted); }
+    #login-msg { color: var(--rust); }
+    .bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .bar p { margin: 0; color: var(--muted); }
+    .bar-btns { display: flex; gap: .5rem; }
+    .filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+    .chip { min-height: 44px; padding: .5em 1em; background: transparent; border: 1px solid var(--ink); color: var(--ink); font: .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+    .chip[aria-pressed="true"] { background: var(--ink); color: var(--bone); }
+    .search-row { display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; margin-bottom: .5rem; }
+    .grow { flex: 1 1 260px; }
+    .check { display: flex; align-items: center; gap: .5rem; min-height: 44px; font-weight: 400; }
+    .check input { width: 22px; height: 22px; margin: 0; min-height: 0; }
+    #list { list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: .75rem; }
+    .lead { background: var(--paper); border: 1px solid var(--line); }
+    .lead summary { display: flex; justify-content: space-between; gap: 1rem; align-items: center; flex-wrap: wrap; padding: .9rem 1rem; cursor: pointer; min-height: 44px; list-style-position: inside; }
+    .row-main { display: grid; gap: .1rem; min-width: 0; }
+    .row-main strong { font-size: 1.1rem; overflow-wrap: anywhere; }
+    .sub { color: var(--muted); }
+    .badges { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .badge { font: .75rem var(--mono); padding: .2em .6em; border: 1px solid var(--line); background: var(--bone); }
+    .badge.s-new { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+    .badge.warn { background: #fff3d6; border-color: var(--gold); color: var(--rust); }
+    .lead details > :not(summary) { margin-left: 1rem; margin-right: 1rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 0; margin-bottom: 1rem; }
+    .details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .8rem 1.2rem; margin-bottom: 1rem; }
+    .details dt { color: var(--muted); } .details dd { margin: .1rem 0 0; overflow-wrap: anywhere; }
+    .wide { grid-column: 1 / -1; }
+    .notes { white-space: pre-wrap; }
+    .edit { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; padding: 1rem 0 1.25rem; border-top: 1px solid var(--line); }
+    .edit .msg { margin-top: .5rem; }
+    #more { display: block; margin: 0 auto; }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+  </style>
+</body>
+</html>
