@@ -10,7 +10,8 @@ import { faqPage } from '../data/schema';
 const pick = (folder: string, caption: string) => photos(folder).find((p) => p.caption === caption)!.src;
 // Hero shows the Sunset Retreat model, matching the Sunset Retreat headline and card.
 const hero = pick('sunset-retreat', 'Exterior');
-const sunset = pick('sunset-retreat', 'Great room');
+// The release card shows the kitchen island view; the split section further down uses the other kitchen photo.
+const cardKitchen = pick('sunset-retreat', 'Kitchen, alternate view');
 const kitchen = pick('sunset-retreat', 'Kitchen');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
 
@@ -60,7 +61,7 @@ const faqSchema = faqPage(faq);
         </div>
       </div>
       <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/" aria-label={`First release, only 2 homes: ${offer.community}, from ${usd(offer.from)}`}>
-        <Image src={sunset} alt="Great room in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
+        <Image src={cardKitchen} alt="Kitchen with island in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
         <div>
           <p class="mono k">First release · only 2 homes</p>
           <p class="name">{offer.community}</p>
