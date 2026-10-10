@@ -51,6 +51,29 @@ export const offer = {
   ],
 };
 
+// Availability wording is derived from offer.release, so changing a status there updates every page that mentions it.
+const joinList = (a: string[]) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
+const countWord = (n: number) => ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'][n] ?? String(n);
+const releaseHomes = offer.release.filter(([h]) => /^Home /.test(h));
+const reservingHomes = releaseHomes.filter(([, s]) => s === 'Reserving').map(([h]) => h);
+const verb = reservingHomes.length > 1 ? 'are' : 'is';
+const waitlistRow = offer.release.find(([, s]) => s === 'Waitlist')?.[0];
+export const availability = {
+  releaseCount: countWord(releaseHomes.length),                // "Two" homes in the first release
+  reservingCount: countWord(reservingHomes.length),            // "Two" reserving now
+  reservingList: joinList(reservingHomes),                     // "Home 1 and Home 2"
+  reservingNow: reservingHomes.length ? `${joinList(reservingHomes)} ${verb} reserving now` : 'No homes are reserving right now',
+  nowReserving: reservingHomes.length ? `${joinList(reservingHomes)} now reserving` : 'Availability by request',
+  waitlistSentence: waitlistRow ? ` ${waitlistRow} has a waitlist.` : '',
+  allReserving: reservingHomes.length > 0 && reservingHomes.length === releaseHomes.length,
+};
+const reservingHomesPoint = reservingHomes.length
+  ? `${countWord(reservingHomes.length)} ${reservingHomes.length > 1 ? 'homes' : 'home'} reserving now`
+  : 'Reservations by request';
+const areaAvailability = reservingHomes.length
+  ? `${joinList(reservingHomes)} ${verb} reserving${waitlistRow ? `, with ${waitlistRow} on a waitlist` : ''}.`
+  : 'Availability is confirmed case by case.';
+
 export const financing = {
   programs: ['0% Down First-Time Buyer', 'FHA Low Down', 'VA Veterans', 'Conventional', '$15K Early-Buyer Credit'],
   perks: [
@@ -183,9 +206,9 @@ export const communities: Community[] = [
     h1: 'New Homes and Semi-Custom Builds in Tehachapi, CA',
     description: 'Aspen II Homes builds in Tehachapi, home of the Sunset Retreat first release from $459,000. Reserve a home or choose one of six semi-custom models.',
     intro: 'Tehachapi is where Aspen II Homes is based and where our current release, Sunset Retreat, is located. Reserve one of the first two Sunset Retreat homes or choose one of six semi-custom models.',
-    points: ['Sunset Retreat first release reserving', 'Six models to choose from', 'Two homes reserving now'],
+    points: ['Sunset Retreat first release reserving', 'Six models to choose from', reservingHomesPoint],
     faq: [
-      ['Are new homes available in Tehachapi now?', 'Yes. Sunset Retreat is our current release in Tehachapi. Home 1 and Home 2 are reserving, with Phase 2 on a waitlist. Plans start at $459,000; pricing and availability are subject to change.'],
+      ['Are new homes available in Tehachapi now?', 'Yes. Sunset Retreat is our current release in Tehachapi. ' + areaAvailability + ' Plans start at $459,000; pricing and availability are subject to change.'],
       ['Which models can I build in Tehachapi?', 'The Sunset Retreat release uses the Sunset Retreat model (1,715 sq ft, 3 bed, 2 bath). Ask us where the other five models can be built next.'],
     ],
   },

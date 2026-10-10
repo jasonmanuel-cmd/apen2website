@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
-import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl } from '../data/site';
+import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
@@ -35,7 +35,7 @@ const qa: [string, string][] = [
     ? `${plan.name} is a two-story plan: living on the main floor, bedrooms upstairs.`
     : `${plan.name} is a single-story plan, with every room on one level.`],
   [`Can ${theName(plan.name)} be built at Sunset Retreat?`, sr
-    ? `Yes. The ${offer.community} first release in Tehachapi uses this plan, from ${usd(offer.from)}. Home 1 and Home 2 are reserving now.`
+    ? `Yes. The ${offer.community} first release in Tehachapi uses this plan, from ${usd(offer.from)}. ${availability.reservingNow}.`
     : `The current ${offer.community} release uses the ${offer.community} model. Ask us where ${theName(plan.name)} can be built next.`],
   ['Which finishes can I choose?', 'Every model is semi-custom: choose flooring, paint colors, cabinetry and more. Available choices depend on the construction stage.'],
   ['How long until move-in?', sr
