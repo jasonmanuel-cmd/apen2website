@@ -1,7 +1,8 @@
 ---
 import { site, plans, communities, offer, usd } from '../data/site';
-interface Props { plan?: string; community?: string; interest?: string; source?: string; dark?: boolean }
-const { plan = '', community = '', interest = '', source = 'Website', dark = false } = Astro.props;
+interface Props { plan?: string; community?: string; interest?: string; source?: string; dark?: boolean; compact?: boolean }
+// compact: for pages with no model/community context (the contact page); those two choices move into "Tell us more".
+const { plan = '', community = '', interest = '', source = 'Website', dark = false, compact = false } = Astro.props;
 const interests = [
   ['reserve', `Reserve & customize a ${offer.community} home (from ${usd(offer.from)})`],
   ['semi', 'Choose a model (semi-custom)'],
@@ -14,9 +15,10 @@ const interests = [
 <form class:list={['lead', { dark }]} action="/api/lead" method="post" data-lead aria-label="Request information">
   <input type="hidden" name="source" value={source} />
   <div class="hp" aria-hidden="true" inert><label>Leave blank <input name="honeypot" tabindex="-1" autocomplete="off" /></label></div>
+  <p class="req mono" aria-hidden="true">* required</p>
   <div class="row">
-    <label>Name <span aria-hidden="true">*</span><input name="name" required autocomplete="name" spellcheck="false" /></label>
-    <label>Phone <span aria-hidden="true">*</span><input name="phone" type="tel" required autocomplete="tel" /></label>
+    <label><span>Name <span aria-hidden="true">*</span></span><input name="name" required autocomplete="name" spellcheck="false" /></label>
+    <label><span>Phone <span aria-hidden="true">*</span></span><input name="phone" type="tel" required autocomplete="tel" /></label>
   </div>
   <label>Email<input name="email" type="email" autocomplete="email" spellcheck="false" /></label>
   <label>I'm interested in
@@ -24,6 +26,7 @@ const interests = [
       {interests.map(([v, l]) => <option value={l} data-key={v} selected={v === interest}>{l}</option>)}
     </select>
   </label>
+  {!compact && (
   <div class="row">
     <label>Model
       <select name="plan">
@@ -38,8 +41,25 @@ const interests = [
       </select>
     </label>
   </div>
+  )}
   <details class="more">
     <summary class="mono">Tell us more (optional)</summary>
+    {compact && (
+    <div class="row">
+      <label>Model
+        <select name="plan">
+          <option value="">Not sure yet</option>
+          {plans.map((p) => <option selected={p.name === plan}>{p.name}</option>)}
+        </select>
+      </label>
+      <label>Community
+        <select name="community">
+          <option value="">Not sure yet</option>
+          {communities.map((c) => <option selected={c.name === community}>{c.name}</option>)}
+        </select>
+      </label>
+    </div>
+    )}
     <div class="row">
       <label>Best way to reach you
         <select name="contactPref"><option value="">Any</option><option>Call</option><option>Text</option><option>Email</option></select>
@@ -117,12 +137,13 @@ const interests = [
   input, select, textarea { font: 1rem var(--serif); color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 2px; padding: .8em .9em; width: 100%; min-width: 0; }
   input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--clay); outline-offset: 0; box-shadow: 0 0 0 4px var(--bone); }
   .hp { position: absolute; left: -9999px; }
-  .status { font-size: .72rem; color: var(--muted); margin: 0; }
+  .status { font-size: .75rem; color: var(--muted); margin: 0; }
+  .req { font-size: .75rem; color: var(--muted); margin: 0; }
   .status a { color: var(--clay); }
   .status:focus { outline: none; box-shadow: none; }
   .sent > :not(.status) { display: none; }
   .sent .status { font: 1.5rem var(--display); text-transform: none; letter-spacing: 0; color: var(--ink); }
-  .dark label, .dark .status { color: var(--on-dark-muted); }
+  .dark label, .dark .status, .dark .req { color: var(--on-dark-muted); }
   .dark .status a { color: var(--gold); }
   .dark.sent .status { color: var(--bone); }
 </style>

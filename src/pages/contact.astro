@@ -3,11 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, communities, offer } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
-const reasons = [
-  `Reserve & customize a ${offer.community} home`,
-  'Get floor plans, pricing and the incentive breakdown',
-  `Walk the ${offer.community} community and model plans`,
-];
 const choices = [
   ['reserve', `Reserve a ${offer.community} home`],
   ['semi', 'Request model pricing'],
@@ -28,14 +23,12 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
         <p class="eyebrow">Contact</p>
         <h1>Talk With Aspen II Homes About <em>Your New Home</em></h1>
         <p class="lede">Reserve a {offer.community} home, or choose a semi-custom model. Zero pressure, zero obligation, just information.</p>
+        <p class="quick"><a class="btn" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES<span class="sr-only"> to {site.phone}</span></a></p>
         <ul class="choices" role="list" aria-label="What can we help with?">
           {choices.map(([key, label]) => <li><a href={`?interest=${key}#form`} data-choice={key}>{label}</a></li>)}
         </ul>
-        <ul class="reasons">{reasons.map((r) => <li>{r}</li>)}</ul>
         <h2 class="sr-only">Contact details</h2>
         <dl class="info">
-          <div><dt class="mono">Call</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
-          <div><dt class="mono">Text</dt><dd><a href={site.sms()}>Text HOMES to {site.phone}</a></dd></div>
           <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
           <div><dt class="mono">Address</dt><dd><a href={mapUrl} target="_blank" rel="noopener">{site.address}<span class="sr-only"> (opens map in a new tab)</span></a></dd></div>
           <div><dt class="mono">Hours</dt><dd>{site.hours}</dd></div>
@@ -46,7 +39,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
       <div class="card" id="form" tabindex="-1">
         <h2 class="sr-only">Send us a message</h2>
         <p class="mono k">Quick form · we reply {site.followUp}</p>
-        <LeadForm source="Contact page" interest="tour" />
+        <LeadForm source="Contact page" interest="tour" compact />
       </div>
     </div>
   </section>
@@ -77,9 +70,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
   .choices { list-style: none; padding: 0; margin: 1.2rem 0 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; }
   .choices a { display: inline-flex; align-items: center; min-height: 44px; border: 1px solid var(--ink); padding: .6em 1.1em; text-decoration: none; font: .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .choices a:hover { background: var(--ink); color: var(--bone); }
-  .reasons { list-style: none; padding: 0; margin: 1.5rem 0; }
-  .reasons li { padding: .6rem 0 .6rem 1.8rem; position: relative; }
-  .reasons li::before { content: "✓" / ""; position: absolute; left: 0; color: var(--sage); }
+  .quick { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.2rem 0 0; }
   .info { margin: 2rem 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
   .info dt { font-size: .75rem; color: var(--muted); }
   .info dd { margin: .2rem 0 0; font-family: var(--display); font-size: 1.25rem; }
