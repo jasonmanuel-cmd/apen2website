@@ -3,7 +3,7 @@ import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Gallery from '../components/Gallery.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, offer, plans, photos, financing, usd, disclaimer, planUrl } from '../data/site';
+import { site, offer, plans, photos, financing, usd, disclaimer, planUrl, availability } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 // The community page. The 1,715 sq ft floor plan of the same name lives at /sunset-retreat/.
@@ -12,11 +12,11 @@ const imgs = photos(model.folder);
 const og = imgs[0] ? (await getImage({ src: imgs[0].src, width: 1200, format: 'jpg' })).src : undefined;
 const path = '/available-homes/';
 const title = `Sunset Retreat Homes for Sale in Tehachapi | ${site.name}`;
-const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bed, ${model.baths} bath single-story homes from ${usd(offer.from)}. Home 1 and Home 2 now reserving.`;
+const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bed, ${model.baths} bath single-story homes from ${usd(offer.from)}. ${availability.nowReserving}.`;
 const qa: [string, string][] = [
   ['What is Sunset Retreat?', `Sunset Retreat is ${site.name}’ current new-home release in Tehachapi, California. The first release homes are the Sunset Retreat model: ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bedrooms, ${model.baths} bathrooms, single-story.`],
   ['How much do Sunset Retreat homes cost?', `The first release starts at ${usd(offer.from)}. Ask us what the starting price includes. Pricing and availability are subject to change.`],
-  ['How many homes are available?', 'Two homes are in the first release: Home 1 and Home 2 are reserving now. Phase 2 has a waitlist.'],
+  ['How many homes are available?', `${availability.releaseCount} homes are in the first release: ${availability.reservingNow}.${availability.waitlistSentence}`],
   ['How long until move-in?', 'First-release homes are estimated at roughly three months to move-in, subject to construction conditions.'],
   ['Can I choose my finishes?', 'Yes. Reserving early lets you personalize finishes such as flooring, paint colors and cabinetry before the home is built. Available choices depend on the construction stage.'],
   ['What financing is available?', `A 0% down option for eligible first-time buyers, FHA, VA and conventional loans, and up to ${usd(offer.earlyCredit)} in early-buyer savings. Eligibility, lender approval and program terms apply.`],
@@ -34,7 +34,7 @@ const schema = [
       <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Sunset Retreat, Tehachapi</span></nav>
       <p class="eyebrow reveal">Current release · {offer.city}</p>
       <h1>New Homes at Sunset Retreat in <em>Tehachapi, California</em></h1>
-      <p class="lede">The first two homes at Sunset Retreat are reserving now, from {usd(offer.from)}. Each is the {model.sqft.toLocaleString('en-US')} sq ft Sunset Retreat model, and reserving early lets you choose your finishes before it’s built.</p>
+      <p class="lede">{availability.allReserving ? `The first ${availability.releaseCount.toLowerCase()} homes at Sunset Retreat are reserving now` : `${availability.reservingNow.replace(/ now$/, '')} at Sunset Retreat`}, from {usd(offer.from)}. Each is the {model.sqft.toLocaleString('en-US')} sq ft Sunset Retreat model, and reserving early lets you choose your finishes before it’s built.</p>
       <div class="ctas"><a class="btn" href="#reserve">Reserve a home</a><a class="btn btn-ghost" href="#availability">See availability</a></div>
     </div>
   </section>
@@ -43,10 +43,10 @@ const schema = [
     <div class="wrap avail">
       <div>
         <p class="eyebrow">Pricing & availability</p>
-        <h2>First release: <em>two homes.</em></h2>
+        <h2>First release: <em>{availability.releaseCount.toLowerCase()} homes.</em></h2>
         <table>
           <caption class="mono">Last confirmed {site.verified}. Subject to change without notice.</caption>
-          <thead><tr><th scope="col">Home</th><th scope="col">Status</th></tr></thead>
+          <thead><tr><th scope="col">Release</th><th scope="col">Status</th></tr></thead>
           <tbody>{offer.release.map(([h, st]) => <tr><th scope="row">{h}</th><td class:list={[{ live: st === 'Reserving' }]}>{st}</td></tr>)}</tbody>
         </table>
       </div>
@@ -68,7 +68,13 @@ const schema = [
     <p class="muted narrow">{model.summary}</p>
     <ul class="hl">{model.highlights.map((h) => <li>{h}</li>)}</ul>
     {imgs.length > 0 && <><p class="mono note">Photography of the Sunset Retreat model plan.</p><Gallery images={imgs} name="Sunset Retreat model" /></>}
-    <p class="ctas-row"><a class="btn btn-ghost" href={planUrl(model)}>Floor plan & full specs</a><a class="btn btn-ghost" href={`/plans/${model.slug}.pdf`} target="_blank" rel="noopener">Floor plan PDF</a></p>
+    {model.layout && (
+      <div class="layout">
+        <h3>The layout in words</h3>
+        <p>{model.layout.text}</p>
+      </div>
+    )}
+    <p class="ctas-row"><a class="btn btn-ghost" href={planUrl(model)}>Floor plan & full specs</a><a class="btn btn-ghost" href={`/plans/${model.slug}.pdf`} target="_blank" rel="noopener">Floor plan PDF<span class="sr-only"> (opens in a new tab)</span></a></p>
   </section>
 
   <section class="section money">
@@ -128,6 +134,9 @@ const schema = [
   .hl { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.5rem 0 2rem; }
   .hl li { border: 1px solid var(--line); background: var(--paper); padding: .45em .9em; font-size: .95rem; }
   .note { font-size: .75rem; color: var(--muted); }
+  .layout { max-width: 60ch; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+  .layout h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+  .layout p { margin: 0; }
   .money { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--bone); }
   .money em, .money .eyebrow { color: var(--gold); }
   .money p:not(.eyebrow) { max-width: 70ch; color: var(--on-dark-muted); font-size: .95rem; }
