@@ -33,24 +33,24 @@ const sources: [string, string][] = [
   h1="First-Time Home Buyer Programs" em="in Kern County, 2026" reviewed="October 2026" summary={summary} faq={faq} sources={sources}>
 
   <h2>The programs at a glance</h2>
-  <table>
-    <thead><tr><th>Program</th><th>What you get</th><th>Who it's for</th><th>The catch</th></tr></thead>
+  <table role="table" tabindex="0" aria-label="Programs at a glance">
+    <thead><tr><th scope="col">Program</th><th scope="col">What you get</th><th scope="col">Who it's for</th><th scope="col">The catch</th></tr></thead>
     <tbody>
-      <tr><td><strong>CalHFA MyHome</strong></td><td>Deferred-payment second loan: up to 3.5% of price (FHA) or 3% (conventional)</td><td>First-time buyers under CalHFA income limits</td><td>Used with a CalHFA first mortgage; homebuyer education required</td></tr>
-      <tr><td><strong>CalHFA Dream For All</strong></td><td>Up to 20% of price, max $150,000, for down payment or closing costs</td><td>First-time buyers; at least one first-generation buyer</td><td>Random drawing; repay the amount plus 20% of appreciation (15% if income is at or below 80% of area median)</td></tr>
-      <tr><td><strong>VA purchase loan</strong></td><td>No down payment if the price isn't above appraised value; no mortgage insurance</td><td>Eligible veterans and service members</td><td>A VA funding fee may apply</td></tr>
-      <tr><td><strong>FHA loan</strong></td><td>A low down payment first loan</td><td>Buyers with smaller savings or lighter credit history</td><td>Mortgage insurance is added to the payment</td></tr>
-      <tr><td><strong>USDA loan</strong></td><td>Home loans in areas USDA designates as rural</td><td>Buyers under USDA income limits</td><td>Depends on the exact address; check USDA's map</td></tr>
+      <tr><th scope="row"><strong>CalHFA MyHome</strong></th><td>Deferred-payment second loan: up to 3.5% of price (FHA) or 3% (conventional)</td><td>First-time buyers under CalHFA income limits</td><td>Used with a CalHFA first mortgage; homebuyer education required</td></tr>
+      <tr><th scope="row"><strong>CalHFA Dream For All</strong></th><td>Up to 20% of price, max $150,000, for down payment or closing costs</td><td>First-time buyers; at least one first-generation buyer</td><td>Random drawing; repay the amount plus 20% of appreciation (15% if income is at or below 80% of area median)</td></tr>
+      <tr><th scope="row"><strong>VA purchase loan</strong></th><td>No down payment if the price isn't above appraised value; no mortgage insurance</td><td>Eligible veterans and service members</td><td>A VA funding fee may apply</td></tr>
+      <tr><th scope="row"><strong>FHA loan</strong></th><td>A low down payment first loan</td><td>Buyers with smaller savings or lighter credit history</td><td>Mortgage insurance is added to the payment</td></tr>
+      <tr><th scope="row"><strong>USDA loan</strong></th><td>Home loans in areas USDA designates as rural</td><td>Buyers under USDA income limits</td><td>Depends on the exact address; check USDA's map</td></tr>
     </tbody>
   </table>
 
   <h2>What this looks like on a Sunset Retreat home</h2>
   <p>Sunset Retreat homes start at {usd(offer.from)}. Here is the most the MyHome program could cover at that price. Your real amount depends on the appraisal, the loan type and the program's current terms.</p>
-  <table>
-    <thead><tr><th>Loan type</th><th>MyHome rate</th><th>Up to</th></tr></thead>
+  <table role="table" tabindex="0" aria-label="MyHome amounts on a Sunset Retreat home">
+    <thead><tr><th scope="col">Loan type</th><th scope="col">MyHome rate</th><th scope="col">Up to</th></tr></thead>
     <tbody>
-      <tr><td>FHA first loan</td><td>3.5% of price</td><td>{myhomeFha}</td></tr>
-      <tr><td>Conventional first loan</td><td>3% of price</td><td>{myhomeConv}</td></tr>
+      <tr><th scope="row">FHA first loan</th><td>3.5% of price</td><td>{myhomeFha}</td></tr>
+      <tr><th scope="row">Conventional first loan</th><td>3% of price</td><td>{myhomeConv}</td></tr>
     </tbody>
   </table>
   <p class="callout">CalHFA's handbook may also set a dollar cap and exceptions to it. A CalHFA-approved lender gives you the exact figure for your purchase.</p>

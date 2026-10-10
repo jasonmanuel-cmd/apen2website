@@ -3,20 +3,21 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, planUrl, areaUrl, serviceAreaNames } from '../data/site';
+import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort } from '../data/site';
 import { faqPage } from '../data/schema';
 
 // Each section uses a different photo; exteriors already appear on the model cards.
 const pick = (folder: string, caption: string) => photos(folder).find((p) => p.caption === caption)!.src;
 // Hero shows the Sunset Retreat model, matching the Sunset Retreat headline and card.
 const hero = pick('sunset-retreat', 'Exterior');
-const sunset = pick('sunset-retreat', 'Great room');
+// The release card shows the kitchen island view; the split section further down uses the other kitchen photo.
+const cardKitchen = pick('sunset-retreat', 'Kitchen, alternate view');
 const kitchen = pick('sunset-retreat', 'Kitchen');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
 
 const stats = [
-  ['$459K', 'Plans from'],
-  [offer.sqft.toLocaleString(), 'Sq ft · Sunset Retreat'],
+  [fromShort, 'Plans from'],
+  [offer.sqft.toLocaleString('en-US'), 'Sq ft · Sunset Retreat'],
   ['6', 'Home models'],
   [offer.downPayment, 'Down option'],
   ['$15K', 'Early savings'],
@@ -36,11 +37,7 @@ const trust = [
   'Equal Housing Opportunity',
   ...(site.license ? [site.license] : []),
 ];
-const steps = [
-  ['Tell us your goals', "Share your budget, timeline and whether you're a first-time buyer. A quick call or form is all it takes."],
-  ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
-  ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
-];
+const steps = buyingSteps;
 const faqSchema = faqPage(faq);
 ---
 <Layout
@@ -55,16 +52,16 @@ const faqSchema = faqPage(faq);
     <div class="wrap hero-grid">
       <div class="copy">
         <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
-        <h1 class="reveal" style="animation-delay:.1s">New homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
-        <p class="lede reveal" style="animation-delay:.2s">Reserve a home at {offer.community}, or choose one of six semi-custom models in Tehachapi and eastern Kern County.</p>
-        <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/available-homes/#availability">Current release details →</a></p>
+        <h1>New homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
+        <p class="lede">Reserve a home at {offer.community}, or choose one of six semi-custom models in Tehachapi and eastern Kern County.</p>
+        <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/available-homes/#availability">Current release details <span aria-hidden="true">→</span></a></p>
         <div class="ctas reveal" style="animation-delay:.3s">
           <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
           <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
         </div>
       </div>
-      <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/">
-        <Image src={sunset} alt="Great room in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
+      <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/" aria-label={`First release, only 2 homes: ${offer.community}, from ${usd(offer.from)}`}>
+        <Image src={cardKitchen} alt="Kitchen with island in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
         <div>
           <p class="mono k">First release · only 2 homes</p>
           <p class="name">{offer.community}</p>
@@ -119,24 +116,6 @@ const faqSchema = faqPage(faq);
       </div>
       <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
       <p class="compare-link"><a class="btn btn-ghost" href="/floor-plans/#compare"><span aria-hidden="true">⇄</span> Compare all six models side by side</a></p>
-      <details class="compare" hidden>
-        <summary class="mono">Compare</summary>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Model</th><th>Sq ft</th><th>Beds</th><th>Baths</th><th>Stories</th><th>Price</th><th>Blueprint</th></tr></thead>
-            <tbody>
-              {plans.map((p) => (
-                <tr>
-                  <th scope="row"><a href={planUrl(p)}>{p.name}</a></th>
-                  <td>{p.sqft.toLocaleString()}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories}</td>
-                  <td>{p.price ? usd(p.price) : 'Call'}</td>
-                  <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener">PDF</a></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
     </div>
   </section>
 
@@ -145,7 +124,7 @@ const faqSchema = faqPage(faq);
     <div class="split-copy">
       <p class="eyebrow">A new standard</p>
       <h2>Built to a standard. <em>Finished to your taste.</em></h2>
-      <p>You don't just buy a house, you help shape it. Choose your model, select your finishes and move into a home that's truly yours from day one.</p>
+      <p>You don’t just buy a house, you help shape it. Choose your model, select your finishes and move into a home that’s truly yours from day one.</p>
       <div class="why">{why.map(([t, d]) => <div><h3>{t}</h3><p class="muted">{d}</p></div>)}</div>
     </div>
   </section>
@@ -155,7 +134,7 @@ const faqSchema = faqPage(faq);
       <div>
         <p class="eyebrow">Buyer incentives</p>
         <h2>Owning is closer <em>than you think.</em></h2>
-        <p>First-time buyer programs, an early-buyer credit you can put toward your floor plan, and buyer-friendly terms. We'll help you find the path that makes owning work.</p>
+        <p>First-time buyer programs, an early-buyer credit you can put toward your floor plan, and buyer-friendly terms. We’ll help you find the path that makes owning work.</p>
         <ul class="programs">{financing.programs.map((p) => <li class="mono">{p}</li>)}</ul>
         <div class="ctas"><a class="btn" href="/financing/">See how it works</a><a class="btn btn-ghost" href={site.sms('FINANCING')}>Text FINANCING</a></div>
       </div>
@@ -182,11 +161,11 @@ const faqSchema = faqPage(faq);
           <p class="eyebrow">Where we build</p>
           <h2>Based in Tehachapi. <em>Serving the region.</em></h2>
         </div>
-        <p class="muted">{site.name} is a local new home builder based in Tehachapi, building homes there since {site.since}{site.license && ` (${site.license})`}. We know each area's building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
+        <p class="muted">{site.name} is a local new home builder based in Tehachapi, building homes there since {site.since}{site.license && ` (${site.license})`}. We know each area’s building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
       </div>
       <div class="comm-grid">
-        {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore →</span></a>)}
-        <a href="/areas/" class="comm"><h3>Nearby communities</h3><p class="muted">{serviceAreaNames.filter((n) => n !== 'Tehachapi').join(', ')}. Availability confirmed case by case.</p><span class="mono">Areas we serve →</span></a>
+        {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore <span aria-hidden="true">→</span></span></a>)}
+        <a href="/areas/" class="comm"><h3>Nearby communities</h3><p class="muted">{serviceAreaNames.filter((n) => n !== 'Tehachapi').join(', ')}. Availability confirmed case by case.</p><span class="mono">Areas we serve <span aria-hidden="true">→</span></span></a>
       </div>
     </div>
   </section>
@@ -199,7 +178,7 @@ const faqSchema = faqPage(faq);
         <p class="muted">Still curious? Call <a href={site.phoneHref}>{site.phone}</a> or text HOMES for instant answers.</p>
       </div>
       <div class="faq">
-        {faq.map(([q, a, href], i) => <details open={i === 0}><summary>{q}</summary><p>{a} <a href={href} class="more">Full answer →</a></p></details>)}
+        {faq.map(([q, a, href], i) => <details open={i === 0}><summary>{q}</summary><p>{a} <a href={href} class="more" aria-label={`Full answer: ${q}`}>Full answer <span aria-hidden="true">→</span></a></p></details>)}
       </div>
     </div>
   </section>
@@ -218,18 +197,19 @@ const faqSchema = faqPage(faq);
 </Layout>
 
 <style>
-  .hero { position: relative; min-height: min(90vh, 880px); display: flex; align-items: flex-end; color: var(--bone); overflow: hidden; }
+  .hero { position: relative; min-height: min(90vh, 880px); min-height: min(90svh, 880px); display: flex; align-items: flex-end; color: var(--bone); overflow: hidden; }
   .hero :global(.hero-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: zoom 20s var(--ease) both; }
   @keyframes zoom { from { transform: scale(1.1); } }
-  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(var(--ink-rgb) / .72), rgb(var(--ink-rgb) / .1) 70%), linear-gradient(180deg, transparent 45%, rgb(var(--ink-rgb) / .75)); }
+  .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / .66), rgb(0 0 0 / .08) 70%), linear-gradient(180deg, transparent 45%, rgb(0 0 0 / .7)); }
   .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.5fr minmax(280px, 360px); gap: 3rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
-  .hero .eyebrow, .hero em { color: var(--gold); }
+  .hero .eyebrow { color: var(--bone); }
+  .hero em { color: var(--bone); }
   .hero h1 { max-width: 15ch; font-size: clamp(2.6rem, 6.4vw, 5.6rem); }
-  .asof { font-size: .66rem; opacity: .85; margin: .5rem 0 0; } .asof a { color: var(--gold); }
+  .asof { font-size: .75rem; opacity: .85; margin: .5rem 0 0; } .asof a { color: var(--bone); text-decoration: underline; text-underline-offset: 3px; }
   .trust { background: var(--paper); border-bottom: 1px solid var(--line); }
   .trust ul { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 2rem; padding-top: 1rem; padding-bottom: 1rem; margin: 0 auto; }
-  .trust li { font-size: .68rem; color: var(--ink); }
-  .trust li::before { content: "✓ "; color: var(--clay); }
+  .trust li { font-size: .75rem; color: var(--ink); }
+  .trust li::before { content: "✓ " / ""; color: var(--clay); }
   .compare-link { margin-top: 2.5rem; }
   .faq .more { color: var(--clay); white-space: nowrap; }
   .hero h1 em { display: block; }
@@ -239,19 +219,19 @@ const faqSchema = faqPage(faq);
   .release-card:hover { transform: translateY(-4px); }
   .release-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
   .release-card > div { padding: 1.2rem 1.4rem 1.4rem; }
-  .release-card .k { color: var(--gold); font-size: .64rem; margin: 0; }
+  .release-card .k { color: var(--gold); font-size: .75rem; margin: 0; }
   .release-card .name { font: 1.7rem var(--display); margin: .3rem 0 0; }
   .release-card .price { margin: 0 0 .8rem; font: .8rem var(--mono); }
   .release-card .price strong { font: 400 1.5rem var(--display); color: var(--gold); }
   .release-card ul { list-style: none; padding: 0; margin: 0; }
-  .release-card li { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px solid rgb(var(--bone-rgb) / .12); font-size: .66rem; color: var(--bone); }
-  .live { color: var(--gold); } .live::before { content: "● "; animation: pulse 1.6s infinite; }
+  .release-card li { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px solid rgb(var(--bone-rgb) / .12); font-size: .75rem; color: var(--bone); }
+  .live { color: var(--gold); } .live::before { content: "● " / ""; animation: pulse 1.6s infinite; }
   @keyframes pulse { 50% { opacity: .3; } }
   @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .release-card { max-width: 420px; } }
 
   .stats { background: var(--ink-2); color: var(--sand); padding: 40px 0; }
   .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.5rem; }
-  .stats .mono { color: var(--on-dark-muted); font-size: .64rem; margin: 0; }
+  .stats .mono { color: var(--on-dark-muted); font-size: .75rem; margin: 0; }
   .stat { font-family: var(--display); font-size: clamp(1.6rem, 2.6vw, 2.4rem); line-height: 1; margin: 0 0 .5rem; color: var(--gold); white-space: nowrap; }
   @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
@@ -263,31 +243,20 @@ const faqSchema = faqPage(faq);
   .paths { display: grid; grid-template-columns: repeat(2, 1fr); max-width: 900px; gap: 1.25rem; }
   .path { position: relative; display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 10px 30px rgb(var(--ink-rgb) / .07); }
   .path.featured { background: var(--ink); color: var(--bone); border-color: var(--ink); }
-  .path .n { color: var(--clay); font-size: .64rem; margin: 0 0 1.5rem; }
+  .path .n { color: var(--clay); font-size: .75rem; margin: 0 0 1.5rem; }
   .path.featured .n { color: var(--gold); }
-  .path .meta { font-size: .66rem; color: var(--muted); margin: -.2rem 0 1rem; }
+  .path .meta { font-size: .75rem; color: var(--muted); margin: -.2rem 0 1rem; }
   .path.featured .meta { color: var(--on-dark-muted); }
   .p-price { font: 1.6rem var(--display); margin: auto 0 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
   .path.featured .p-price { color: var(--gold); border-color: rgb(var(--bone-rgb) / .15); }
   .path .btn { align-self: start; }
   .path:not(.featured) .btn { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
   .path:not(.featured) .btn:hover { background: var(--ink); color: var(--bone); }
-  .badge { position: absolute; top: -10px; right: 1.5rem; background: var(--gold); color: var(--ink); font-size: .6rem; padding: .35em .8em; }
+  .badge { position: absolute; top: -10px; right: 1.5rem; background: var(--gold); color: var(--ink); font-size: .75rem; padding: .35em .8em; }
   @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
 
   .plans-sec { background: var(--sand-2); }
   .plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1.25rem; }
-  .compare { margin-top: 2.5rem; border-top: 1px solid var(--line); padding-top: 1.5rem; }
-  .compare { border-top: 0; padding-top: 0; }
-  .compare summary { display: inline-flex; gap: .6em; cursor: pointer; list-style: none; color: var(--clay); border: 1px solid var(--ink); padding: .8em 1.1em; font-size: .7rem; }
-  .compare summary::-webkit-details-marker { display: none; }
-  .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
-  table { width: 100%; border-collapse: collapse; min-width: 620px; }
-  th, td { text-align: left; padding: .9rem 1rem .9rem 0; border-bottom: 1px solid var(--line); }
-  thead th { font: .68rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-  tbody th { font-family: var(--display); font-weight: 400; font-size: 1.15rem; }
-  tbody a { text-decoration: none; } tbody a:hover { color: var(--clay); }
-  td a { color: var(--clay); font-family: var(--mono); font-size: .75rem; }
 
   .split { display: grid; grid-template-columns: 1fr 1fr; background: var(--sand); }
   .split img { width: 100%; height: 100%; object-fit: cover; min-height: 420px; }
@@ -302,10 +271,10 @@ const faqSchema = faqPage(faq);
   .incentives em, .incentives .eyebrow { color: var(--gold); }
   .inc-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
   .programs { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .66rem; }
+  .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .75rem; }
   .big-nums > div { border-top: 1px solid rgb(var(--bone-rgb) / .15); padding: 1.3rem 0; }
   .big-nums .n { font: clamp(2.6rem, 6vw, 4.4rem)/1 var(--display); color: var(--gold); margin: 0 0 .4rem; }
-  .big-nums .mono { margin: 0; color: var(--on-dark-muted); font-size: .68rem; }
+  .big-nums .mono { margin: 0; color: var(--on-dark-muted); font-size: .75rem; }
   @media (max-width: 860px) { .inc-grid { grid-template-columns: 1fr; } }
 
   .steps { list-style: none; padding: 0; margin: 3rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
@@ -319,7 +288,7 @@ const faqSchema = faqPage(faq);
   .comm { display: flex; flex-direction: column; padding: 1.8rem; background: var(--paper); border: 1px solid var(--line); text-decoration: none; transition: border-color .3s, transform .3s var(--ease); }
   .comm:hover { border-color: var(--clay); transform: translateY(-4px); }
   .comm h3 { font-size: 1.35rem; }
-  .comm .mono { margin-top: auto; color: var(--clay); font-size: .7rem; }
+  .comm .mono { margin-top: auto; color: var(--clay); font-size: .75rem; }
 
 
   .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
@@ -328,7 +297,7 @@ const faqSchema = faqPage(faq);
   .faq details:last-child { border-bottom: 1px solid var(--line); }
   .faq summary { cursor: pointer; list-style: none; padding: 1.2rem 2.5rem 1.2rem 0; position: relative; font: 1.2rem var(--display); }
   .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: "+"; position: absolute; right: .3rem; top: 1rem; font: 1.5rem var(--mono); color: var(--clay); transition: transform .3s var(--ease); }
+  .faq summary::after { content: "+" / ""; position: absolute; right: .3rem; top: 1rem; font: 1.5rem var(--mono); color: var(--clay); transition: transform .3s var(--ease); }
   .faq details[open] summary::after { transform: rotate(45deg); }
   .faq details p { margin: 0 0 1.4rem; color: var(--muted); max-width: 60ch; }
   @media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; } }

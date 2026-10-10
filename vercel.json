@@ -33,6 +33,19 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/staff/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ],
   "redirects": [
@@ -305,6 +318,12 @@
       "source": "/guides/tehachapi-weather-new-home",
       "destination": "/guides/tehachapi-weather-new-home/",
       "permanent": true
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/keepalive",
+      "schedule": "17 14 * * *"
     }
   ]
 }

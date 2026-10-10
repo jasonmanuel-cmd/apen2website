@@ -27,15 +27,15 @@ const sources: [string, string][] = [
   h1="Building a Home for" em="Tehachapi's Weather" reviewed="October 2026" summary={summary} faq={faq} sources={sources}>
 
   <h2>Tehachapi's climate in numbers</h2>
-  <table>
-    <thead><tr><th>Measure</th><th>Tehachapi</th></tr></thead>
+  <table role="table" tabindex="0" aria-label="Tehachapi's climate in numbers">
+    <thead><tr><th scope="col">Measure</th><th scope="col">Tehachapi</th></tr></thead>
     <tbody>
-      <tr><td>Elevation</td><td>3,970 ft</td></tr>
-      <tr><td>Typical snow per winter</td><td>15–20 in</td></tr>
-      <tr><td>Winter temperatures</td><td>About 29–52°F</td></tr>
-      <tr><td>Summer temperatures</td><td>About 58–88°F</td></tr>
-      <tr><td>Wind</td><td>Windy year-round; about 4,500 wind turbines in the area (2019)</td></tr>
-      <tr><td>Location</td><td>35 mi east-southeast of Bakersfield, 20 mi west of Mojave, on State Route 58</td></tr>
+      <tr><th scope="row">Elevation</th><td>3,970 ft</td></tr>
+      <tr><th scope="row">Typical snow per winter</th><td>15–20 in</td></tr>
+      <tr><th scope="row">Winter temperatures</th><td>About 29–52°F</td></tr>
+      <tr><th scope="row">Summer temperatures</th><td>About 58–88°F</td></tr>
+      <tr><th scope="row">Wind</th><td>Windy year-round; about 4,500 wind turbines in the area (2019)</td></tr>
+      <tr><th scope="row">Location</th><td>35 mi east-southeast of Bakersfield, 20 mi west of Mojave, on State Route 58</td></tr>
     </tbody>
   </table>
 

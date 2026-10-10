@@ -18,6 +18,10 @@ export const site = {
   // Owner-confirmed 2026-10-05: same owners as Aspen Homes, Inc. (CSLB #693832, issued 1994-08-03, Tehachapi).
   // Aspen II Homes, Inc. holds CSLB #1004058 (issued 2015-05-29). Public CSLB records checked 2026-10-05.
   since: 1994,
+  // Aspen II Homes, Inc. was incorporated in 2015 (CSLB issue date above); the original company was Aspen Homes, Inc.
+  incorporated: 2015,
+  originalEntity: 'Aspen Homes, Inc.',
+  currentEntity: 'Aspen II Homes, Inc.',
   license: 'CSLB #1004058', // Owner-confirmed 2026-10-05 (also on the logo). Shows in footer, trust bar, About, Contact and schema.
   // Month the prices, availability and incentives below were last confirmed. Update it whenever you re-check them.
   verified: 'September 2026',
@@ -46,6 +50,29 @@ export const offer = {
     ['Phase 2', 'Waitlist'],
   ],
 };
+
+// Availability wording is derived from offer.release, so changing a status there updates every page that mentions it.
+const joinList = (a: string[]) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`);
+const countWord = (n: number) => ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six'][n] ?? String(n);
+const releaseHomes = offer.release.filter(([h]) => /^Home /.test(h));
+const reservingHomes = releaseHomes.filter(([, s]) => s === 'Reserving').map(([h]) => h);
+const verb = reservingHomes.length > 1 ? 'are' : 'is';
+const waitlistRow = offer.release.find(([, s]) => s === 'Waitlist')?.[0];
+export const availability = {
+  releaseCount: countWord(releaseHomes.length),                // "Two" homes in the first release
+  reservingCount: countWord(reservingHomes.length),            // "Two" reserving now
+  reservingList: joinList(reservingHomes),                     // "Home 1 and Home 2"
+  reservingNow: reservingHomes.length ? `${joinList(reservingHomes)} ${verb} reserving now` : 'No homes are reserving right now',
+  nowReserving: reservingHomes.length ? `${joinList(reservingHomes)} now reserving` : 'Availability by request',
+  waitlistSentence: waitlistRow ? ` ${waitlistRow} has a waitlist.` : '',
+  allReserving: reservingHomes.length > 0 && reservingHomes.length === releaseHomes.length,
+};
+const reservingHomesPoint = reservingHomes.length
+  ? `${countWord(reservingHomes.length)} ${reservingHomes.length > 1 ? 'homes' : 'home'} reserving now`
+  : 'Reservations by request';
+const areaAvailability = reservingHomes.length
+  ? `${joinList(reservingHomes)} ${verb} reserving${waitlistRow ? `, with ${waitlistRow} on a waitlist` : ''}.`
+  : 'Availability is confirmed case by case.';
 
 export const financing = {
   programs: ['0% Down First-Time Buyer', 'FHA Low Down', 'VA Veterans', 'Conventional', '$15K Early-Buyer Credit'],
@@ -99,6 +126,7 @@ export type Plan = {
   headline: string;
   summary: string;
   highlights: string[];
+  layout?: { text: string; rooms: string[] }; // room-by-room text of the blueprint; owner-approved only
 };
 
 export const plans: Plan[] = [
@@ -112,11 +140,15 @@ export const plans: Plan[] = [
   },
   {
     slug: 'sunset-retreat', folder: 'sunset-retreat', name: 'Sunset Retreat', sqft: 1715, beds: 3, baths: 2, stories: 1, price: 459000, firstRelease: true, tagline: 'Everyday comfort',
-    garage: '2-car garage', dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
+    garage: '2-car garage', dimensions: '52′ × 58′ overall', specSource: 'Sunset Retreat blueprint; layout text approved by owner', specReviewedAt: '2026-10-08',
     status: 'Now reserving in the Sunset Retreat first release',
     headline: 'Now selling in Tehachapi.',
     summary: 'A welcoming open-concept layout connects the great room, dining area and kitchen, with a breakfast nook opening to a covered patio. The primary suite is a quiet retreat with its own bath and wardrobe.',
     highlights: ['Great room with breakfast nook', 'Kitchen with pantry', 'Primary suite with private bath', 'Rear patio', '2-car garage'],
+    layout: {
+      text: 'Single-story, three-bedroom, two-bath plan with a two-car garage. The overall footprint is about 52 feet wide by 58 feet deep. You enter through a covered porch into the entry. The great room opens to the dining area and the kitchen, which has a pantry and a breakfast nook. The nook opens to a rear patio. The primary bedroom sits at one end of the house with its own bath and walk-in wardrobe. Bedrooms 2 and 3 share a hall bath on the opposite side. The laundry is off the garage entry. The garage fits two cars, has a 16-foot sectional door, and houses the tankless water heater. The home is fire-sprinklered.',
+      rooms: ['Entry with covered porch', 'Great room, open to dining and kitchen', 'Kitchen with pantry and breakfast nook, patio access', 'Primary bedroom with private bath and walk-in wardrobe', 'Bedrooms 2 and 3 sharing a hall bath', 'Laundry', '2-car garage, 16′ sectional door, tankless water heater'],
+    },
   },
   {
     slug: 'the-tranquil-abode', folder: 'tranquil-abode', name: 'The Tranquil Abode', sqft: 1736, beds: 3, baths: 2.5, stories: 2, tagline: 'Two-story living',
@@ -174,9 +206,9 @@ export const communities: Community[] = [
     h1: 'New Homes and Semi-Custom Builds in Tehachapi, CA',
     description: 'Aspen II Homes builds in Tehachapi, home of the Sunset Retreat first release from $459,000. Reserve a home or choose one of six semi-custom models.',
     intro: 'Tehachapi is where Aspen II Homes is based and where our current release, Sunset Retreat, is located. Reserve one of the first two Sunset Retreat homes or choose one of six semi-custom models.',
-    points: ['Sunset Retreat first release reserving', 'Six models to choose from', 'Two homes reserving now'],
+    points: ['Sunset Retreat first release reserving', 'Six models to choose from', reservingHomesPoint],
     faq: [
-      ['Are new homes available in Tehachapi now?', 'Yes. Sunset Retreat is our current release in Tehachapi. Home 1 and Home 2 are reserving, with Phase 2 on a waitlist. Plans start at $459,000; pricing and availability are subject to change.'],
+      ['Are new homes available in Tehachapi now?', 'Yes. Sunset Retreat is our current release in Tehachapi. ' + areaAvailability + ' Plans start at $459,000; pricing and availability are subject to change.'],
       ['Which models can I build in Tehachapi?', 'The Sunset Retreat release uses the Sunset Retreat model (1,715 sq ft, 3 bed, 2 bath). Ask us where the other five models can be built next.'],
     ],
   },
@@ -221,6 +253,15 @@ export const faq: [string, string, string][] = [
   ['Do you work with VA loans?', 'Yes. We work with VA, FHA and conventional financing. Eligibility, lender approval and program terms apply.', '/financing/'],
 ];
 
+// "How it works" steps, shared by the homepage and the financing page.
+export const buyingSteps = [
+  ['Tell us your goals', 'Share your budget, timeline and whether you’re a first-time buyer. A quick call or form is all it takes.'],
+  ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
+  ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
+];
+// Short price for stat tiles, derived so it can't drift from offer.from.
+export const fromShort = `$${Math.round(offer.from / 1000)}K`;
+
 export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';
 
 export const planUrl = (p: { slug: string }) => `/floor-plans/${p.slug}/`;
@@ -234,5 +275,5 @@ export const usd = (n: number) => '$' + n.toLocaleString('en-US');
 export const theName = (name: string) => (/^the /i.test(name) ? name : `the ${name}`);
 export const sqftRange = () => {
   const s = plans.map((p) => p.sqft);
-  return `${Math.min(...s).toLocaleString()}–${Math.max(...s).toLocaleString()}`;
+  return `${Math.min(...s).toLocaleString('en-US')}–${Math.max(...s).toLocaleString('en-US')}`;
 };
