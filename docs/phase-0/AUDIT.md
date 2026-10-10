@@ -33,7 +33,7 @@ Model and area slugs match the pre-2026 WordPress site, so they likely carry exi
 - Six models with sqft / beds / baths / stories, summaries, highlights, photos (68 images across 5 models; The Grand Haven has blueprint only), six blueprint PDFs (`public/plans/`). Source for specs: prior live site; **no approved spec document on file** (spec §05 requires one).
 - Garage descriptions, dimensions, customization limits: **not on file** (only Sunset Retreat lists a 2-car garage).
 - Sunset Retreat release: from $459,000, Home 1 and Home 2 "Reserving", Phase 2 "Waitlist", ~3 months move-in; last confirmed September 2026. No approved public address, listing rights or price-approval date (spec inventory record needs these).
-- Business identity: name, phone (661) 238-3136, Gmail address, 785 Tucker Road G295 Tehachapi (staffed vs mailing unknown). License, legal entity, hours: unknown.
+- Business identity: name, phone (661) 241-0306, Gmail address, 785 Tucker Road G295 Tehachapi (staffed vs mailing unknown). License, legal entity, hours: unknown.
 - Financing: program list and disclaimers; no lender-approved terms or dates.
 
 ## 5. Forms and lead handling today
