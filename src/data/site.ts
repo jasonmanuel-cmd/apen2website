@@ -7,9 +7,9 @@ export const site = {
   tagline: "Kern County's Local New Home Builder",
   // Canonical host (owner decision D2). Vercel serves the apex and 308-redirects www to it.
   url: 'https://aspen2homes.com',
-  phone: '(661) 238-3136',
-  phoneHref: 'tel:+16612383136',
-  sms: (body = 'HOMES') => `sms:+16612383136?body=${encodeURIComponent(body)}`,
+  phone: '(661) 241-0306',
+  phoneHref: 'tel:+16612410306',
+  sms: (body = 'HOMES') => `sms:+16612410306?body=${encodeURIComponent(body)}`,
   email: 'Aspen2homes@gmail.com',
   address: '785 Tucker Road G295, Tehachapi, CA 93561',
   followUp: 'within 30 minutes during business hours',

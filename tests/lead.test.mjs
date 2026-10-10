@@ -55,7 +55,7 @@ delete process.env.NOTIFICATION_EMAIL;
 const FORM = { 'content-type': 'application/x-www-form-urlencoded' };
 globalThis.fetch = async () => ({ ok: true });
 r = await run(lead, FORM); assert.equal(r.code, 303); assert.equal(r.headers.Location, '/thank-you/');
-r = await run({ name: 'x' }, FORM); assert.equal(r.code, 400); assert.ok(r.html.includes('(661) 238-3136'));
+r = await run({ name: 'x' }, FORM); assert.equal(r.code, 400); assert.ok(r.html.includes('(661) 241-0306'));
 r = await run({ ...lead, honeypot: 'bot' }, FORM); assert.equal(r.code, 303);
 
 // Database (Supabase REST). One fetch mock answers both Supabase (/rest/v1/leads) and Resend.
