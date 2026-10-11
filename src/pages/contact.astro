@@ -22,7 +22,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
       <div>
         <p class="eyebrow">Contact</p>
         <h1>Talk With Aspen II Homes About <em>Your New Home</em></h1>
-        <p class="lede">Reserve a {offer.community} home, or choose a semi-custom model. Zero pressure, zero obligation, just information.</p>
+        <p class="lede">Reserve a {offer.community} home, or choose a semi-custom model. Sending a question commits you to nothing. We explain any reservation terms before you commit.</p>
         <p class="quick"><a class="btn" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES<span class="sr-only"> to {site.phone}</span></a></p>
         <ul class="choices" role="list" aria-label="What can we help with?">
           {choices.map(([key, label]) => <li><a href={`?interest=${key}#form`} data-choice={key}>{label}</a></li>)}
