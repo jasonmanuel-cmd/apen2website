@@ -3,6 +3,8 @@
 // To add a plan, add one line below. Files go in public/blueprint/3d/ (use .webp blueprints; the original PNGs are 3–6 MB).
 // A plan shows as "Coming soon" until its .glb file exists, and the whole section stays hidden until at least one does.
 const d = '/blueprint/3d/';
+// Wall color in the 3D view. FloorGen exports walls as near-white (#f5f5f4), which disappears on the light background.
+const wallColor = '#4b5244';
 const tours: { name: string; blueprint: string; model: string; note?: string }[] = [
   { name: 'Sunset Retreat', blueprint: `${d}sunset-retreat-ground-floor-plan.webp`, model: `${d}sunset-retreat-3d.glb` },
   { name: 'Tranquil Oasis', blueprint: `${d}tranquil-oasis-ground-floor-plan.webp`, model: `${d}tranquil-oasis-3d.glb` },
@@ -38,7 +40,7 @@ const items = await Promise.all(tours.map(async (t, i) => {
 const live = items.filter((t) => t.ready);
 ---
 {live.length > 0 && (
-  <section class="section explorer" aria-labelledby="pe-h">
+  <section class="section explorer" aria-labelledby="pe-h" data-wall={wallColor}>
     <div class="wrap">
       <p class="eyebrow">Explore the plans</p>
       <h2 id="pe-h">Walk the plan <em>in 2D and 3D.</em></h2>
@@ -102,6 +104,14 @@ const live = items.filter((t) => t.ready);
 <script>
   let mvLoaded: Promise<unknown> | undefined;
   const loadViewer = () => (mvLoaded ??= import('@google/model-viewer'));
+  // Recolor the wall material (FloorGen names it after its hex color, e.g. "#f5f5f4-0").
+  const tintWalls = (mv: any, hex?: string) => {
+    if (!hex) return;
+    const rgb = hex.match(/[0-9a-f]{2}/gi)!.map((h) => (parseInt(h, 16) / 255) ** 2.2);
+    for (const m of mv.model?.materials ?? []) {
+      if (/^#f5f5f4/i.test(m.name)) m.pbrMetallicRoughness.setBaseColorFactor([...rgb, 1]);
+    }
+  };
 
   document.querySelectorAll<HTMLElement>('.explorer').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]:not([disabled])')];
@@ -131,6 +141,7 @@ const live = items.filter((t) => t.ready);
         panel.querySelectorAll<HTMLElement>('[data-view]').forEach((v) => { v.hidden = v.dataset.view !== btn.dataset.mode; });
         if (btn.dataset.mode === '3d' && mv && !mv.getAttribute('src')) {
           await loadViewer(); // ~1 MB viewer loads only when someone opens 3D
+          mv.addEventListener('load', () => tintWalls(mv, root.dataset.wall), { once: true });
           mv.setAttribute('src', mv.dataset.src!);
         }
       }));
