@@ -74,11 +74,14 @@ const areaAvailability = reservingHomes.length
   ? `${joinList(reservingHomes)} ${verb} reserving${waitlistRow ? `, with ${waitlistRow} on a waitlist` : ''}.`
   : 'Availability is confirmed case by case.';
 
+// The early-buyer credit amount lives in offer.earlyCredit; every mention below is derived from it.
+const dollars = (n: number) => '$' + n.toLocaleString('en-US');
+export const earlyShort = `$${Math.round(offer.earlyCredit / 1000)}K`;
 export const financing = {
-  programs: ['0% Down First-Time Buyer', 'FHA Low Down', 'VA Veterans', 'Conventional', '$15K Early-Buyer Credit'],
+  programs: ['0% Down First-Time Buyer', 'FHA Low Down', 'VA Veterans', 'Conventional', `${earlyShort} Early-Buyer Credit`],
   perks: [
     ['0% Down Option', 'First-time buyer programs may let you get in with little to nothing down. Ask us to check your eligibility.'],
-    ['Up to $15,000 Early-Buyer Savings', 'Reserve early and apply a credit of up to $15,000 directly toward your floor plan.'],
+    [`Up to ${dollars(offer.earlyCredit)} Early-Buyer Savings`, `Reserve early and apply a credit of up to ${dollars(offer.earlyCredit)} directly toward your floor plan.`],
     ['2-1 Rate Buydown', 'Lower your interest rate by 2% in year one and 1% in year two, potentially hundreds a month in savings at the start.'],
     ['Closing-Cost Credit', 'Ask about credits that reduce your out-of-pocket at close, so getting into your new home costs less up front.'],
     ['New-Home Warranty', 'Every new home comes with warranty coverage. Ask us for the current warranty document and what it covers.'],
@@ -248,7 +251,7 @@ export const faq: [string, string, string][] = [
   ['Which home models can I choose from?', 'Six: Tranquil Oasis, Sunset Retreat, The Tranquil Abode, Sunrise View Residence, Enchanted Haven and The Grand Haven, from 1,507 to 2,348 sq ft. Each model page has photos and a downloadable blueprint.', '/floor-plans/'],
   ['Can I customize my new home?', 'Yes. Reserve a Sunset Retreat home and choose your finishes, or pick one of six semi-custom models. Available choices depend on the model and construction stage.', '/our-process/'],
   ['Is 0% down financing available?', 'A 0% down option is available for eligible first-time buyers. Eligibility, lender approval and program terms apply. We also work with FHA, VA and conventional financing.', '/financing/'],
-  ['How do early-buyer savings work?', 'Reserve early and apply up to $15,000 in early-buyer savings toward your floor plan. Availability, eligibility and program terms apply.', '/financing/'],
+  ['How do early-buyer savings work?', `Reserve early and apply up to ${dollars(offer.earlyCredit)} in early-buyer savings toward your floor plan. Availability, eligibility and program terms apply.`, '/financing/'],
   ['How long until I can move in?', 'Sunset Retreat first-release homes are estimated at roughly three months to move-in.', '/available-homes/'],
   ['Do you work with VA loans?', 'Yes. We work with VA, FHA and conventional financing. Eligibility, lender approval and program terms apply.', '/financing/'],
 ];

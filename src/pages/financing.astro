@@ -23,7 +23,7 @@ const crumbSchema = breadcrumb([['Home', '/'], ['Financing', '/financing/']]);
         <div><p class="n">{fromShort}</p><p class="mono">Plans starting at</p></div>
       </div>
       <p class="notlender mono">We are a home builder, not a lender. Programs are offered by lenders and are subject to eligibility, approval and terms. Last confirmed {site.verified}; subject to change without notice.</p>
-      <p class="guide-link">New to buying? Read our guide to <a href="/guides/first-time-buyer-programs-kern-county/">first-time buyer programs in Kern County</a>.</p>
+      <p class="guide-link">New to buying? Read our guide to <a href="/guides/first-time-buyer-programs-kern-county/">first-time buyer programs in Kern County</a>, or <a href="/guides/new-home-costs-tehachapi/">what a new home in Tehachapi really costs</a>.</p>
       <div class="ctas"><a class="btn" href="#qualify">Ask about 0% down options</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a></div>
     </div>
   </section>
@@ -61,6 +61,7 @@ const crumbSchema = breadcrumb([['Home', '/'], ['Financing', '/financing/']]);
       <LeadForm interest="financing" source="Financing page" dark />
     </div>
     <p class="wrap fine">{financing.disclaimer}</p>
+    <p class="wrap eho-row"><span class="mono eho">Equal Housing Opportunity</span></p>
   </section>
 </Layout>
 
@@ -98,4 +99,6 @@ const crumbSchema = breadcrumb([['Home', '/'], ['Financing', '/financing/']]);
   .grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
   @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
   .fine { font-size: .8rem; color: var(--on-dark-muted); margin-top: 3rem; }
+  .eho-row { margin-top: 1rem; }
+  .eho { font-size: .75rem; border: 1px solid var(--on-dark-muted); color: var(--on-dark-muted); display: inline-block; padding: .3em .7em; }
 </style>

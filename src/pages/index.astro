@@ -3,7 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort } from '../data/site';
+import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort } from '../data/site';
 import { faqPage } from '../data/schema';
 
 // Each section uses a different photo; exteriors already appear on the model cards.
@@ -20,7 +20,7 @@ const stats = [
   [offer.sqft.toLocaleString('en-US'), 'Sq ft · Sunset Retreat'],
   ['6', 'Home models'],
   [offer.downPayment, 'Down option'],
-  ['$15K', 'Early savings'],
+  [earlyShort, 'Early savings'],
   [offer.moveIn, 'To move-in'],
 ];
 const why = [
@@ -140,7 +140,7 @@ const faqSchema = faqPage(faq);
       </div>
       <div class="big-nums">
         <div><p class="n">0%</p><p class="mono">Down option for first-time buyers</p></div>
-        <div><p class="n">$15,000</p><p class="mono">Early-buyer savings toward your plan</p></div>
+        <div><p class="n">{usd(offer.earlyCredit)}</p><p class="mono">Early-buyer savings toward your plan</p></div>
         <div><p class="n">2-1</p><p class="mono">Rate buydown available</p></div>
       </div>
     </div>
