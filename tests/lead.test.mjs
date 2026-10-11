@@ -8,7 +8,7 @@ const run = async (body, headers = {}) => {
   await handler({ method: 'POST', body, headers }, res);
   return out;
 };
-const lead = { name: 'Test <b>Buyer</b>', phone: '555-0100', email: 'buyer@example.com', plan: 'Sunset Retreat', timeline: 'Reserve', notes: 'hi' };
+const lead = { name: 'Test <b>Buyer</b>', phone: '(661) 555-0100', email: 'buyer@example.com', plan: 'Sunset Retreat', timeline: 'Reserve', notes: 'hi' };
 const log = console.log; console.log = () => {}; console.error = () => {};
 
 // 1. no key: nothing can be delivered, so the visitor is told to call
@@ -34,7 +34,7 @@ r = await run(lead); assert.equal(r.code, 502);
 
 // 5. crash cases found in audit: non-string fields, broken JSON, junk email, oversized notes
 globalThis.fetch = async (_url, opts) => { sent = JSON.parse(opts.body); return { ok: true }; };
-r = await run({ name: 123, phone: 456, email: 'a@b.co' }); assert.equal(r.code, 200);
+r = await run({ name: 123, phone: 6615550100, email: 'a@b.co' }); assert.equal(r.code, 200);
 r = await run('{bad'); assert.equal(r.code, 400);
 r = await run(['array']); assert.equal(r.code, 400);
 // Email is required: missing or malformed is a 400 and nothing is stored or sent.
@@ -105,11 +105,11 @@ process.env.SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOi.payload.sig'; mockWorld(); a
 assert.equal(dbEvents()[0].headers.Authorization, 'Bearer eyJhbGciOi.payload.sig');
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_test';
 // Optional fields the visitor left blank are stored as NULL, not empty strings.
-mockWorld(); await run({ name: 'Solo', phone: '555-0101', email: 'solo@example.com' });
+mockWorld(); await run({ name: 'Solo', phone: '(661) 555-0101', email: 'solo@example.com' });
 assert.equal(dbEvents()[0].body.community, null);
 assert.ok(Object.values(dbEvents()[0].body).every((v) => v !== ''));
 // A request with no valid email never reaches the database or the email provider.
-mockWorld(); r = await run({ name: 'Solo', phone: '555-0101' }); assert.equal(r.code, 400); assert.equal(dbEvents().length, 0);
+mockWorld(); r = await run({ name: 'Solo', phone: '(661) 555-0101' }); assert.equal(r.code, 400); assert.equal(dbEvents().length, 0);
 // The response never exposes the row id.
 mockWorld(); r = await run(lead); assert.ok(!JSON.stringify(r.body).includes(ID));
 
@@ -139,7 +139,7 @@ assert.equal(dbEvents().length, 0);
 
 // 12. database errors never put submitted values in the logs
 const errs = []; console.error = (...a) => errs.push(a.join(' '));
-for (const db of ['fail', 'throw']) { mockWorld({ db }); await run({ ...lead, name: 'Secret Name', phone: '999-SECRET' }); }
+for (const db of ['fail', 'throw']) { mockWorld({ db }); await run({ ...lead, name: 'Secret Name', phone: '(999) 555-0199 SECRET' }); }
 assert.ok(errs.length > 0 && errs.every((e) => !e.includes('Secret') && !e.includes('SECRET')));
 console.error = () => {};
 
@@ -151,4 +151,13 @@ process.env.SUPABASE_URL = goodUrl; delete process.env.SUPABASE_SERVICE_ROLE_KEY
 assert.equal(r.code, 200); assert.equal(r.body.saved, false); assert.equal(dbEvents().length, 0);
 process.env.SUPABASE_SERVICE_ROLE_KEY = goodKey;
 
-log('ALL LEAD TESTS PASSED (33 cases)');
+// 14. phone must be a real number: both phone and email are required, and a placeholder phone is a 400 that stores and sends nothing
+for (const bad of ['', 'none', '123', '555-0100', '(661) 241', 'call me', '1'.repeat(16)]) {
+  mockWorld(); r = await run({ ...lead, phone: bad });
+  assert.equal(r.code, 400, `phone ${JSON.stringify(bad)} should be rejected`); assert.equal(dbEvents().length, 0);
+}
+for (const good of ['6615550100', '(661) 555-0100', '661.555.0100', '+1 661 555 0100', '1-661-555-0100']) {
+  mockWorld(); r = await run({ ...lead, phone: good }); assert.equal(r.code, 200, `phone ${good} should be accepted`);
+}
+
+log('ALL LEAD TESTS PASSED (34 cases)');

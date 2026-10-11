@@ -11,7 +11,7 @@ const bp = cover ? undefined : blueprint(plan.folder);
   <div class:list={['media', { plan: bp }]}>
     {cover && <Image src={cover} alt={`${name}${first?.caption ? `: ${first.caption.toLowerCase()}` : ''}${plan.rendering ? ' (artist rendering)' : ''}`} widths={[400, 700]} sizes="(max-width: 700px) 100vw, 400px" />}
     {bp && <Image src={bp} alt={`${plan.name} floor plan`} widths={[400, 700]} sizes="(max-width: 700px) 100vw, 400px" />}
-    {plan.firstRelease && <span class="tag mono hot">Now selling</span>}
+    {plan.firstRelease && <span class="tag mono hot">Now reserving</span>}
     {plan.rendering && <span class="tag mono">Rendering</span>}
     {bp && <span class="tag mono">Floor plan</span>}
     {plan.stories === 2 && <span class="tag mono right">Two-story</span>}

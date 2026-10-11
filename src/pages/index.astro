@@ -3,7 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort } from '../data/site';
+import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort, availability } from '../data/site';
 import { faqPage } from '../data/schema';
 
 // Each section uses a different photo; exteriors already appear on the model cards.
@@ -19,20 +19,19 @@ const stats = [
   [fromShort, 'Sunset Retreat from'],
   [offer.sqft.toLocaleString('en-US'), 'Sq ft · Sunset Retreat'],
   ['6', 'Home models'],
-  [offer.downPayment, 'Down option'],
-  [earlyShort, 'Early savings'],
+  [offer.downPayment, 'Down option, eligible buyers'],
+  [earlyShort, 'Early savings, up to'],
   [offer.moveIn, 'To move-in'],
 ];
 const why = [
-  ['Six proven floor plans', `${sqftRange()} sq ft, single- and two-story, each with a downloadable floor plan.`],
+  ['Six floor plans', `${sqftRange()} sq ft, single- and two-story, each with a downloadable floor plan.`],
   ['Semi-custom finishes', 'Choose flooring, paint colors, cabinetry and more, depending on construction stage.'],
   ['Based in Tehachapi', 'A local builder serving Tehachapi and eastern Kern County.'],
-  ['Equal Housing Opportunity', 'A fair, transparent process and honest disclosures at every step.'],
+  ['Buyer guides', 'Plain-English guides on buyer programs, costs and Tehachapi weather, with the sources listed.'],
 ];
 const trust = [
   `Same owners, building in Tehachapi since ${site.since}`,
   'Local Tehachapi builder',
-  'Six-model collection',
   'Serving Tehachapi & eastern Kern County',
   'Equal Housing Opportunity',
   ...(site.license ? [site.license] : []),
@@ -41,8 +40,8 @@ const steps = buyingSteps;
 const faqSchema = faqPage(faq);
 ---
 <Layout
-  title={`Tehachapi Home Builder: New Homes $${Math.round(offer.from / 1000)}K+ | ${site.name}`}
-  description={`New homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down options for eligible first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings, terms apply.`}
+  title={`Tehachapi Home Builder: Sunset Retreat from ${fromShort} | ${site.name}`}
+  description={`Sunset Retreat homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down options for eligible first-time buyers. Terms apply.`}
   image={og.src}
   schema={faqSchema}
 >
@@ -51,19 +50,19 @@ const faqSchema = faqPage(faq);
     <div class="shade"></div>
     <div class="wrap hero-grid">
       <div class="copy">
-        <p class="eyebrow reveal">Now selling · {offer.community}, {offer.city}</p>
-        <h1>New homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
+        <p class="eyebrow reveal">Now reserving · {offer.community}, {offer.city}</p>
+        <h1>{offer.community} homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
         <p class="lede">Reserve a home at {offer.community}, or choose one of six semi-custom models in Tehachapi and eastern Kern County.</p>
-        <p class="asof mono reveal" style="animation-delay:.25s">Pricing & availability last confirmed {site.verified}. Subject to change. <a href="/available-homes/#availability">Current release details <span aria-hidden="true">→</span></a></p>
+        <p class="asof mono reveal" style="animation-delay:.25s">Pricing and availability change. Contact us to confirm what is available today. <a href="/available-homes/#availability">Current release details <span aria-hidden="true">→</span></a></p>
         <div class="ctas reveal" style="animation-delay:.3s">
           <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
           <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
         </div>
       </div>
-      <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/" aria-label={`First release, only 2 homes: ${offer.community}, from ${usd(offer.from)}`}>
+      <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/" aria-label={`First release, ${availability.releaseCount.toLowerCase()} homes: ${offer.community}, from ${usd(offer.from)}`}>
         <Image src={cardKitchen} alt="Kitchen with island in the Sunset Retreat model" widths={[400, 700]} sizes="360px" />
         <div>
-          <p class="mono k">First release · only 2 homes</p>
+          <p class="mono k">First release · {availability.releaseCount.toLowerCase()} {availability.releaseCount === 'One' ? 'home' : 'homes'}</p>
           <p class="name">{offer.community}</p>
           <p class="price">From <strong>{usd(offer.from)}</strong></p>
           <ul>{offer.release.map(([h, s]) => <li class="mono"><span>{h}</span><span class:list={[{ live: s === 'Reserving' }]}>{s}</span></li>)}</ul>
@@ -122,8 +121,8 @@ const faqSchema = faqPage(faq);
   <section class="split">
     <Image src={kitchen} alt="Kitchen in the Sunset Retreat model" widths={[600, 1000, 1536]} sizes="(max-width: 1000px) 100vw, 50vw" />
     <div class="split-copy">
-      <p class="eyebrow">A new standard</p>
-      <h2>Built to a standard. <em>Finished to your taste.</em></h2>
+      <p class="eyebrow">Your finishes</p>
+      <h2>Your model. <em>Finished to your taste.</em></h2>
       <p>You don’t just buy a house, you help shape it. Choose your model, select your finishes and move into a home that’s truly yours from day one.</p>
       <div class="why">{why.map(([t, d]) => <div><h3>{t}</h3><p class="muted">{d}</p></div>)}</div>
     </div>
@@ -139,9 +138,8 @@ const faqSchema = faqPage(faq);
         <div class="ctas"><a class="btn" href="/financing/">See how it works</a><a class="btn btn-ghost" href={site.sms('FINANCING')}>Text FINANCING</a></div>
       </div>
       <div class="big-nums">
-        <div><p class="n">0%</p><p class="mono">Down option for first-time buyers</p></div>
-        <div><p class="n">{usd(offer.earlyCredit)}</p><p class="mono">Early-buyer savings toward your plan</p></div>
-        <div><p class="n">2-1</p><p class="mono">Rate buydown available</p></div>
+        <div><p class="n">0%</p><p class="mono">Down option for eligible first-time buyers</p></div>
+        <div><p class="n"><span class="up">Up to</span> {usd(offer.earlyCredit)}</p><p class="mono">Early-buyer savings toward your plan</p></div>
       </div>
     </div>
   </section>
@@ -161,7 +159,7 @@ const faqSchema = faqPage(faq);
           <p class="eyebrow">Where we build</p>
           <h2>Based in Tehachapi. <em>Serving the region.</em></h2>
         </div>
-        <p class="muted">{site.name} is a local new home builder based in Tehachapi. The same owners have been building homes there since {site.since}, first as {site.originalEntity} and, since {site.incorporated}, as {site.currentEntity}{site.license && ` (${site.license})`}. We know each area’s building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
+        <p class="muted">{site.name} is a local new home builder based in Tehachapi. The same owners have been building homes there since {site.since}, first as {site.originalEntity} and, since {site.incorporated}, as {site.currentEntity}{site.license && ` (${site.license})`}. We know the building regulations, suppliers and subcontractors in the areas we serve.</p>
       </div>
       <div class="comm-grid">
         {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore <span aria-hidden="true">→</span></span></a>)}
@@ -191,7 +189,7 @@ const faqSchema = faqPage(faq);
         <p class="muted">Reserve a {offer.community} home, or choose a semi-custom model. No pressure, just answers.</p>
         <p class="direct mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={site.sms()}>Text HOMES</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
       </div>
-      <LeadForm source="Home page" />
+      <LeadForm source="Home page" compact />
     </div>
   </section>
 </Layout>
@@ -274,6 +272,7 @@ const faqSchema = faqPage(faq);
   .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .75rem; }
   .big-nums > div { border-top: 1px solid rgb(var(--bone-rgb) / .15); padding: 1.3rem 0; }
   .big-nums .n { font: clamp(2.6rem, 6vw, 4.4rem)/1 var(--display); color: var(--gold); margin: 0 0 .4rem; }
+  .big-nums .up { display: block; font: .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--on-dark-muted); margin-bottom: .3rem; }
   .big-nums .mono { margin: 0; color: var(--on-dark-muted); font-size: .75rem; }
   @media (max-width: 860px) { .inc-grid { grid-template-columns: 1fr; } }
 
