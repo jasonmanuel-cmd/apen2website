@@ -1,5 +1,7 @@
 ---
 import { Image } from 'astro:assets';
+import logo from '../assets/logo.webp';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import logoMark from '../assets/logo-mark.png';
 import logoWord from '../assets/logo-wordmark.png';
 import logoFull from '../assets/logo-full.png';
@@ -152,6 +154,8 @@ const nav: [string, string, [string, string][]][] = [
     <a href={site.phoneHref}>Call</a>
     <a href="/contact/">Contact</a>
     <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
+  </div>
+  <SpeedInsights />
   </nav>
   <script is:inline>
     // Esc dismisses an open nav dropdown (WCAG 1.4.13); it reopens on the next hover or focus entry.
