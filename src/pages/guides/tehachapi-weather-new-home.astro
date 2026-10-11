@@ -5,26 +5,27 @@ import { site } from '../../data/site';
 const path = '/guides/tehachapi-weather-new-home/';
 const summary = [
   'Tehachapi sits at <strong>3,970 feet</strong> in the Tehachapi Mountains, about 35 miles east-southeast of Bakersfield on Highway 58.',
-  'It gets <strong>15 to 20 inches of snow</strong> in a typical winter, with winter temperatures from about <strong>29 to 52°F</strong>.',
-  'It is <strong>windy year-round</strong>; the area is home to about <strong>4,500 wind turbines</strong>.',
-  'A home here should be built for wind, snow, big day-to-night temperature swings and strong sun. Use the checklist below to compare any builder, including us.',
+  'It gets <strong>15 to 20 inches of snow</strong> in a typical winter, with average winter daily temperatures from about <strong>29 to 52°F</strong> (low to high; individual days run colder and hotter).',
+  'It is <strong>windy year-round</strong>; the area has a large wind farm, about <strong>4,500 turbines as of 2019</strong>.',
+  'Wind, snow, big day-to-night temperature swings and strong sun are worth weighing in any home here. Use the checklist below to compare any builder, including us.',
 ];
 const faq: [string, string][] = [
   ['Does it really snow in Tehachapi?', 'Yes. The city typically gets 15 to 20 inches of snow each winter, so roofs, driveways and walkways should be planned for snow and ice.'],
-  ['How windy is it?', 'Wind is a defining feature of Tehachapi, which is why thousands of wind turbines line the pass. Wind affects roofing, garage doors, windows, fencing and even where you put outdoor furniture.'],
-  ['Do new homes in California have to have solar?', 'California\'s energy code requires a solar photovoltaic system on newly built single-family homes, with some exceptions. At Tehachapi\'s elevation and sun, solar can make a real dent in power bills. Ask us how it applies to a specific home.'],
+  ['How windy is it?', 'Wind is a defining feature of Tehachapi, which is why a large wind farm lines the pass. Wind affects roofing, garage doors, windows, fencing and even where you put outdoor furniture.'],
+  ['Do new homes in California have to have solar?', 'California\'s energy code has required solar photovoltaic systems on most newly built single-family homes, with some exceptions, and a new code cycle took effect January 1, 2026. Ask us how it applies to a specific home, and ask for an estimate of the system size and your expected power bills.'],
   ['Where can I see how an Aspen II home is built?', 'Ask us for the spec sheet for the plan you like, and tour Sunset Retreat in person. We are glad to walk you through roofing, insulation, windows and heating and cooling.'],
 ];
 const sources: [string, string][] = [
-  ['Wikipedia: Tehachapi, California (elevation, climate, snowfall, wind energy, location)', 'https://en.wikipedia.org/wiki/Tehachapi,_California'],
-  ['California Energy Commission: single-family solar PV requirements', 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards/energy-code-support-center/2022-0'],
+  ['Wikipedia: Tehachapi, California (source of the elevation, climate, snowfall, wind energy and location figures above)', 'https://en.wikipedia.org/wiki/Tehachapi,_California'],
+  ['National Weather Service, Hanford office: current forecasts and climate data for the area', 'https://www.weather.gov/hnx/'],
+  ['California Energy Commission: Building Energy Efficiency Standards', 'https://www.energy.ca.gov/programs-and-topics/programs/building-energy-efficiency-standards'],
   [`${site.name}: floor plans`, `${site.url}/floor-plans/`],
 ];
 ---
 <GuidePage path={path} crumb="Tehachapi weather"
-  title={`New Homes Built for Tehachapi Weather | ${site.name}`}
-  description={`Tehachapi sits at 3,970 feet with snow, strong wind and big temperature swings. What that means for a new home, and what to ask any builder.`}
-  h1="Building a Home for" em="Tehachapi's Weather" reviewed="October 2026" summary={summary} faq={faq} sources={sources}>
+  title={`Tehachapi Weather and Your New Home: What to Ask | ${site.name}`}
+  description={`Tehachapi sits at 3,970 feet with snow, strong wind and big temperature swings. What that means when you buy a new home, and what to ask any builder.`}
+  h1="Building a Home for" em="Tehachapi's Weather" reviewed={site.guidesReviewed} summary={summary} faq={faq} sources={sources}>
 
   <h2>Tehachapi's climate in numbers</h2>
   <table role="table" tabindex="0" aria-label="Tehachapi's climate in numbers">
@@ -32,9 +33,9 @@ const sources: [string, string][] = [
     <tbody>
       <tr><th scope="row">Elevation</th><td>3,970 ft</td></tr>
       <tr><th scope="row">Typical snow per winter</th><td>15–20 in</td></tr>
-      <tr><th scope="row">Winter temperatures</th><td>About 29–52°F</td></tr>
-      <tr><th scope="row">Summer temperatures</th><td>About 58–88°F</td></tr>
-      <tr><th scope="row">Wind</th><td>Windy year-round; about 4,500 wind turbines in the area (2019)</td></tr>
+      <tr><th scope="row">Winter temperatures</th><td>Average daily low–high about 29–52°F</td></tr>
+      <tr><th scope="row">Summer temperatures</th><td>Average daily low–high about 58–88°F</td></tr>
+      <tr><th scope="row">Wind</th><td>Windy year-round; about 4,500 wind turbines in the area as of 2019 (counts change)</td></tr>
       <tr><th scope="row">Location</th><td>35 mi east-southeast of Bakersfield, 20 mi west of Mojave, on State Route 58</td></tr>
     </tbody>
   </table>
@@ -47,7 +48,7 @@ const sources: [string, string][] = [
   <h3>Big temperature swings</h3>
   <p>Cold nights and warm days make insulation, window quality and a properly sized heating and cooling system matter more here than in the valley. Together they decide your comfort and your power bills.</p>
   <h3>Strong sun at elevation</h3>
-  <p>California's energy code requires solar on newly built single-family homes, with some exceptions. Shade on the west side, a covered patio and good attic ventilation help in summer.</p>
+  <p>California's energy code has required solar on most newly built single-family homes, with some exceptions. Shade on the west side, a covered patio and good attic ventilation help in summer.</p>
 
   <h2>Questions to ask any builder</h2>
   <ul class="checklist">

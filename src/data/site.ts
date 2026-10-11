@@ -25,6 +25,9 @@ export const site = {
   license: 'CSLB #1004058', // Owner-confirmed 2026-10-05 (also on the logo). Shows in footer, trust bar, About, Contact and schema.
   // Month the prices, availability and incentives below were last confirmed. Update it whenever you re-check them.
   verified: 'September 2026',
+  // Month the three /guides/ pages were last checked against their sources. Owner: confirm, and update when you re-check.
+  guidesReviewed: 'October 2026',
+  guidesReviewedISO: '2026-10',
 };
 
 // Third-party listings the owner has claimed (2026-10-05). Feeds schema sameAs and the footer "Find us on" links.
