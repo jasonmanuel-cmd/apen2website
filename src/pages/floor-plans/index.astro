@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import PlanCard from '../../components/PlanCard.astro';
+import PlanExplorer from '../../components/PlanExplorer.astro';
 import { site, plans, offer, usd, sqftRange, disclaimer, planUrl } from '../../data/site';
 import { breadcrumb, webPage } from '../../data/schema';
 
@@ -40,6 +41,8 @@ const schema = [
     <p class="mono count" role="status" aria-live="polite">Showing all 6 plans</p>
     <p class="mono empty" hidden>No plans match that filter.</p>
   </section>
+
+  <PlanExplorer />
 
   <section class="section compare" id="compare">
     <div class="wrap">
