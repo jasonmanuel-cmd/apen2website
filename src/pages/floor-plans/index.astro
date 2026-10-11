@@ -5,8 +5,8 @@ import { site, plans, offer, usd, sqftRange, disclaimer, planUrl } from '../../d
 import { breadcrumb, webPage } from '../../data/schema';
 
 const path = '/floor-plans/';
-const title = `New Home Floor Plans in Tehachapi, CA | ${site.name}`;
-const description = `Compare all six ${site.name} floor plans, ${sqftRange()} sq ft, 3 to 4 bedrooms, single- and two-story. Specs, status and floor plan PDFs.`;
+const title = `Six New Home Floor Plans, ${sqftRange()} Sq Ft | ${site.name}`;
+const description = `Compare all six ${site.name} floor plans, ${sqftRange()} sq ft, 3 to 4 bedrooms, single- and two-story. Sizes, bedrooms, bathrooms and floor plan PDFs.`;
 const name = (slug: string, n: string) => (slug === 'sunset-retreat' ? `${n} Model` : n);
 const schema = [
   webPage(path, title, description, {
@@ -19,8 +19,8 @@ const schema = [
   <section class="section wrap intro">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Floor plans</span></nav>
     <p class="eyebrow">The model collection</p>
-    <h1>Six New-Home Floor Plans, <em>Ready for Your Finishes</em></h1>
-    <p class="lede">From {sqftRange()} sq ft. Every plan is semi-custom: choose flooring, paint colors, cabinetry and more. The current <a href="/available-homes/">{offer.community} release in Tehachapi</a> uses the {offer.community} model, from {usd(offer.from)}.</p>
+    <h1>Six Floor Plans <em>for New Homes</em></h1>
+    <p class="lede">Plans run {sqftRange()} sq ft. Finish choices such as flooring, paint colors and cabinetry depend on the plan and construction stage. The current <a href="/available-homes/">{offer.community} release in Tehachapi</a> uses the {offer.community} model, from {usd(offer.from)}.</p>
 
     <div class="filters" role="group" aria-label="Filter floor plans">
       <span class="mono">Filter:</span>
@@ -53,15 +53,16 @@ const schema = [
               <tr>
                 <th scope="row"><a href={planUrl(p)}>{name(p.slug, p.name)}</a></th>
                 <td>{p.sqft.toLocaleString('en-US')}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
-                <td>{p.price ? `From ${usd(p.price)}` : 'Request pricing'}</td>
+                <td>{p.price ? `From ${usd(p.price)}` : 'Request current pricing'}</td>
                 <td class="st">{p.status}</td>
-                <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener" aria-label={`${name(p.slug, p.name)} floor plan PDF`}>PDF</a></td>
+                <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener">PDF<span class="sr-only">: {name(p.slug, p.name)} floor plan (scanned image, opens in a new tab)</span></a></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <p class="fine">Pricing and availability last confirmed {site.verified}. {disclaimer} Plans, dimensions, features and elevations may change.</p>
+      <p class="fine">Contact us to confirm current pricing and availability. {disclaimer} Plans, dimensions, features and elevations may change.</p>
+      <p class="fine">The floor plan PDFs are scanned images, so screen readers cannot read them. For room sizes or a description of a plan, call <a href={site.phoneHref}>{site.phone}</a>. The <a href="/floor-plans/sunset-retreat/">Sunset Retreat page</a> has its layout written out room by room.</p>
       <p class="ctas"><a class="btn" href="/contact/?interest=semi">Request current pricing</a><a class="btn btn-ghost" href="/available-homes/">See Sunset Retreat availability</a></p>
     </div>
   </section>
@@ -98,13 +99,13 @@ const schema = [
   .grid > div { display: flex; } .grid > div[hidden] { display: none; } .grid > div > :global(*) { flex: 1; }
   .empty, .count { color: var(--muted); font-size: .75rem; }
   .compare { background: var(--sand-2); }
-  .table-wrap { overflow-x: auto; margin-top: 1.5rem; }
+  .table-wrap { overflow-x: auto; margin-top: 1.5rem; position: relative; }
   table { width: 100%; border-collapse: collapse; min-width: 760px; }
   th, td { text-align: left; padding: .9rem 1rem .9rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
   thead th { font: .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   tbody th { font: 400 1.15rem var(--display); }
   tbody a { color: var(--clay); }
   .st { font-size: .9rem; color: var(--muted); max-width: 22ch; }
-  .fine { font-size: .8rem; color: var(--muted); margin-top: 1.5rem; max-width: 80ch; }
+  .fine { font-size: .8rem; color: var(--muted); margin-top: 1.5rem; max-width: 80ch; } .fine a { color: var(--clay); }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
 </style>

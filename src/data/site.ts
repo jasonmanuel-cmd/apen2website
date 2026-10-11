@@ -139,7 +139,7 @@ export const plans: Plan[] = [
   {
     slug: 'tranquil-oasis', folder: 'tranquil-oasis', name: 'Tranquil Oasis', sqft: 1507, beds: 3, baths: 2, stories: 1, tagline: 'Open-concept living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
-    status: 'Available to build · request current pricing',
+    status: 'Contact us for availability and pricing',
     headline: 'Charming, efficient, easy to love.',
     summary: 'An open floor plan connects the living room, dining area and kitchen, with large windows pulling natural light through the whole home. The kitchen brings modern appliances, ample countertop space and sleek cabinetry.',
     highlights: ['Open living, dining & kitchen', 'Large windows throughout', 'Primary bedroom with private bath', 'Dedicated utility room'],
@@ -159,7 +159,7 @@ export const plans: Plan[] = [
   {
     slug: 'the-tranquil-abode', folder: 'tranquil-abode', name: 'The Tranquil Abode', sqft: 1736, beds: 3, baths: 2.5, stories: 2, tagline: 'Two-story living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
-    status: 'Available to build · request current pricing',
+    status: 'Contact us for availability and pricing',
     headline: 'Two stories. All the calm.',
     summary: 'Living on the main floor, sleeping upstairs. The second-floor primary suite includes a walk-in closet, joined by two more bedrooms and a full bath, with a half bath downstairs for guests.',
     highlights: ['Second-floor primary suite', 'Walk-in closets', 'Main-floor guest half bath', 'Kitchen open to living'],
@@ -167,7 +167,7 @@ export const plans: Plan[] = [
   {
     slug: 'sunrise-view-residence', folder: 'sunrise-view', name: 'Sunrise View Residence', sqft: 1848, beds: 4, baths: 2, stories: 1, rendering: true, tagline: 'Room to grow',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
-    status: 'Available to build · request current pricing',
+    status: 'Contact us for availability and pricing',
     headline: 'Four bedrooms, room to grow.',
     summary: 'Connected living and dining spaces, a spacious kitchen with ample storage, and four bedrooms that flex as guest rooms, a home office or hobby space. The primary bath is designed for a spa-like start to the day.',
     highlights: ['Four bedrooms', 'Primary suite with private bath', 'Kitchen with ample storage', 'Adjacent dining area'],
@@ -175,7 +175,7 @@ export const plans: Plan[] = [
   {
     slug: 'enchanted-haven', folder: 'enchanted-haven', name: 'Enchanted Haven', sqft: 1910, beds: 3, baths: 2, stories: 1, tagline: 'Semi-custom living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
-    status: 'Available to build · request current pricing',
+    status: 'Contact us for availability and pricing',
     headline: 'Made yours, down to the cabinetry.',
     summary: 'A light-filled living room, spacious kitchen and peaceful primary suite. Personalize flooring, paint colors and cabinetry, and shape the kitchen around how you actually cook.',
     highlights: ['Semi-custom finish selections', 'Customizable kitchen', 'Primary suite with private bath', 'Dedicated utility room'],
@@ -183,7 +183,7 @@ export const plans: Plan[] = [
   {
     slug: 'the-grand-haven', folder: 'grand-haven', name: 'The Grand Haven', sqft: 2348, beds: 4, baths: 2.5, stories: 1, tagline: 'Spacious semi-custom living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
-    status: 'Available to build · request current pricing',
+    status: 'Contact us for availability and pricing',
     headline: 'Our largest plan. Built to host.',
     summary: 'An open-concept great room flows into a modern kitchen with a generous island, pantry and a bay-windowed dining room opening to the patio. Four bedrooms provide flexibility, with opportunities to personalize finishes.',
     highlights: ['Kitchen island & pantry', 'Bay-window dining room', 'Primary suite with walk-in closet', 'Four bedrooms', 'Covered patio'],
