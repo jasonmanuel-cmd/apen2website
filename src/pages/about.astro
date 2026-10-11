@@ -2,10 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { site, offer, communities, usd, sqftRange, areaUrl, serviceAreaNames, profiles } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
+import LeadForm from '../components/LeadForm.astro';
 
 const path = '/about/';
 const title = `About ${site.name} | Local Home Builder in Tehachapi, CA`;
-const description = `${site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County: the Sunset Retreat release and six semi-custom floor plans.`;
+const description = `${site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County: six floor plans, including the Sunset Retreat release.`;
 const mapHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
 const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), breadcrumb([['Home', '/'], ['About', path]])];
 ---
@@ -13,7 +14,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
   <section class="section wrap">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">About</span></nav>
     <p class="eyebrow">About us</p>
-    <h1>The local builder of new and semi-custom homes in <em>Tehachapi.</em></h1>
+    <h1>A local builder of new and semi-custom homes in <em>Tehachapi.</em></h1>
     <p class="lede">{site.name} builds new and semi-custom homes in Tehachapi and eastern Kern County, and the same owners have been building here since {site.since}. Our current release is <a href="/available-homes/">{offer.community}</a> in Tehachapi, from {usd(offer.from)}.</p>
   </section>
 
@@ -23,11 +24,12 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
         <h2>What we <em>build.</em></h2>
         <ul class="list">
           <li><a href="/available-homes/">{offer.community}</a>: our current release in Tehachapi.</li>
-          <li><a href="/floor-plans/">Six floor plans</a>, {sqftRange()} sq ft, every one semi-custom.</li>
+          <li><a href="/floor-plans/">Six floor plans</a>, {sqftRange()} sq ft, with finish choices that depend on the home and construction stage.</li>
+          <li>Learn how it works: <a href="/our-process/">our process</a>, <a href="/financing/">financing and incentives</a> and our <a href="/guides/">buyer guides</a>.</li>
         </ul>
       </div>
       <div>
-        <h2>Where we <em>work.</em></h2>
+        <h2>Areas we <em>serve.</em></h2>
         <ul class="list">{serviceAreaNames.map((n) => { const c = communities.find((x) => x.published && x.name === n); return <li>{c ? <a href={areaUrl(c)}>{n}</a> : n}</li>; })}</ul>
         <p class="muted">Outside Tehachapi, we confirm availability case by case. <a href="/areas/">Areas we serve</a></p>
       </div>
@@ -40,13 +42,23 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
       <div><dt class="mono">Business</dt><dd>{site.currentEntity}</dd></div>
       <div><dt class="mono">Phone</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
       <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-      <div><dt class="mono">Address</dt><dd><a href={mapHref} target="_blank" rel="noopener">{site.address}</a></dd></div>
+      <div><dt class="mono">Address</dt><dd><a href={mapHref} target="_blank" rel="noopener">{site.address}<span class="sr-only"> (opens in a new tab)</span></a></dd></div>
       {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
       <div><dt class="mono">Building since</dt><dd>{site.since}, as {site.originalEntity}; {site.currentEntity} since {site.incorporated}</dd></div>
     </dl>
     <p class="mono eho">Equal Housing Opportunity</p>
-    <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}</a></>)}</p>
+    <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}<span class="sr-only"> (opens in a new tab)</span></a></>)}</p>
     <div class="ctas"><a class="btn" href="/contact/">Talk with our team</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></div>
+  </section>
+
+  <section class="section facts-sec" id="contact">
+    <div class="wrap ask">
+      <div>
+        <h2>Ask us <em>anything.</em></h2>
+        <p class="muted">Tell us what you are looking for and we will reply. Sending a question commits you to nothing.</p>
+      </div>
+      <LeadForm source="About page" compact />
+    </div>
   </section>
 </Layout>
 
@@ -62,5 +74,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
   .nap dt { font-size: .75rem; color: var(--muted); } .nap dd { margin: .3rem 0 0; font-size: 1.1rem; } .nap a { color: var(--clay); }
   .profiles { font-size: .75rem; line-height: 2; margin: 1.5rem 0; } .profiles a { color: var(--clay); }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
+  .ask { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+  @media (max-width: 760px) { .ask { grid-template-columns: 1fr; } }
   .eho { font-size: .75rem; border: 1px solid var(--muted); display: inline-block; padding: .3em .7em; }
 </style>
