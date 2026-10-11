@@ -1,6 +1,6 @@
 ---
 // Shared layout for /guides/* buyer guides: answer-first summary, body, FAQ, sources.
-// Every number in a guide must trace to a source listed on that page or to src/data/site.ts.
+// Every number in a guide must trace to a source listed on that page or to src/data/site.ts. Note any figure that is our own arithmetic.
 import Layout from '../layouts/Layout.astro';
 import { site } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
@@ -12,7 +12,7 @@ interface Props {
 }
 const { path, title, description, crumb, h1, em, summary, reviewed, faq, sources } = Astro.props;
 const schema = [
-  webPage(path, title, description, { '@type': 'Article', headline: `${h1} ${em}`, author: { '@type': 'Organization', name: site.name }, publisher: { '@type': 'Organization', name: site.name, url: site.url } }),
+  webPage(path, title, description, { '@type': 'Article', headline: `${h1} ${em}`, dateModified: site.guidesReviewedISO, author: { '@type': 'Organization', name: site.name }, publisher: { '@type': 'Organization', name: site.name, url: site.url } }),
   breadcrumb([['Home', '/'], ['Buyer guides', '/guides/'], [crumb, path]]),
   faqPage(faq),
 ];

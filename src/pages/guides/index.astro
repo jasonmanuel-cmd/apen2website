@@ -5,10 +5,10 @@ import { breadcrumb, webPage } from '../../data/schema';
 
 const path = '/guides/';
 const title = `New Home Buyer Guides for Tehachapi | ${site.name}`;
-const description = `Plain-English guides for buying a new home in Tehachapi and Kern County: first-time buyer programs, real costs and property tax, and building for local weather.`;
+const description = `Plain-English guides for buying a new home in Tehachapi and Kern County: first-time buyer programs, what to budget beyond the price, and what Tehachapi weather means for a home.`;
 const guides: [string, string, string][] = [
-  ['/guides/first-time-buyer-programs-kern-county/', 'First-time buyer programs in Kern County', 'CalHFA MyHome, Dream For All, VA and FHA loans, with real numbers on a Sunset Retreat home.'],
-  ['/guides/new-home-costs-tehachapi/', 'What a new home in Tehachapi really costs', 'Price per square foot, property tax, the supplemental tax bill and the homeowners\' exemption.'],
+  ['/guides/first-time-buyer-programs-kern-county/', 'First-time buyer programs in Kern County', 'CalHFA MyHome, Dream For All, VA and FHA loans, with example amounts on a Sunset Retreat home.'],
+  ['/guides/new-home-costs-tehachapi/', 'What to budget for a new home in Tehachapi', 'Price per square foot, property tax, the supplemental tax bill and the homeowners\' exemption.'],
   ['/guides/tehachapi-weather-new-home/', 'Building a home for Tehachapi\'s weather', 'Snow, wind, elevation and sun, and the questions to ask any builder.'],
 ];
 const schema = [webPage(path, title, description, { '@type': 'CollectionPage' }), breadcrumb([['Home', '/'], ['Buyer guides', path]])];
@@ -18,7 +18,7 @@ const schema = [webPage(path, title, description, { '@type': 'CollectionPage' })
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Buyer guides</span></nav>
     <p class="eyebrow">Buyer guides</p>
     <h1>New Home Buyer Guides <em>for Tehachapi</em></h1>
-    <p class="lede">Straight answers to the questions buyers ask us most, with sources for every number.</p>
+    <p class="lede">Straight answers to the questions buyers ask us most, with the sources we used listed on each guide.</p>
     <ul class="cards">
       {guides.map(([href, t, d]) => <li><a href={href}><h2>{t}</h2><p>{d}</p><span class="mono">Read the guide <span aria-hidden="true">→</span></span></a></li>)}
     </ul>
