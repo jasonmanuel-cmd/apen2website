@@ -265,7 +265,7 @@ export const buyingSteps = [
 // Short price for stat tiles, derived so it can't drift from offer.from.
 export const fromShort = `$${Math.round(offer.from / 1000)}K`;
 
-export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';
+export const disclaimer = 'Renderings are artist concepts and may differ from completed construction. Photos may show optional upgrades, furnishings or finishes that are not standard; features and finishes vary by home. Pricing, availability, incentives, floor plans, and square footage are estimates subject to change and buyer verification.';
 
 export const planUrl = (p: { slug: string }) => `/floor-plans/${p.slug}/`;
 export const areaUrl = (c: Community) => (c.published ? `/areas/${c.area}/` : '/areas/');
