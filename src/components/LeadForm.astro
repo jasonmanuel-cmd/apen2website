@@ -18,7 +18,7 @@ const interests = [
   <p class="req mono" aria-hidden="true">* required</p>
   <div class="row">
     <label><span>Name <span aria-hidden="true">*</span></span><input name="name" required autocomplete="name" spellcheck="false" /></label>
-    <label><span>Phone <span aria-hidden="true">*</span></span><input name="phone" type="tel" required autocomplete="tel" /></label>
+    <label><span>Phone <span aria-hidden="true">*</span></span><input name="phone" type="tel" inputmode="tel" required autocomplete="tel" pattern={'^\\D*(\\d\\D*){10,15}$'} title="Enter a phone number with area code, at least 10 digits" /></label>
   </div>
   <label><span>Email <span aria-hidden="true">*</span></span><input name="email" type="email" required autocomplete="email" spellcheck="false" /></label>
   <label>I'm interested in

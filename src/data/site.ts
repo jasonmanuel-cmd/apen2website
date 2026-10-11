@@ -4,7 +4,7 @@ import captions from './captions.json';
 // Single source of truth. Facts come from aspen2homes.com and aspen2bakersfield.com (checked 2026-09-28).
 export const site = {
   name: 'Aspen II Homes',
-  tagline: "Kern County's Local New Home Builder",
+  tagline: 'A Local New Home Builder',
   // Canonical host (owner decision D2). Vercel serves the apex and 308-redirects www to it.
   url: 'https://aspen2homes.com',
   phone: '(661) 241-0306',
@@ -81,11 +81,11 @@ const areaAvailability = reservingHomes.length
 const dollars = (n: number) => '$' + n.toLocaleString('en-US');
 export const earlyShort = `$${Math.round(offer.earlyCredit / 1000)}K`;
 export const financing = {
-  programs: ['0% Down First-Time Buyer', 'FHA Low Down', 'VA Veterans', 'Conventional', `${earlyShort} Early-Buyer Credit`],
+  programs: ['0% Down First-Time Buyer', 'FHA Low Down', 'VA Veterans', 'Conventional', `Up to ${earlyShort} Early-Buyer Credit`],
   perks: [
     ['0% Down Option', 'First-time buyer programs may let you get in with little to nothing down. Ask us to check your eligibility.'],
     [`Up to ${dollars(offer.earlyCredit)} Early-Buyer Savings`, `Reserve early and apply a credit of up to ${dollars(offer.earlyCredit)} directly toward your floor plan.`],
-    ['2-1 Rate Buydown', 'Lower your interest rate by 2% in year one and 1% in year two, potentially hundreds a month in savings at the start.'],
+    ['Rate Buydown Options', 'Ask whether a rate buydown is available for your home. Contact us for more information.'],
     ['Closing-Cost Credit', 'Ask about credits that reduce your out-of-pocket at close, so getting into your new home costs less up front.'],
     ['New-Home Warranty', 'Every new home comes with warranty coverage. Ask us for the current warranty document and what it covers.'],
     ['Early Reservation Pricing', 'Reserve during the first release and the pricing in your reservation agreement applies, ahead of the next phase. Ask us for the terms in writing.'],
@@ -94,9 +94,9 @@ export const financing = {
 };
 
 export const paths = [
-  { n: '01', name: 'Reserve & Customize', title: 'Sunset Retreat', meta: '1,715 sq ft · Single-story · Tehachapi', price: 'From $459,000', badge: 'First 2 homes',
-    text: 'The first two homes coming to Sunset Retreat. Reserve early and customize your finishes before they are built. Ask about pricing terms.', cta: ['See availability', '/available-homes/'] },
-  { n: '02', name: 'Semi-Custom', title: 'Choose Your Model', meta: 'Six layouts · Curated finishes', price: 'Call today',
+  { n: '01', name: 'Reserve & Customize', title: 'Sunset Retreat', meta: '1,715 sq ft · Single-story · Tehachapi', price: 'From $459,000', badge: `First ${releaseHomes.length} homes`,
+    text: `The first ${availability.releaseCount.toLowerCase()} homes coming to Sunset Retreat. Reserve early and customize your finishes before they are built. Ask about pricing terms.`, cta: ['See availability', '/available-homes/'] },
+  { n: '02', name: 'Semi-Custom', title: 'Choose Your Model', meta: 'Six layouts · Curated finishes', price: 'Request pricing',
     text: 'Pick from our proven model layouts and personalize the details that matter most. A guided path to a brand-new home.', cta: ['Compare floor plans', '/floor-plans/'] },
 ];
 
@@ -148,7 +148,7 @@ export const plans: Plan[] = [
     slug: 'sunset-retreat', folder: 'sunset-retreat', name: 'Sunset Retreat', sqft: 1715, beds: 3, baths: 2, stories: 1, price: 459000, firstRelease: true, tagline: 'Everyday comfort',
     garage: '2-car garage', dimensions: '52′ × 58′ overall', specSource: 'Sunset Retreat blueprint; layout text approved by owner', specReviewedAt: '2026-10-08',
     status: 'Now reserving in the Sunset Retreat first release',
-    headline: 'Now selling in Tehachapi.',
+    headline: 'Now reserving in Tehachapi.',
     summary: 'A welcoming open-concept layout connects the great room, dining area and kitchen, with a breakfast nook opening to a covered patio. The primary suite is a quiet retreat with its own bath and wardrobe.',
     highlights: ['Great room with breakfast nook', 'Kitchen with pantry', 'Primary suite with private bath', 'Rear patio', '2-car garage'],
     layout: {
@@ -256,13 +256,13 @@ export const faq: [string, string, string][] = [
   ['Is 0% down financing available?', 'A 0% down option is available for eligible first-time buyers. Eligibility, lender approval and program terms apply. We also work with FHA, VA and conventional financing.', '/financing/'],
   ['How do early-buyer savings work?', `Reserve early and apply up to ${dollars(offer.earlyCredit)} in early-buyer savings toward your floor plan. Availability, eligibility and program terms apply.`, '/financing/'],
   ['How long until I can move in?', 'Sunset Retreat first-release homes are estimated at roughly three months to move-in.', '/available-homes/'],
-  ['Do you work with VA loans?', 'Yes. We work with VA, FHA and conventional financing. Eligibility, lender approval and program terms apply.', '/financing/'],
+  ['Can I use a VA loan?', 'VA, FHA and conventional loans are options for eligible buyers. Eligibility, lender approval and program terms apply, and new construction has its own requirements, so confirm details with your lender. Contact us for more information.', '/financing/'],
 ];
 
 // "How it works" steps, shared by the homepage and the financing page.
 export const buyingSteps = [
   ['Tell us your goals', 'Share your budget, timeline and whether you’re a first-time buyer. A quick call or form is all it takes.'],
-  ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
+  ['We explain your options', 'We introduce you to lenders and explain the programs, early-buyer savings and credits that may apply to you.'],
   ['Reserve & customize', 'Reserve your home, choose your model and personalize your finishes before it is built. Pricing terms are in your reservation agreement.'],
 ];
 // Short price for stat tiles, derived so it can't drift from offer.from.

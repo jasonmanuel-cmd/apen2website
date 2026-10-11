@@ -9,6 +9,8 @@ const esc = (s = '') =>
 // Coerce any input to a trimmed, length-capped string (bots send numbers, arrays, huge payloads).
 const str = (v, max = 200) => (v == null ? '' : String(v)).trim().slice(0, max);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// A callable number: 10 to 15 digits once spaces, dashes, parentheses and a leading + are ignored.
+const validPhone = (p) => { const d = p.replace(/\D/g, ''); return d.length >= 10 && d.length <= 15; };
 
 const CALL = 'Please call (661) 241-0306.';
 
@@ -142,6 +144,13 @@ export default async function handler(req, res) {
       return reply(req, res, 400, {
         success: false,
         error: 'Missing required fields: name and phone number are required.'
+      });
+    }
+    // The form marks phone required; make sure it is a real number, not a placeholder like "none" or "123".
+    if (!validPhone(phone)) {
+      return reply(req, res, 400, {
+        success: false,
+        error: 'Please enter a valid phone number, including area code, so we can reach you.'
       });
     }
     // The form marks email required; enforce it here too so a missing or malformed address can't slip past the browser check.
