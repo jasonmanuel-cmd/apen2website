@@ -16,7 +16,7 @@ const kitchen = pick('sunset-retreat', 'Kitchen');
 const og = await getImage({ src: hero, width: 1200, format: 'jpg' });
 
 const stats = [
-  [fromShort, 'Plans from'],
+  [fromShort, 'Sunset Retreat from'],
   [offer.sqft.toLocaleString('en-US'), 'Sq ft · Sunset Retreat'],
   ['6', 'Home models'],
   [offer.downPayment, 'Down option'],
@@ -42,7 +42,7 @@ const faqSchema = faqPage(faq);
 ---
 <Layout
   title={`Tehachapi Home Builder: New Homes $${Math.round(offer.from / 1000)}K+ | ${site.name}`}
-  description={`New homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down for first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings.`}
+  description={`New homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down options for eligible first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings, terms apply.`}
   image={og.src}
   schema={faqSchema}
 >
@@ -85,9 +85,9 @@ const faqSchema = faqPage(faq);
       <div class="head">
         <div>
           <p class="eyebrow">Two ways to own</p>
-          <h2>Move-in ready or <em>made yours.</em></h2>
+          <h2>Reserve a home or <em>make a model yours.</em></h2>
         </div>
-        <p class="muted">Available in roughly three months. No pressure, no obligation, just fast answers to help you decide.</p>
+        <p class="muted">Sunset Retreat first-release homes are estimated at roughly three months to move-in, subject to construction conditions. Sending a question commits you to nothing, so ask away.</p>
       </div>
       <div class="paths">
         {paths.map((p, i) => (
@@ -112,7 +112,7 @@ const faqSchema = faqPage(faq);
           <p class="eyebrow">The model collection</p>
           <h2>Six models. <em>Your finishes.</em></h2>
         </div>
-        <p class="muted">Browse real photography and the blueprint for every home, then pick the one that fits your life.</p>
+        <p class="muted">Browse photos and renderings where we have them, plus the blueprint for every home, then pick the one that fits your life.</p>
       </div>
       <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
       <p class="compare-link"><a class="btn btn-ghost" href="/floor-plans/#compare"><span aria-hidden="true">⇄</span> Compare all six models side by side</a></p>
@@ -161,7 +161,7 @@ const faqSchema = faqPage(faq);
           <p class="eyebrow">Where we build</p>
           <h2>Based in Tehachapi. <em>Serving the region.</em></h2>
         </div>
-        <p class="muted">{site.name} is a local new home builder based in Tehachapi, building homes there since {site.since}{site.license && ` (${site.license})`}. We know each area’s building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
+        <p class="muted">{site.name} is a local new home builder based in Tehachapi. The same owners have been building homes there since {site.since}, first as {site.originalEntity} and, since {site.incorporated}, as {site.currentEntity}{site.license && ` (${site.license})`}. We know each area’s building regulations, suppliers and subcontractors, so your project runs smoothly.</p>
       </div>
       <div class="comm-grid">
         {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore <span aria-hidden="true">→</span></span></a>)}

@@ -85,14 +85,14 @@ export const financing = {
     ['2-1 Rate Buydown', 'Lower your interest rate by 2% in year one and 1% in year two, potentially hundreds a month in savings at the start.'],
     ['Closing-Cost Credit', 'Ask about credits that reduce your out-of-pocket at close, so getting into your new home costs less up front.'],
     ['New-Home Warranty', 'Every new home comes with warranty coverage. Ask us for the current warranty document and what it covers.'],
-    ['Lock Your Pricing Early', "Reserve during the first release to lock today's pricing before the next phase."],
+    ['Early Reservation Pricing', 'Reserve during the first release and the pricing in your reservation agreement applies, ahead of the next phase. Ask us for the terms in writing.'],
   ],
   disclaimer: '0% down and savings programs are subject to eligibility, lender approval, and program terms, and may not be available to all buyers. Amounts, rates, and credits are estimates and are not a commitment to lend. This is not legal, tax, or financial advice.',
 };
 
 export const paths = [
   { n: '01', name: 'Reserve & Customize', title: 'Sunset Retreat', meta: '1,715 sq ft · Single-story · Tehachapi', price: 'From $459,000', badge: 'First 2 homes',
-    text: 'The first two homes coming to Sunset Retreat. Lock your pricing and customize your finishes before they are built.', cta: ['See availability', '/available-homes/'] },
+    text: 'The first two homes coming to Sunset Retreat. Reserve early and customize your finishes before they are built. Ask about pricing terms.', cta: ['See availability', '/available-homes/'] },
   { n: '02', name: 'Semi-Custom', title: 'Choose Your Model', meta: 'Six layouts · Curated finishes', price: 'Call today',
     text: 'Pick from our proven model layouts and personalize the details that matter most. A guided path to a brand-new home.', cta: ['Compare floor plans', '/floor-plans/'] },
 ];
@@ -260,7 +260,7 @@ export const faq: [string, string, string][] = [
 export const buyingSteps = [
   ['Tell us your goals', 'Share your budget, timeline and whether you’re a first-time buyer. A quick call or form is all it takes.'],
   ['We match your programs', 'We line up the 0% down option, early-buyer savings and any credits you qualify for.'],
-  ['Reserve & customize', 'Lock your pricing, choose your model and personalize your finishes before it is built.'],
+  ['Reserve & customize', 'Reserve your home, choose your model and personalize your finishes before it is built. Pricing terms are in your reservation agreement.'],
 ];
 // Short price for stat tiles, derived so it can't drift from offer.from.
 export const fromShort = `$${Math.round(offer.from / 1000)}K`;

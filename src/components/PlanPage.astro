@@ -144,7 +144,7 @@ const schema = [
       <div>
         <p class="eyebrow">Interested in {theName(plan.name)}?</p>
         <h2>Get pricing, availability & <em>the incentive breakdown.</em></h2>
-        <p>Ask about 0% down for first-time buyers and up to {usd(offer.earlyCredit)} in early-buyer savings. We reply {site.followUp}.</p>
+        <p>{sr ? `Ask about 0% down options for eligible first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings, terms apply.` : 'Ask about current financing options and incentives for this plan.'} We reply {site.followUp}.</p>
       </div>
       <LeadForm plan={plan.name} interest={plan.firstRelease ? 'reserve' : 'semi'} source={`Plan page: ${plan.name}`} dark />
     </div>
