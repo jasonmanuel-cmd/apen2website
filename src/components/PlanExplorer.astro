@@ -1,10 +1,15 @@
 ---
 // Floor plan explorer: 2D blueprint + interactive 3D model per plan.
-// To add a plan, add one line below. Files go in public/blueprint/3d/.
+// To add a plan, add one line below. Files go in public/blueprint/3d/ (use .webp blueprints; the original PNGs are 3–6 MB).
 // A plan shows as "Coming soon" until its .glb file exists, and the whole section stays hidden until at least one does.
-const tours: { name: string; blueprint: string; model: string }[] = [
-  { name: 'Sunset Retreat', blueprint: '/blueprint/3d/sunset-retreat-ground-floor-plan.png', model: '/blueprint/3d/sunset-retreat-3d.glb' },
-  { name: 'Plan 2', blueprint: '/blueprint/3d/plan-2-floor-plan.png', model: '/blueprint/3d/plan-2-3d.glb' },
+const d = '/blueprint/3d/';
+const tours: { name: string; blueprint: string; model: string; note?: string }[] = [
+  { name: 'Sunset Retreat', blueprint: `${d}sunset-retreat-ground-floor-plan.webp`, model: `${d}sunset-retreat-3d.glb` },
+  { name: 'Tranquil Oasis', blueprint: `${d}tranquil-oasis-ground-floor-plan.webp`, model: `${d}tranquil-oasis-3d.glb` },
+  { name: 'The Tranquil Abode', blueprint: `${d}the-tranquil-abode-second-floor-plan.webp`, model: `${d}the-tranquil-abode-3d.glb`, note: 'Second floor shown. The PDF has both floors.' },
+  { name: 'Sunrise View Residence', blueprint: `${d}sunrise-view-residence-ground-floor-plan.webp`, model: `${d}sunrise-view-residence-3d.glb` },
+  { name: 'Enchanted Haven', blueprint: `${d}enchanted-haven-ground-floor-plan.webp`, model: `${d}enchanted-haven-3d.glb` },
+  { name: 'The Grand Haven', blueprint: `${d}the-grand-haven-ground-floor-plan.webp`, model: `${d}the-grand-haven-3d.glb` },
 ];
 
 import fs from 'node:fs';
@@ -59,12 +64,12 @@ const live = items.filter((t) => t.ready);
                 {t.img ? (
                   <button class="pe-zoom" data-open aria-label={`Open the ${t.name} blueprint full screen`}>
                     <img src={t.img} alt={`${t.name} floor plan`} loading="lazy" decoding="async" />
-                    <span class="mono hint">Tap to enlarge</span>
+                    <span class="mono hint">{t.note ? `${t.note} Tap to enlarge.` : 'Tap to enlarge'}</span>
                   </button>
                 ) : <p class="muted">Blueprint coming soon.</p>}
               </div>
               <div class="pe-3d" data-view="3d" hidden>
-                <model-viewer data-src={t.model} poster={t.img} alt={`3D model of the ${t.name} home`} camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" interaction-prompt="auto" shadow-intensity="1" exposure="1" loading="lazy"></model-viewer>
+                <model-viewer data-src={t.model} poster={t.img} alt={`3D model of the ${t.name} home`} camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="12deg" interaction-prompt="auto" camera-orbit="-25deg 52deg 100%" min-camera-orbit="auto 0deg auto" max-camera-orbit="auto 80deg auto" field-of-view="28deg" environment-image="neutral" shadow-intensity="0.8" shadow-softness="0.6" exposure="0.85" loading="lazy"></model-viewer>
                 <p class="mono hint overlay">Drag to rotate · Scroll or pinch to zoom · Two fingers to pan</p>
                 <button class="pe-full mono" data-full>Full screen</button>
               </div>
@@ -143,8 +148,8 @@ const live = items.filter((t) => t.ready);
 <style>
   .explorer { background: var(--paper); border-block: 1px solid var(--line); }
   .explorer h2 { max-width: 20ch; }
-  .pe-tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 2rem 0 1.25rem; border-bottom: 1px solid var(--line); }
-  .pe-tabs button { font: 600 1rem var(--display); padding: .8rem 1.1rem; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); cursor: pointer; }
+  .pe-tabs { display: flex; overflow-x: auto; scrollbar-width: thin; gap: .5rem; margin: 2rem 0 1.25rem; border-bottom: 1px solid var(--line); }
+  .pe-tabs button { flex: none; white-space: nowrap; font: 600 1rem var(--display); padding: .8rem 1.1rem; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); cursor: pointer; }
   .pe-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--clay); }
   .pe-tabs button:disabled { cursor: not-allowed; opacity: .6; }
   .pe-tabs .soon { font-weight: 400; font-size: .85rem; }
