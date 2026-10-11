@@ -37,7 +37,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
   <section class="section wrap">
     <h2>Contact <em>details.</em></h2>
     <dl class="nap">
-      <div><dt class="mono">Business</dt><dd>{site.name}</dd></div>
+      <div><dt class="mono">Business</dt><dd>{site.currentEntity}</dd></div>
       <div><dt class="mono">Phone</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
       <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
       <div><dt class="mono">Address</dt><dd><a href={mapHref} target="_blank" rel="noopener">{site.address}</a></dd></div>

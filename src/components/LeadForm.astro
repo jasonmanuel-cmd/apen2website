@@ -1,5 +1,5 @@
 ---
-import { site, plans, communities, offer, usd } from '../data/site';
+import { site, plans, serviceAreaNames, offer, usd } from '../data/site';
 interface Props { plan?: string; community?: string; interest?: string; source?: string; dark?: boolean; compact?: boolean }
 // compact: for pages with no model/community context (the contact page); those two choices move into "Tell us more".
 const { plan = '', community = '', interest = '', source = 'Website', dark = false, compact = false } = Astro.props;
@@ -37,7 +37,7 @@ const interests = [
     <label>Community
       <select name="community">
         <option value="">Not sure yet</option>
-        {communities.map((c) => <option selected={c.name === community}>{c.name}</option>)}
+        {serviceAreaNames.map((n) => <option selected={n === community}>{n}</option>)}
       </select>
     </label>
   </div>
@@ -55,7 +55,7 @@ const interests = [
       <label>Community
         <select name="community">
           <option value="">Not sure yet</option>
-          {communities.map((c) => <option selected={c.name === community}>{c.name}</option>)}
+          {serviceAreaNames.map((n) => <option selected={n === community}>{n}</option>)}
         </select>
       </label>
     </div>

@@ -18,7 +18,7 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
 const org = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: site.name, foundingDate: String(site.since), url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `From ${usd(offer.from)}`, telephone: site.phone, email: site.email,
+  name: site.name, foundingDate: String(site.since), url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `${offer.community} homes from ${usd(offer.from)}`, telephone: site.phone, email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
   areaServed: serviceAreaNames,
@@ -118,7 +118,7 @@ const nav: [string, string, [string, string][]][] = [
     <div class="wrap footer-grid">
       <div>
         <p class="logo-badge"><Image src={logoFull} alt="Aspen II Homes, Tehachapi, CA" width={220} /></p>
-        <p class="muted">{site.tagline}. Building in Tehachapi since {site.since}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
+        <p class="muted">{site.tagline}. The same owners, building in Tehachapi since {site.since}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
         <!-- BuildZoom badge (owner-supplied embed). Loads an image and an impression pixel from BuildZoom; disclosed on /privacy/. -->
         <div class="bz-bdg"><a target="_blank" rel="noopener" title="BuildZoom.com" href="https://www.buildzoom.com/contractor/aspen-ii-homes-ca?ad_location=co_website"><img alt="Aspen II Homes on BuildZoom" width="230" height="74" src="https://badges.buildzoom.com/2023/fon1.png" loading="lazy" /></a><a target="_blank" rel="noopener" href="https://www.buildzoom.com/tehachapi-ca/general-contractors?ad_location=co_website&bg_ref=88342094">General Contractors in Tehachapi</a><img src="https://track.buildzoom.com//badge_load?track_id=dYDNyw&entity=Contractor&event_type=impression&ad_type=contractor_badge" width="1" height="1" alt="" loading="lazy" /></div>
         <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}<br />{site.hours}</p>
@@ -136,9 +136,9 @@ const nav: [string, string, [string, string][]][] = [
       </div>
     </div>
     <div class="wrap fine">
-      <p>{site.name} · {offer.community}, {offer.city} · New homes from {usd(offer.from)}{site.license && ` · ${site.license}`}</p>
+      <p>{site.currentEntity} · {offer.community}, {offer.city} · {offer.community} homes from {usd(offer.from)}{site.license && ` · ${site.license}`}</p>
       <p>{disclaimer} 0% down and savings programs are subject to eligibility, lender approval, and program terms. This is not a commitment to lend and is not legal, tax, or financial advice.</p>
-      <p><span class="eho">Equal Housing Opportunity</span> © {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+      <p><span class="eho">Equal Housing Opportunity</span> © {new Date().getFullYear()} {site.currentEntity}. All rights reserved.</p>
     </div>
   </footer>
 
