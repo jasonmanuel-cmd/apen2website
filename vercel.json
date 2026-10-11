@@ -33,6 +33,19 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/staff/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ],
   "redirects": [
@@ -195,6 +208,122 @@
       "source": "/check-my-lot",
       "destination": "/contact/",
       "permanent": true
+    },
+    {
+      "source": "/about",
+      "destination": "/about/",
+      "permanent": true
+    },
+    {
+      "source": "/available-homes",
+      "destination": "/available-homes/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans",
+      "destination": "/floor-plans/",
+      "permanent": true
+    },
+    {
+      "source": "/semi-custom-homes",
+      "destination": "/semi-custom-homes/",
+      "permanent": true
+    },
+    {
+      "source": "/our-process",
+      "destination": "/our-process/",
+      "permanent": true
+    },
+    {
+      "source": "/financing",
+      "destination": "/financing/",
+      "permanent": true
+    },
+    {
+      "source": "/gallery",
+      "destination": "/gallery/",
+      "permanent": true
+    },
+    {
+      "source": "/areas",
+      "destination": "/areas/",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/accessibility",
+      "destination": "/accessibility/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans/tranquil-oasis",
+      "destination": "/floor-plans/tranquil-oasis/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans/sunset-retreat",
+      "destination": "/floor-plans/sunset-retreat/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans/the-tranquil-abode",
+      "destination": "/floor-plans/the-tranquil-abode/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans/sunrise-view-residence",
+      "destination": "/floor-plans/sunrise-view-residence/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans/enchanted-haven",
+      "destination": "/floor-plans/enchanted-haven/",
+      "permanent": true
+    },
+    {
+      "source": "/floor-plans/the-grand-haven",
+      "destination": "/floor-plans/the-grand-haven/",
+      "permanent": true
+    },
+    {
+      "source": "/areas/tehachapi",
+      "destination": "/areas/tehachapi/",
+      "permanent": true
+    },
+    {
+      "source": "/guides",
+      "destination": "/guides/",
+      "permanent": true
+    },
+    {
+      "source": "/guides/first-time-buyer-programs-kern-county",
+      "destination": "/guides/first-time-buyer-programs-kern-county/",
+      "permanent": true
+    },
+    {
+      "source": "/guides/new-home-costs-tehachapi",
+      "destination": "/guides/new-home-costs-tehachapi/",
+      "permanent": true
+    },
+    {
+      "source": "/guides/tehachapi-weather-new-home",
+      "destination": "/guides/tehachapi-weather-new-home/",
+      "permanent": true
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/keepalive",
+      "schedule": "17 14 * * *"
     }
   ]
 }

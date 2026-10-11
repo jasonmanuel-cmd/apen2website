@@ -1,15 +1,83 @@
 // Vercel Serverless Function: /api/lead.js
-// Receives the website's consultation form and emails it via Resend.
+// Receives the website's consultation form, stores it in Supabase (public.leads), then emails it via Resend.
+// The database write comes first, so a lead survives an email outage. Both are best effort
+// individually; the visitor only sees a failure when the lead could be neither stored nor emailed.
 // Same-origin only: no CORS headers, so other websites can't post leads through it.
-
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 // Coerce any input to a trimmed, length-capped string (bots send numbers, arrays, huge payloads).
 const str = (v, max = 200) => (v == null ? '' : String(v)).trim().slice(0, max);
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// A callable number: 10 to 15 digits once spaces, dashes, parentheses and a leading + are ignored.
+const validPhone = (p) => { const d = p.replace(/\D/g, ''); return d.length >= 10 && d.length <= 15; };
 
-const CALL = 'Please call (661) 238-3136.';
+const CALL = 'Please call (661) 241-0306.';
+
+// Supabase over its REST API (PostgREST), so no database driver is needed. The service-role key bypasses
+// row level security and must only ever live in server-side environment variables (see .env.example).
+// Database calls must never hold the form hostage: give up after a few seconds and fall through to email.
+const DB_TIMEOUT_MS = 4000;
+const DB_RECORD_TIMEOUT_MS = 2500; // bookkeeping after the email; must not eat the function's time budget
+// Error responses can echo submitted values, so logs only get a short tag, never a message or body.
+const errTag = (err) => String(err?.code || err?.name || 'error');
+const orNull = (v) => (v === '' || v == null ? null : v);
+
+const supabaseConfig = () => {
+  const url = str(process.env.SUPABASE_URL, 300).replace(/\/+$/, '');
+  const key = str(process.env.SUPABASE_SERVICE_ROLE_KEY, 600);
+  return url && key ? { url, key } : null;
+};
+
+const supabase = async (db, path, init, ms) => {
+  const res = await fetch(`${db.url}/rest/v1/${path}`, {
+    ...init,
+    headers: {
+      apikey: db.key,
+      // Legacy service_role keys are JWTs and go in both headers; newer sb_secret_ keys go in apikey only.
+      ...(db.key.startsWith('eyJ') && { Authorization: `Bearer ${db.key}` }),
+      'Content-Type': 'application/json',
+      ...init.headers
+    },
+    signal: AbortSignal.timeout(ms)
+  });
+  if (!res.ok) throw Object.assign(new Error('Supabase request failed'), { code: `HTTP_${res.status}` });
+  return res;
+};
+
+const saveLead = async (db, l) => {
+  const res = await supabase(db, 'leads?select=id', {
+    method: 'POST',
+    headers: { Prefer: 'return=representation' },
+    body: JSON.stringify({
+      name: l.name,
+      phone: l.phone,
+      email: orNull(l.email),
+      interest: orNull(l.timeline),
+      plan: orNull(l.plan),
+      community: orNull(l.community),
+      contact_pref: orNull(l.contactPref),
+      stage: orNull(l.stage),
+      buy_window: orNull(l.when),
+      budget: orNull(l.budget),
+      first_time: l.firstTime,
+      military: l.military,
+      notes: orNull(l.notes),
+      source: l.source,
+      origin_domain: orNull(l.originDomain),
+      raw: { tags: l.tags }
+    })
+  }, DB_TIMEOUT_MS);
+  const rows = await res.json();
+  return rows?.[0]?.id || null;
+};
+
+const recordEmail = (db, id, sent, error) =>
+  supabase(db, `leads?id=eq.${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ email_sent: sent, email_error: error })
+  }, DB_RECORD_TIMEOUT_MS);
 
 // A plain HTML form post (JavaScript off or blocked) gets a page back instead of raw JSON.
 const isFormPost = (req) => /application\/x-www-form-urlencoded|multipart\/form-data/i.test(req.headers?.['content-type'] || '');
@@ -25,7 +93,7 @@ const reply = (req, res, code, body) => {
     `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request not sent | Aspen II Homes</title>` +
     `<body style="font:18px/1.6 Georgia,serif;max-width:36rem;margin:15vh auto;padding:0 20px;color:#15302A;background:#F7F2E8">` +
     `<h1>Your request didn't go through.</h1><p>${esc(body.error)}</p>` +
-    `<p><a href="tel:+16612383136">Call (661) 238-3136</a> or <a href="/contact/">go back to the form</a>.</p></body>`
+    `<p><a href="tel:+16612410306">Call (661) 241-0306</a> or <a href="/contact/">go back to the form</a>.</p></body>`
   );
 };
 
@@ -78,13 +146,45 @@ export default async function handler(req, res) {
         error: 'Missing required fields: name and phone number are required.'
       });
     }
+    // The form marks phone required; make sure it is a real number, not a placeholder like "none" or "123".
+    if (!validPhone(phone)) {
+      return reply(req, res, 400, {
+        success: false,
+        error: 'Please enter a valid phone number, including area code, so we can reach you.'
+      });
+    }
+    // The form marks email required; enforce it here too so a missing or malformed address can't slip past the browser check.
+    if (!email) {
+      return reply(req, res, 400, {
+        success: false,
+        error: 'Please enter a valid email address so we can reply.'
+      });
+    }
 
     const leadPayload = { timestamp: new Date().toISOString(), name, phone, email, community, timeline, plan, notes, source };
 
     // Log only non-identifying fields; names, phones, emails and notes stay out of hosting logs.
     console.log('[ASPEN II LEAD]', JSON.stringify({ timestamp: leadPayload.timestamp, source, plan, community }));
 
-    // 3. Email the lead via Resend (see .env.example).
+    // 3. Store the lead first (Supabase, see .env.example). If this fails the lead can still reach the
+    // team by email, so a database problem is logged and the request carries on.
+    const db = supabaseConfig();
+    let leadId = null;
+    if (db) {
+      try {
+        const originDomain = str(req.headers?.host, 100).toLowerCase().replace(/:\d+$/, '');
+        leadId = await saveLead(db, {
+          name, phone, email, timeline, plan, community, contactPref, stage, when, budget,
+          firstTime, military, notes, source, originDomain, tags
+        });
+      } catch (err) {
+        console.error('Lead NOT stored in database:', errTag(err));
+      }
+    } else {
+      console.error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set; lead will not be stored.');
+    }
+
+    // 4. Email the lead via Resend (see .env.example).
     // Until the domain is verified in Resend, RESEND_FROM must stay onboarding@resend.dev,
     // and Resend only delivers to the email address that owns the Resend account.
     const resendKey = process.env.RESEND_API_KEY;
@@ -92,6 +192,7 @@ export default async function handler(req, res) {
     const from = process.env.RESEND_FROM || 'Aspen II Homes <onboarding@resend.dev>';
 
     let emailSent = false;
+    let emailError = null;
 
     if (resendKey) {
       const message = {
@@ -132,21 +233,34 @@ export default async function handler(req, res) {
         }
       }));
       emailSent = results.some(Boolean);
-
-      // Key is set but sending failed: tell the visitor to call rather than silently losing the lead.
-      if (!emailSent) {
-        return reply(req, res, 502, { success: false, error: `Could not deliver your request. ${CALL}` });
-      }
+      if (!emailSent) emailError = 'Resend rejected or unreachable';
     } else {
-      // No RESEND_API_KEY: nothing can be delivered, so don't tell the visitor it was.
-      console.error('RESEND_API_KEY is not set; lead not delivered.');
-      return reply(req, res, 503, { success: false, error: `Our form is temporarily unavailable. ${CALL}` });
+      console.error('RESEND_API_KEY is not set; lead not emailed.');
+      emailError = 'RESEND_API_KEY not set';
     }
+
+    // 5. Record how the email went on the stored lead, so unsent ones are easy to find.
+    if (db && leadId) {
+      try {
+        await recordEmail(db, leadId, emailSent, emailError);
+      } catch (err) {
+        console.error('Could not record email outcome:', errTag(err));
+      }
+    }
+
+    // 6. Only tell the visitor it failed when the lead was neither stored nor emailed.
+    if (!emailSent && !leadId) {
+      return resendKey
+        ? reply(req, res, 502, { success: false, error: `Could not deliver your request. ${CALL}` })
+        : reply(req, res, 503, { success: false, error: `Our form is temporarily unavailable. ${CALL}` });
+    }
+    if (!emailSent) console.error('Lead stored but NOT emailed. Find it with: select * from public.leads where not email_sent;');
 
     return reply(req, res, 200, {
       success: true,
       message: 'Consultation request received successfully.',
-      emailDispatched: emailSent
+      emailDispatched: emailSent,
+      saved: Boolean(leadId)
     });
   } catch (error) {
     console.error('Lead processing error:', error);

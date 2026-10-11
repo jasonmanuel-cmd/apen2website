@@ -4,8 +4,8 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
-import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl } from '../data/site';
-import { breadcrumb, faqPage, webPage } from '../data/schema';
+import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
+import { breadcrumb, faqPage, webPage, floorPlan } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
 const imgs = photos(plan.folder);
@@ -13,17 +13,19 @@ const bp = blueprint(plan.folder);
 const pdf = `/plans/${plan.slug}.pdf`;
 const ogSrc = imgs[0]?.src ?? bp;
 const og = ogSrc ? (await getImage({ src: ogSrc, width: 1200, format: 'jpg' })).src : undefined;
+const bpImg = bp ? (await getImage({ src: bp, width: 1200, format: 'jpg' })).src : undefined;
 const i = plans.indexOf(plan);
 const others = [1, 2, 3].map((n) => plans[(i + n) % plans.length]);
 const sr = plan.slug === 'sunset-retreat';
 // "Sunset Retreat" is both a community and a plan; the plan page always says "model".
 const label = sr ? `${plan.name} Model` : plan.name;
 const story = plan.stories === 2 ? 'two-story' : 'single-story';
-const spec = `${plan.sqft.toLocaleString()} Sq Ft, ${plan.beds} Bed, ${plan.baths} Bath`;
-const title = `${label} | ${plan.sqft.toLocaleString()} Sq Ft ${plan.beds}-Bed New Home Plan | ${site.name}`;
-const description = `${label}: ${plan.sqft.toLocaleString()} sq ft, ${plan.beds} bed, ${plan.baths} bath ${story} new home plan${plan.price ? ` from ${usd(plan.price)}` : ''} by ${site.name}, Tehachapi & eastern Kern County. Photos, floor plan PDF, availability.`;
+const spec = `${plan.sqft.toLocaleString('en-US')} Sq Ft, ${plan.beds} Bed, ${plan.baths} Bath`;
+const baseTitle = `${plan.name} Floor Plan | ${plan.sqft.toLocaleString('en-US')} Sq Ft`;
+const title = baseTitle.length + site.name.length + 3 <= 60 ? `${baseTitle} | ${site.name}` : baseTitle;
+const description = `${plan.name} floor plan: ${plan.sqft.toLocaleString('en-US')} sq ft, ${plan.beds} bed, ${plan.baths} bath ${story}${plan.price ? ` from ${usd(plan.price)}` : ''}. Built by ${site.name} in Tehachapi, CA. Photos, PDF and availability.`;
 const facts = [
-  ['Living area', `${plan.sqft.toLocaleString()} sf`],
+  ['Living area', `${plan.sqft.toLocaleString('en-US')} sf`],
   ['Bedrooms', plan.beds],
   ['Bathrooms', plan.baths],
   ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
@@ -34,20 +36,21 @@ const qa: [string, string][] = [
     ? `${plan.name} is a two-story plan: living on the main floor, bedrooms upstairs.`
     : `${plan.name} is a single-story plan, with every room on one level.`],
   [`Can ${theName(plan.name)} be built at Sunset Retreat?`, sr
-    ? `Yes. The ${offer.community} first release in Tehachapi uses this plan, from ${usd(offer.from)}. Home 1 and Home 2 are reserving now.`
+    ? `Yes. The ${offer.community} first release in Tehachapi uses this plan, from ${usd(offer.from)}. ${availability.reservingNow}.`
     : `The current ${offer.community} release uses the ${offer.community} model. Ask us where ${theName(plan.name)} can be built next.`],
   ['Which finishes can I choose?', 'Every model is semi-custom: choose flooring, paint colors, cabinetry and more. Available choices depend on the construction stage.'],
   ['How long until move-in?', sr
     ? `${offer.community} first-release homes are estimated at roughly three months to move-in, subject to construction conditions.`
     : 'Timing depends on the homesite, permits and construction schedule. Ask us for a current estimate.'],
   ['What does the price include?', plan.price
-    ? `Plans start at ${usd(plan.price)}. Ask us what the starting price includes for the home you're considering; pricing and availability are subject to change.`
+    ? `Plans start at ${usd(plan.price)}. Ask us what the starting price includes for the home you’re considering; pricing and availability are subject to change.`
     : 'Pricing depends on the homesite, finishes and options. Ask us for a current quote.'],
   ['Can the plan be changed?', 'Ask us about modifications. What can change depends on the plan and construction stage.'],
 ];
 const path = planUrl(plan);
 const schema = [
-  webPage(path, title, description, og ? { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } } : {}),
+  webPage(path, title, description, { mainEntity: { '@id': `${new URL(path, site.url).href}#floorplan` }, ...(og && { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } }) }),
+  floorPlan(path, plan, og && new URL(og, site.url).href, bpImg && new URL(bpImg, site.url).href),
   breadcrumb([['Home', '/'], ['Floor plans', '/floor-plans/'], [label, path]]),
   faqPage(qa),
 ];
@@ -61,7 +64,7 @@ const schema = [
   <section class="wrap intro">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/floor-plans/">Floor plans</a> / <span aria-current="page">{label}</span></nav>
     <div class="top">
-      <div class="reveal">
+      <div>
         <p class="eyebrow">{plan.tagline}{plan.firstRelease && ` · ${offer.community}, ${offer.city}`}</p>
         <h1>{label}: <em>{spec}</em> New Home Plan</h1>
         <p class="lede">{plan.headline}</p>
@@ -69,7 +72,7 @@ const schema = [
       </div>
       <div class="price-box reveal" style="animation-delay:.15s">
         <p class="mono">{plan.price ? 'Starting at' : 'Pricing'}</p>
-        <p class="big">{plan.price ? usd(plan.price) : 'Call today'}</p>
+        <p class="big">{plan.price ? usd(plan.price) : <a href={site.phoneHref}>Call {site.phone}</a>}</p>
         {plan.firstRelease && (
           <ul class="release">{offer.release.map(([h, s]) => <li class="mono"><span>{h}</span><span class:list={[{ live: s === 'Reserving' }]}>{s}</span></li>)}</ul>
         )}
@@ -81,7 +84,7 @@ const schema = [
     <dl class="facts">
       {facts.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
     </dl>
-    <p class="where mono">Where it's available: {sr ? <><a href="/available-homes/">{offer.community}, Tehachapi</a> (first release)</> : <>ask us where it can be built next in <a href="/areas/">Tehachapi and eastern Kern County</a>.</>}</p>
+    <p class="where mono">Where it’s available: {sr ? <><a href="/available-homes/">{offer.community}, Tehachapi</a> (first release)</> : <>ask us where it can be built next in <a href="/areas/">Tehachapi and eastern Kern County</a>.</>}</p>
   </section>
 
   {imgs.length > 0 && (
@@ -109,15 +112,23 @@ const schema = [
       <div class="wrap bp-grid">
         <div>
           <p class="eyebrow">The blueprint</p>
-          <h2>See every room <em>before it's built.</em></h2>
-          <p class="muted">The full {plan.name} floor plan, {plan.sqft.toLocaleString()} sq ft. Open the PDF to zoom into dimensions. Confirm current specifications with our team.</p>
+          <h2>See every room <em>before it’s built.</em></h2>
+          <p class="muted">The full {plan.name} floor plan, {plan.sqft.toLocaleString('en-US')} sq ft. Open the PDF to zoom into dimensions. Confirm current specifications with our team.</p>
+          <p class="muted">Building in the mountains? Read <a href="/guides/tehachapi-weather-new-home/">how Tehachapi’s snow and wind shape a new home</a>.</p>
+          {plan.layout && (
+            <div class="layout">
+              <h3>The layout in words</h3>
+              <p>{plan.layout.text}</p>
+              <ul>{plan.layout.rooms.map((r) => <li>{r}</li>)}</ul>
+            </div>
+          )}
           <div class="bp-ctas">
             <a class="btn" href={pdf} target="_blank" rel="noopener">Open blueprint PDF</a>
             <a class="btn btn-ghost" href={pdf} download>Download</a>
           </div>
         </div>
-        <a class="bp-img" href={pdf} target="_blank" rel="noopener" aria-label={`Open ${plan.name} blueprint PDF`}>
-          <Image src={bp} alt={`${label} ${plan.sqft.toLocaleString()}-square-foot ${plan.beds}-bedroom floor plan by ${site.name}`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
+        <a class="bp-img" href={pdf} target="_blank" rel="noopener" tabindex="-1" aria-label={`Open ${plan.name} blueprint PDF`}>
+          <Image src={bp} alt={`${label} ${plan.sqft.toLocaleString('en-US')}-square-foot ${plan.beds}-bedroom floor plan by ${site.name}${plan.layout ? '. A written description of the layout is beside the image.' : ''}`} widths={[500, 900]} sizes="(max-width: 860px) 100vw, 55vw" />
         </a>
       </div>
     </section>
@@ -135,7 +146,7 @@ const schema = [
       <div>
         <p class="eyebrow">Interested in {theName(plan.name)}?</p>
         <h2>Get pricing, availability & <em>the incentive breakdown.</em></h2>
-        <p>Ask about 0% down for first-time buyers and up to {usd(offer.earlyCredit)} in early-buyer savings. We reply {site.followUp}.</p>
+        <p>{sr ? `Ask about 0% down options for eligible first-time buyers and up to ${usd(offer.earlyCredit)} in early-buyer savings, terms apply.` : 'Ask about current financing options and incentives for this plan.'} We reply {site.followUp}.</p>
       </div>
       <LeadForm plan={plan.name} interest={plan.firstRelease ? 'reserve' : 'semi'} source={`Plan page: ${plan.name}`} dark />
     </div>
@@ -152,30 +163,31 @@ const schema = [
 
 <style>
   .intro { padding-top: clamp(28px, 5vw, 64px); padding-bottom: 40px; }
-  .crumbs { color: var(--muted); font-size: .68rem; margin-bottom: 2.2rem; }
+  .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2.2rem; }
   .crumbs a { text-decoration: none; } .crumbs a:hover { color: var(--clay); }
   .top { display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem; align-items: end; }
   .lede { font-size: 1.3rem; max-width: 40ch; color: var(--muted); margin: 0; }
   .price-box { background: var(--ink); color: var(--bone); padding: 2rem; display: flex; flex-direction: column; gap: .7rem; }
-  .price-box > .mono { color: var(--on-dark-muted); margin: 0; font-size: .7rem; }
+  .price-box > .mono { color: var(--on-dark-muted); margin: 0; font-size: .75rem; }
+  .big a { color: inherit; text-decoration: none; }
   .big { font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3rem); line-height: 1; margin: 0 0 .6rem; color: var(--gold); }
   .release { list-style: none; padding: 0; margin: 0 0 .8rem; border-top: 1px solid rgb(var(--bone-rgb) / .12); }
-  .release li { display: flex; justify-content: space-between; padding: .55rem 0; border-bottom: 1px solid rgb(var(--bone-rgb) / .12); font-size: .68rem; color: var(--on-dark-muted); }
+  .release li { display: flex; justify-content: space-between; padding: .55rem 0; border-bottom: 1px solid rgb(var(--bone-rgb) / .12); font-size: .75rem; color: var(--on-dark-muted); }
   .release .live { color: var(--gold); }
-  .release .live::before { content: "● "; animation: pulse 1.6s infinite; }
+  .release .live::before { content: "● " / ""; animation: pulse 1.6s infinite; }
   @keyframes pulse { 50% { opacity: .3; } }
   .facts { display: grid; grid-template-columns: repeat(4, 1fr); margin: 3rem 0 0; border-top: 1px solid var(--line); }
   .facts div { padding: 1.25rem 1rem 0 0; }
-  .facts dt { color: var(--muted); font-size: .66rem; }
+  .facts dt { color: var(--muted); font-size: .75rem; }
   .facts dd { margin: .3rem 0 0; font-family: var(--display); font-size: 1.6rem; }
   @media (max-width: 860px) { .top { grid-template-columns: 1fr; } }
   @media (max-width: 520px) { .facts { grid-template-columns: 1fr 1fr; } }
-  .note { font-size: .68rem; color: var(--muted); margin: 0 0 .8rem; }
+  .note { font-size: .75rem; color: var(--muted); margin: 0 0 .8rem; }
   .top h1 { font-size: clamp(2.2rem, 5vw, 4rem); }
   .top h1 em { display: block; font-size: .55em; color: var(--clay); }
   .note-sr { margin: 1rem 0 0; } .note-sr a { color: var(--clay); }
-  .price-box .status { color: var(--gold); font-size: .68rem; margin: 0 0 .4rem; }
-  .where { font-size: .72rem; color: var(--muted); margin: 1.5rem 0 0; line-height: 1.8; }
+  .price-box .status { color: var(--gold); font-size: .75rem; margin: 0 0 .4rem; }
+  .where { font-size: .75rem; color: var(--muted); margin: 1.5rem 0 0; line-height: 1.8; }
   .where a { color: var(--clay); }
   .plan-faq .faq { max-width: 860px; margin-top: 1.5rem; }
   .plan-faq details { border-top: 1px solid var(--line); }
@@ -187,11 +199,15 @@ const schema = [
   .summary { font-size: 1.15rem; }
   .hl { list-style: none; margin: 0 0 1.5rem; padding: 0; }
   .hl li { padding: .9rem 0 .9rem 2rem; border-bottom: 1px solid var(--line); position: relative; }
-  .hl li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); }
+  .hl li::before { content: "✓" / ""; position: absolute; left: 0; color: var(--sage); }
   .small { font-size: .92rem; }
   @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
   .blueprint { background: var(--sand-2); padding: clamp(64px, 9vw, 110px) 0; }
   .bp-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+  .layout { margin: 1.5rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--line); }
+  .layout h3 { font-size: 1.25rem; margin: 0 0 .6rem; }
+  .layout p { margin: 0 0 .8rem; }
+  .layout ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
   .bp-ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; }
   .bp-img { display: block; background: #fff; padding: 1rem; border: 1px solid var(--line); box-shadow: 0 20px 50px rgb(var(--ink-rgb) / .1); cursor: zoom-in; transition: transform .4s var(--ease); }
   .bp-img:hover { transform: translateY(-4px); }

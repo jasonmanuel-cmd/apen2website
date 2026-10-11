@@ -1,0 +1,186 @@
+---
+// Floor plan explorer: 2D blueprint + interactive 3D model per plan.
+// To add a plan, add one line below. Files go in public/blueprint/3d/ (use .webp blueprints; the original PNGs are 3–6 MB).
+// A plan shows as "Coming soon" until its .glb file exists, and the whole section stays hidden until at least one does.
+const d = '/blueprint/3d/';
+const tours: { name: string; blueprint: string; model: string; note?: string }[] = [
+  { name: 'Sunset Retreat', blueprint: `${d}sunset-retreat-ground-floor-plan.webp`, model: `${d}sunset-retreat-3d.glb` },
+  { name: 'Tranquil Oasis', blueprint: `${d}tranquil-oasis-ground-floor-plan.webp`, model: `${d}tranquil-oasis-3d.glb` },
+  { name: 'The Tranquil Abode', blueprint: `${d}the-tranquil-abode-second-floor-plan.webp`, model: `${d}the-tranquil-abode-3d.glb`, note: 'Second floor shown. The PDF has both floors.' },
+  { name: 'Sunrise View Residence', blueprint: `${d}sunrise-view-residence-ground-floor-plan.webp`, model: `${d}sunrise-view-residence-3d.glb` },
+  { name: 'Enchanted Haven', blueprint: `${d}enchanted-haven-ground-floor-plan.webp`, model: `${d}enchanted-haven-3d.glb` },
+  { name: 'The Grand Haven', blueprint: `${d}the-grand-haven-ground-floor-plan.webp`, model: `${d}the-grand-haven-3d.glb` },
+];
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { getImage } from 'astro:assets';
+import { plans, blueprint } from '../data/site';
+
+const isImage = (p: string) => /\.(png|jpe?g|webp|svg)$/i.test(p);
+const exists = (p: string) => fs.existsSync(path.join(process.cwd(), 'public', p));
+
+const items = await Promise.all(tours.map(async (t, i) => {
+  // Specs come from the site's plan data so they always match the plan page.
+  const plan = plans.find((p) => p.name === t.name);
+  const ready = exists(t.model);
+  let img = isImage(t.blueprint) && exists(t.blueprint) ? t.blueprint : undefined;
+  const fallback = plan && blueprint(plan.folder);
+  if (!img && fallback) img = (await getImage({ src: fallback, width: 1600, format: 'webp' })).src;
+  const pdf = t.blueprint.endsWith('.pdf') && exists(t.blueprint) ? t.blueprint : plan ? `/plans/${plan.slug}.pdf` : undefined;
+  const specs = plan && [
+    ['Living area', `${plan.sqft.toLocaleString('en-US')} sq ft`],
+    ['Layout', `${plan.beds} bed · ${plan.baths} bath${plan.garage ? ` · ${plan.garage}` : ''}`],
+    ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
+  ];
+  return { ...t, id: `pe-${i}`, ready, img, pdf, specs, href: plan && `/floor-plans/${plan.slug}/` };
+}));
+const live = items.filter((t) => t.ready);
+---
+{live.length > 0 && (
+  <section class="section explorer" aria-labelledby="pe-h">
+    <div class="wrap">
+      <p class="eyebrow">Explore the plans</p>
+      <h2 id="pe-h">Walk the plan <em>in 2D and 3D.</em></h2>
+
+      <div class="pe-tabs" role="tablist" aria-label="Choose a plan">
+        {items.map((t, i) => (
+          <button role="tab" id={`${t.id}-tab`} aria-controls={t.id} aria-selected={t === live[0] ? 'true' : 'false'} tabindex={t === live[0] ? 0 : -1} disabled={!t.ready} data-plan={t.id}>
+            {t.name}{!t.ready && <span class="soon"> · Coming soon</span>}
+          </button>
+        ))}
+      </div>
+
+      {live.map((t) => (
+        <div class="pe-panel" id={t.id} role="tabpanel" aria-labelledby={`${t.id}-tab`} hidden={t !== live[0]}>
+          <div class="pe-modes" role="group" aria-label={`${t.name} view`}>
+            <button aria-pressed="true" data-mode="2d">2D Blueprint</button>
+            <button aria-pressed="false" data-mode="3d">Interactive 3D</button>
+          </div>
+
+          <div class="pe-grid">
+            <div class="pe-stage">
+              <div class="pe-2d" data-view="2d">
+                {t.img ? (
+                  <button class="pe-zoom" data-open aria-label={`Open the ${t.name} blueprint full screen`}>
+                    <img src={t.img} alt={`${t.name} floor plan`} loading="lazy" decoding="async" />
+                    <span class="mono hint">{t.note ? `${t.note} Tap to enlarge.` : 'Tap to enlarge'}</span>
+                  </button>
+                ) : <p class="muted">Blueprint coming soon.</p>}
+              </div>
+              <div class="pe-3d" data-view="3d" hidden>
+                <model-viewer data-src={t.model} poster={t.img} alt={`3D model of the ${t.name} home`} camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="1500" rotation-per-second="12deg" interaction-prompt="auto" camera-orbit="-25deg 52deg 100%" min-camera-orbit="auto 0deg auto" max-camera-orbit="auto 80deg auto" field-of-view="28deg" environment-image="neutral" shadow-intensity="0.8" shadow-softness="0.6" exposure="0.85" loading="lazy"></model-viewer>
+                <p class="mono hint overlay">Drag to rotate · Scroll or pinch to zoom · Two fingers to pan</p>
+                <button class="pe-full mono" data-full>Full screen</button>
+              </div>
+            </div>
+
+            <aside class="pe-card">
+              <p class="mono label">Model</p>
+              <h3>{t.name}</h3>
+              {t.specs && <dl>{t.specs.map(([k, v]) => <><dt>{k}</dt><dd>{v}</dd></>)}</dl>}
+              <p class="muted small">3D model and blueprint are for illustration. Confirm current specifications with our team.</p>
+              <div class="pe-ctas">
+                {t.href && <a class="btn" href={t.href}>Plan details</a>}
+                {t.pdf && <a class="btn btn-ghost" href={t.pdf} target="_blank" rel="noopener">Blueprint PDF</a>}
+              </div>
+            </aside>
+          </div>
+
+          {t.img && (
+            <dialog class="pe-dialog" aria-label={`${t.name} blueprint`}>
+              <form method="dialog"><button class="pe-close mono">Close ✕</button></form>
+              <img src={t.img} alt={`${t.name} floor plan, full size`} />
+            </dialog>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+<script>
+  let mvLoaded: Promise<unknown> | undefined;
+  const loadViewer = () => (mvLoaded ??= import('@google/model-viewer'));
+
+  document.querySelectorAll<HTMLElement>('.explorer').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]:not([disabled])')];
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        root.querySelector<HTMLElement>(`#${t.dataset.plan}`)!.hidden = !on;
+      });
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab));
+      tab.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        const next = tabs[(i + d + tabs.length) % tabs.length];
+        select(next); next.focus();
+      });
+    });
+
+    root.querySelectorAll<HTMLElement>('.pe-panel').forEach((panel) => {
+      const modes = panel.querySelectorAll<HTMLButtonElement>('[data-mode]');
+      const mv = panel.querySelector<HTMLElement & { src?: string }>('model-viewer');
+      modes.forEach((btn) => btn.addEventListener('click', async () => {
+        modes.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        panel.querySelectorAll<HTMLElement>('[data-view]').forEach((v) => { v.hidden = v.dataset.view !== btn.dataset.mode; });
+        if (btn.dataset.mode === '3d' && mv && !mv.getAttribute('src')) {
+          await loadViewer(); // ~1 MB viewer loads only when someone opens 3D
+          mv.setAttribute('src', mv.dataset.src!);
+        }
+      }));
+      const dlg = panel.querySelector<HTMLDialogElement>('dialog');
+      panel.querySelector('[data-open]')?.addEventListener('click', () => dlg?.showModal());
+      dlg?.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+      panel.querySelector('[data-full]')?.addEventListener('click', () => {
+        const stage = panel.querySelector<HTMLElement>('.pe-3d');
+        if (document.fullscreenElement) document.exitFullscreen(); else stage?.requestFullscreen?.();
+      });
+    });
+  });
+</script>
+
+<style>
+  .explorer { background: var(--paper); border-block: 1px solid var(--line); }
+  .explorer h2 { max-width: 20ch; }
+  .pe-tabs { display: flex; overflow-x: auto; scrollbar-width: thin; gap: .5rem; margin: 2rem 0 1.25rem; border-bottom: 1px solid var(--line); }
+  .pe-tabs button { flex: none; white-space: nowrap; font: 600 1rem var(--display); padding: .8rem 1.1rem; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); cursor: pointer; }
+  .pe-tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--clay); }
+  .pe-tabs button:disabled { cursor: not-allowed; opacity: .6; }
+  .pe-tabs .soon { font-weight: 400; font-size: .85rem; }
+  .pe-modes { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 4px; margin-bottom: 1.25rem; background: var(--sand-2, #f4efe6); }
+  .pe-modes button { border: 0; background: none; padding: .55rem 1.1rem; border-radius: 999px; font-weight: 600; cursor: pointer; color: var(--muted); }
+  .pe-modes button[aria-pressed="true"] { background: var(--ink); color: var(--sand, #fff); }
+  .pe-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 1.5rem; align-items: start; }
+  .pe-stage { position: relative; background: #fff; border: 1px solid var(--line); aspect-ratio: 4 / 3; overflow: hidden; }
+  .pe-2d, .pe-3d { position: absolute; inset: 0; }
+  .pe-zoom { all: unset; cursor: zoom-in; display: block; width: 100%; height: 100%; position: relative; }
+  .pe-zoom img { width: 100%; height: 100%; object-fit: contain; padding: 1rem; box-sizing: border-box; }
+  .pe-zoom:focus-visible { outline: 3px solid var(--clay); outline-offset: -3px; }
+  model-viewer { width: 100%; height: 100%; --poster-color: #fff; background: linear-gradient(#fff, var(--sand-2, #f4efe6)); }
+  .hint { position: absolute; left: 50%; bottom: .75rem; transform: translateX(-50%); font-size: .62rem; color: var(--muted); background: rgba(255,255,255,.85); padding: .35rem .7rem; border-radius: 999px; white-space: nowrap; pointer-events: none; }
+  .pe-full { position: absolute; top: .75rem; right: .75rem; font-size: .62rem; padding: .45rem .8rem; border: 1px solid var(--line); background: rgba(255,255,255,.9); cursor: pointer; }
+  .pe-3d:fullscreen { background: #fff; }
+  .pe-card { border: 1px solid var(--line); border-top: 4px solid var(--clay); background: #fff; padding: 1.5rem; }
+  .pe-card .label { color: var(--clay); font-size: .62rem; margin: 0; }
+  .pe-card h3 { margin: .2rem 0 1rem; font-size: 1.6rem; }
+  .pe-card dl { display: grid; grid-template-columns: auto 1fr; gap: .55rem 1rem; margin: 0 0 1rem; }
+  .pe-card dt { color: var(--muted); font-size: .85rem; }
+  .pe-card dd { margin: 0; font-weight: 600; }
+  .pe-card .small { font-size: .8rem; }
+  .pe-ctas { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
+  .pe-dialog { width: min(96vw, 1400px); max-height: 94vh; padding: 0; border: 0; background: #fff; }
+  .pe-dialog::backdrop { background: rgba(20, 20, 20, .8); }
+  .pe-dialog img { display: block; width: 100%; height: auto; touch-action: pinch-zoom; }
+  .pe-close { position: sticky; top: 0; float: right; margin: .5rem; padding: .5rem .9rem; border: 1px solid var(--line); background: #fff; cursor: pointer; }
+  @media (max-width: 860px) {
+    .pe-grid { grid-template-columns: 1fr; }
+    .pe-stage { aspect-ratio: 1 / 1; }
+    .hint { white-space: normal; text-align: center; width: 86%; }
+  }
+</style>

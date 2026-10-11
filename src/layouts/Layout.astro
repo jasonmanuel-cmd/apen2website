@@ -13,18 +13,25 @@ import '@fontsource/source-serif-4/latin-400-italic.css';
 import '@fontsource/source-serif-4/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
-import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl } from '../data/site';
+import { ORG_ID, SITE_ID } from '../data/schema';
+import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl, serviceAreaNames, profiles } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const org = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: site.name, url: site.url, logo: `${site.url}/logo.png`, telephone: site.phone, email: site.email,
+  '@id': ORG_ID,
+  name: site.name, foundingDate: String(site.since), url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `${offer.community} homes from ${usd(offer.from)}`, telephone: site.phoneHref.replace('tel:', ''), email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
-  areaServed: ['Tehachapi', 'Golden Hills', 'Bear Valley Springs', 'Stallion Springs', 'California City', 'Ridgecrest'],
+  // CSLB record checked 2026-10-05: Class B, General Building.
+  ...(site.license && { hasCredential: { '@type': 'EducationalOccupationalCredential', credentialCategory: 'license', name: 'California contractor license, Class B General Building', identifier: site.license.replace(/\D/g, ''), recognizedBy: { '@type': 'GovernmentOrganization', name: 'Contractors State License Board', url: 'https://www.cslb.ca.gov/' } } }),
+  areaServed: serviceAreaNames,
+  sameAs: profiles.map(([, href]) => href),
+  openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '07:00', closes: '19:00' }],
 };
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', '@id': SITE_ID, name: site.name, url: site.url, publisher: { '@id': ORG_ID } };
 const path = Astro.url.pathname;
 // Spec §04 navigation, minus Build on Your Lot (owner decision D12: spec and semi-custom homes only).
 const nav: [string, string, [string, string][]][] = [
@@ -42,6 +49,7 @@ const nav: [string, string, [string, string][]][] = [
   ['/our-process/', 'Our Process', []],
   ['/financing/', 'Resources', [
     ['/financing/', 'Financing'],
+    ['/guides/', 'Buyer guides'],
     ['/#faq', 'FAQ'],
     ['/gallery/', 'Gallery'],
     ['/about/', 'About'],
@@ -52,6 +60,15 @@ const nav: [string, string, [string, string][]][] = [
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js): Google Analytics 4 property G-4XGMLDL790. Keep exactly one per page. -->
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-4XGMLDL790"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-4XGMLDL790');
+  </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
@@ -61,13 +78,16 @@ const nav: [string, string, [string, string][]][] = [
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
-  {image && <meta property="og:image" content={new URL(image, site.url).href} />}
+  <meta property="og:image" content={new URL(image ?? '/og-default.png', site.url).href} />
+  <meta property="og:site_name" content={site.name} />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#0B3A06" />
   <link rel="icon" href="/favicon.webp" type="image/webp" />
   <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="sitemap" href="/sitemap.xml" />
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  <script type="application/ld+json" set:html={JSON.stringify(website)} />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   <!-- Vercel Web Analytics: cookieless page views. Enable it in Vercel > Project > Analytics. -->
   <script defer src="/_vercel/insights/script.js"></script>
@@ -75,7 +95,7 @@ const nav: [string, string, [string, string][]][] = [
 <body>
   <a class="skip" href="#main">Skip to content</a>
   <a class="promo" href="/financing/">
-    <strong>{offer.downPayment} down</strong> for first-time buyers <span aria-hidden="true">·</span> <strong>Save up to {usd(offer.earlyCredit)}</strong> early-buyer credit <span class="go">See details →</span>
+    <strong>{offer.downPayment} down options</strong> for eligible first-time buyers <span aria-hidden="true">·</span> <strong>Up to {usd(offer.earlyCredit)}</strong> early-buyer credit, terms apply <span class="go">See details →</span>
   </a>
   <header class="nav">
     <a href="/" class="logo" aria-label="Aspen II Homes, home"><Image src={logoMark} alt="" height={44} class="mark" loading="eager" /><Image src={logoWord} alt="" height={26} class="word" loading="eager" /></a>
@@ -106,8 +126,11 @@ const nav: [string, string, [string, string][]][] = [
     <div class="wrap footer-grid">
       <div>
         <p class="logo-badge"><Image src={logoFull} alt="Aspen II Homes, Tehachapi, CA" width={220} /></p>
-        <p class="muted">{site.tagline}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
-        <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}</p>
+        <p class="muted">{site.tagline}. The same owners, building in Tehachapi since {site.since}. Semi-custom new construction across Tehachapi and eastern Kern County.</p>
+        <!-- BuildZoom badge (owner-supplied embed). Loads an image and an impression pixel from BuildZoom; disclosed on /privacy/. -->
+        <div class="bz-bdg"><a target="_blank" rel="noopener" title="BuildZoom.com" href="https://www.buildzoom.com/contractor/aspen-ii-homes-ca?ad_location=co_website"><img alt="Aspen II Homes on BuildZoom" width="230" height="74" src="https://badges.buildzoom.com/2023/fon1.png" loading="lazy" /></a><a target="_blank" rel="noopener" href="https://www.buildzoom.com/tehachapi-ca/general-contractors?ad_location=co_website&bg_ref=88342094">General Contractors in Tehachapi</a><img src="https://track.buildzoom.com//badge_load?track_id=dYDNyw&entity=Contractor&event_type=impression&ad_type=contractor_badge" width="1" height="1" alt="" loading="lazy" /></div>
+        <p class="mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a><br />{site.address}<br />{site.hours}</p>
+        <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}</a></>)}</p>
       </div>
       <div>
         <p class="mono head">Floor plans</p>
@@ -117,22 +140,32 @@ const nav: [string, string, [string, string][]][] = [
         <p class="mono head">Areas we serve</p>
         <ul>{communities.filter((c) => c.published).map((c) => <li><a href={areaUrl(c)}>{c.name}</a></li>)}<li><a href="/areas/">All areas we serve</a></li></ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
+        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/guides/">Buyer guides</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
-      <p>{site.name} · {offer.community}, {offer.city} · New homes from {usd(offer.from)}{site.license && ` · ${site.license}`}</p>
+      <p>{site.currentEntity} · {offer.community}, {offer.city} · {offer.community} homes from {usd(offer.from)}{site.license && ` · ${site.license}`}</p>
       <p>{disclaimer} 0% down and savings programs are subject to eligibility, lender approval, and program terms. This is not a commitment to lend and is not legal, tax, or financial advice.</p>
-      <p><span class="eho">Equal Housing Opportunity</span> © {new Date().getFullYear()} {site.name}. All rights reserved.</p>
+      <p><span class="eho">Equal Housing Opportunity</span> © {new Date().getFullYear()} {site.currentEntity}. All rights reserved.</p>
     </div>
   </footer>
 
-  <div class="mobile-bar" aria-label="Quick contact">
+  <nav class="mobile-bar" aria-label="Quick contact">
     <a href={site.phoneHref}>Call</a>
     <a href="/contact/">Contact</a>
     <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
   </div>
   <SpeedInsights />
+  </nav>
+  <script is:inline>
+    // Esc dismisses an open nav dropdown (WCAG 1.4.13); it reopens on the next hover or focus entry.
+    document.querySelectorAll('.dd').forEach(function (dd) {
+      ['mouseenter', 'focusin'].forEach(function (t) { dd.addEventListener(t, function () { dd.classList.remove('closed'); }); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') document.querySelectorAll('.dd').forEach(function (dd) { dd.classList.add('closed'); });
+    });
+  </script>
 </body>
 </html>
 
@@ -151,7 +184,7 @@ const nav: [string, string, [string, string][]][] = [
     --max: 1260px; --gutter: clamp(16px, 4vw, 36px); --ease: cubic-bezier(.2,.7,.35,1);
   }
   *, *::before, *::after { box-sizing: border-box; }
-  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; scroll-padding-bottom: 80px; }
   body { margin: 0; background: var(--bg) var(--topo); background-size: 480px; color: var(--ink); font: 400 1.075rem/1.65 var(--serif); -webkit-font-smoothing: antialiased; }
   img { max-width: 100%; height: auto; display: block; }
   a { color: inherit; }
@@ -162,10 +195,11 @@ const nav: [string, string, [string, string][]][] = [
   p { text-wrap: pretty; }
   em { font-style: italic; color: var(--clay); }
   .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
-  .section { padding: clamp(64px, 10vw, 120px) 0; }
+  .section { padding-block: clamp(64px, 10vw, 120px); }
   .eyebrow, .mono { font-family: var(--mono); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
   .eyebrow { color: var(--rust); margin: 0 0 1rem; }
   .muted { color: var(--muted); }
+  .guide-link { margin-top: 1.5rem; } .guide-link a { color: var(--clay); font-weight: 600; }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5em; background: var(--gold); color: var(--ink); text-decoration: none; border: 0; cursor: pointer;
          font: 500 .82rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 1em 1.6em; border-radius: 2px;
          transition: background .25s var(--ease), transform .25s var(--ease); }
@@ -175,7 +209,9 @@ const nav: [string, string, [string, string][]][] = [
   .btn-ghost { background: transparent; border: 1px solid currentColor; color: inherit; }
   .btn-ghost:hover { background: rgba(127,127,127,.12); }
   .btn-sm { padding: .7em 1.1em; }
-  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  /* Two-tone ring: green line on a bone halo. Passes 3:1 on every light surface and on the dark ink sections (gold alone was 2.1-2.8:1 on light). */
+  :focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; box-shadow: 0 0 0 5px var(--bone); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: var(--bone); padding: .6em 1em; z-index: 100; }
   .skip:focus { left: 8px; }
 
@@ -191,6 +227,7 @@ const nav: [string, string, [string, string][]][] = [
   .dd .panel { position: absolute; left: -1rem; top: 100%; min-width: 240px; display: none; flex-direction: column; background: var(--paper);
                border: 1px solid var(--line); box-shadow: 0 16px 40px rgb(var(--ink-rgb) / .15); padding: .4rem 0; z-index: 30; }
   .dd:hover .panel, .dd:focus-within .panel { display: flex; }
+  .dd.closed .panel { display: none; }
   .dd .panel a { padding: .6rem 1rem; text-decoration: none; font-size: .95rem; }
   .dd .panel a:hover, .dd .panel a:focus-visible { background: var(--sand-2); color: var(--clay); }
   .logo { font-family: var(--display); font-size: 1.45rem; text-decoration: none; margin: 0; white-space: nowrap; display: inline-flex; align-items: center; gap: .55rem; }
@@ -201,6 +238,8 @@ const nav: [string, string, [string, string][]][] = [
   .logo-badge { display: inline-block; background: var(--paper); padding: 1rem 1.2rem; border-radius: 4px; margin: 0 0 1.2rem; border-top: 4px solid; border-image: var(--roof) 1; }
   .logo-badge img { width: 220px; height: auto; }
   .footer em { color: var(--gold); }
+  .footer .profiles { font-size: .7rem; color: var(--on-dark-muted); line-height: 1.9; } .footer .profiles a { color: var(--sand); text-decoration: underline; text-underline-offset: 3px; }
+  .bz-bdg { width: 230px; margin-top: 1.2rem; } .bz-bdg a img { width: 230px; height: auto; } .bz-bdg > img { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; } .bz-bdg > a { display: block; font: 500 9px Helvetica, Arial, sans-serif; text-align: center; margin-top: 4px; color: var(--on-dark-muted); line-height: 10px; }
   .promo { display: block; background: var(--gold); color: var(--ink); text-align: center; text-decoration: none; padding: .55rem var(--gutter); font: .72rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .promo strong { font-weight: 500; }
   .promo .go { margin-left: .8rem; border-bottom: 1px solid currentColor; }
@@ -227,7 +266,7 @@ const nav: [string, string, [string, string][]][] = [
   .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2.5rem; }
   .footer ul { list-style: none; padding: 0; margin: 0; line-height: 2; }
   .footer .head { color: var(--gold); font-size: .7rem; }
-  .fine { font-size: .78rem; color: #8a8478; margin-top: 3rem; border-top: 1px solid rgb(var(--bone-rgb) / .1); padding-top: 1.5rem; }
+  .fine { font-size: .78rem; color: var(--on-dark-muted); margin-top: 3rem; border-top: 1px solid rgb(var(--bone-rgb) / .1); padding-top: 1.5rem; }
   @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
 
   .mobile-bar { display: none; }

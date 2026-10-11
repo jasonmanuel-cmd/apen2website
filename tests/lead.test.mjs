@@ -8,7 +8,7 @@ const run = async (body, headers = {}) => {
   await handler({ method: 'POST', body, headers }, res);
   return out;
 };
-const lead = { name: 'Test <b>Buyer</b>', phone: '555-0100', email: 'buyer@example.com', plan: 'Sunset Retreat', timeline: 'Reserve', notes: 'hi' };
+const lead = { name: 'Test <b>Buyer</b>', phone: '(661) 555-0100', email: 'buyer@example.com', plan: 'Sunset Retreat', timeline: 'Reserve', notes: 'hi' };
 const log = console.log; console.log = () => {}; console.error = () => {};
 
 // 1. no key: nothing can be delivered, so the visitor is told to call
@@ -34,10 +34,16 @@ r = await run(lead); assert.equal(r.code, 502);
 
 // 5. crash cases found in audit: non-string fields, broken JSON, junk email, oversized notes
 globalThis.fetch = async (_url, opts) => { sent = JSON.parse(opts.body); return { ok: true }; };
-r = await run({ name: 123, phone: 456 }); assert.equal(r.code, 200);
+r = await run({ name: 123, phone: 6615550100, email: 'a@b.co' }); assert.equal(r.code, 200);
 r = await run('{bad'); assert.equal(r.code, 400);
 r = await run(['array']); assert.equal(r.code, 400);
-r = await run({ ...lead, email: 'not-an-email' }); assert.equal(r.code, 200); assert.equal(sent.reply_to, undefined);
+// Email is required: missing or malformed is a 400 and nothing is stored or sent.
+sent = undefined;
+r = await run({ ...lead, email: 'not-an-email' }); assert.equal(r.code, 400); assert.equal(r.body.success, false); assert.equal(sent, undefined);
+r = await run({ ...lead, email: '' }); assert.equal(r.code, 400); assert.equal(sent, undefined);
+{ const { email: _drop, ...noEmail } = lead; r = await run(noEmail); assert.equal(r.code, 400); assert.equal(sent, undefined); }
+r = await run({ ...lead, email: ['a@b.co', 'c@d.co'] }); assert.equal(r.code, 400); r = await run({ ...lead, email: { x: 1 } }); assert.equal(r.code, 400);
+r = await run({ ...lead }); assert.equal(r.code, 200); assert.equal(sent.reply_to, 'buyer@example.com');
 r = await run({ ...lead, notes: 'x'.repeat(100000) }); assert.ok(sent.html.length < 6000);
 r = await run({ ...lead, honeypot: 1 }); assert.equal(r.code, 200); // bot: fake success
 // 6. only POST allowed, no CORS headers
@@ -55,7 +61,103 @@ delete process.env.NOTIFICATION_EMAIL;
 const FORM = { 'content-type': 'application/x-www-form-urlencoded' };
 globalThis.fetch = async () => ({ ok: true });
 r = await run(lead, FORM); assert.equal(r.code, 303); assert.equal(r.headers.Location, '/thank-you/');
-r = await run({ name: 'x' }, FORM); assert.equal(r.code, 400); assert.ok(r.html.includes('(661) 238-3136'));
+r = await run({ name: 'x' }, FORM); assert.equal(r.code, 400); assert.ok(r.html.includes('(661) 241-0306'));
 r = await run({ ...lead, honeypot: 'bot' }, FORM); assert.equal(r.code, 303);
 
-log('ALL LEAD TESTS PASSED (17 cases)');
+// Database (Supabase REST). One fetch mock answers both Supabase (/rest/v1/leads) and Resend.
+const SB = 'https://abc123.supabase.co';
+process.env.SUPABASE_URL = SB;
+process.env.SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_test';
+const events = [];
+const ID = '11111111-1111-1111-1111-111111111111';
+const mockWorld = ({ db = 'ok', resend = 'ok' } = {}) => {
+  events.length = 0;
+  globalThis.fetch = async (url, opts) => {
+    if (String(url).startsWith(`${SB}/rest/v1/leads`)) {
+      events.push({ type: 'db', method: opts.method, url: String(url), headers: opts.headers, body: JSON.parse(opts.body) });
+      if (db === 'throw') throw new Error('network down for Secret Name');
+      if (db === 'fail') return { ok: false, status: 503, json: async () => ({ message: 'Secret Name was in this error' }) };
+      return { ok: true, status: opts.method === 'POST' ? 201 : 204, json: async () => [{ id: ID }] };
+    }
+    events.push({ type: 'email' });
+    return { ok: resend === 'ok', status: 403, text: async () => 'forbidden' };
+  };
+};
+const dbEvents = () => events.filter((e) => e.type === 'db');
+process.env.RESEND_API_KEY = 'test';
+const full = { ...lead, community: 'Tehachapi', contactPref: 'phone', stage: 'Looking', when: '3-6 months', budget: '$400K', firstTime: 'yes', source: 'Contact page' };
+
+// 7. stored first, then emailed, then the email outcome is recorded on the row
+mockWorld();
+r = await run(full, { host: 'aspen2homes.com:443' });
+assert.equal(r.code, 200); assert.equal(r.body.saved, true); assert.equal(r.body.emailDispatched, true);
+assert.deepEqual(events.map((e) => e.type), ['db', 'email', 'db']);
+const [ins, upd] = dbEvents();
+assert.equal(ins.method, 'POST'); assert.equal(ins.url, `${SB}/rest/v1/leads?select=id`);
+assert.equal(ins.headers.apikey, 'sb_secret_test'); assert.equal(ins.headers.Authorization, undefined);
+assert.equal(ins.body.name, 'Test <b>Buyer</b>', 'raw (unescaped) name is stored; escaping is for the email only');
+assert.equal(ins.body.origin_domain, 'aspen2homes.com'); assert.equal(ins.body.source, 'Contact page');
+assert.equal(ins.body.first_time, true); assert.equal(ins.body.military, false); assert.equal(ins.body.buy_window, '3-6 months');
+assert.equal(upd.method, 'PATCH'); assert.equal(upd.url, `${SB}/rest/v1/leads?id=eq.${ID}`);
+assert.deepEqual(upd.body, { email_sent: true, email_error: null });
+// Legacy service_role keys are JWTs and also go in the Authorization header.
+process.env.SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOi.payload.sig'; mockWorld(); await run(lead);
+assert.equal(dbEvents()[0].headers.Authorization, 'Bearer eyJhbGciOi.payload.sig');
+process.env.SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_test';
+// Optional fields the visitor left blank are stored as NULL, not empty strings.
+mockWorld(); await run({ name: 'Solo', phone: '(661) 555-0101', email: 'solo@example.com' });
+assert.equal(dbEvents()[0].body.community, null);
+assert.ok(Object.values(dbEvents()[0].body).every((v) => v !== ''));
+// A request with no valid email never reaches the database or the email provider.
+mockWorld(); r = await run({ name: 'Solo', phone: '(661) 555-0101' }); assert.equal(r.code, 400); assert.equal(dbEvents().length, 0);
+// The response never exposes the row id.
+mockWorld(); r = await run(lead); assert.ok(!JSON.stringify(r.body).includes(ID));
+
+// 8. email down but lead stored: visitor still succeeds, the failure is recorded on the row
+mockWorld({ resend: 'fail' }); r = await run(lead);
+assert.equal(r.code, 200); assert.equal(r.body.saved, true); assert.equal(r.body.emailDispatched, false);
+assert.deepEqual(dbEvents()[1].body, { email_sent: false, email_error: 'Resend rejected or unreachable' });
+// ...and with no Resend key at all
+delete process.env.RESEND_API_KEY; mockWorld(); r = await run(lead);
+assert.equal(r.code, 200); assert.equal(r.body.saved, true); assert.deepEqual(dbEvents()[1].body, { email_sent: false, email_error: 'RESEND_API_KEY not set' });
+process.env.RESEND_API_KEY = 'test';
+
+// 9. database down (error response, or the request itself throws) but email works: lead is emailed, no update is attempted
+for (const db of ['fail', 'throw']) {
+  mockWorld({ db }); r = await run(lead);
+  assert.equal(r.code, 200); assert.equal(r.body.saved, false); assert.equal(r.body.emailDispatched, true);
+  assert.equal(dbEvents().length, 1);
+}
+// 10. both down: only now does the visitor see a failure
+mockWorld({ db: 'fail', resend: 'fail' }); r = await run(lead); assert.equal(r.code, 502);
+delete process.env.RESEND_API_KEY; mockWorld({ db: 'fail' }); r = await run(lead); assert.equal(r.code, 503);
+process.env.RESEND_API_KEY = 'test';
+
+// 11. bots and invalid posts never touch the database
+mockWorld(); await run({ ...lead, honeypot: 'bot' }); await run({ name: 'x' }); await run('{bad');
+assert.equal(dbEvents().length, 0);
+
+// 12. database errors never put submitted values in the logs
+const errs = []; console.error = (...a) => errs.push(a.join(' '));
+for (const db of ['fail', 'throw']) { mockWorld({ db }); await run({ ...lead, name: 'Secret Name', phone: '(999) 555-0199 SECRET' }); }
+assert.ok(errs.length > 0 && errs.every((e) => !e.includes('Secret') && !e.includes('SECRET')));
+console.error = () => {};
+
+// 13. missing or half-set Supabase config must not break the form: the lead is still emailed
+const goodUrl = process.env.SUPABASE_URL, goodKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+delete process.env.SUPABASE_URL; mockWorld(); r = await run(lead);
+assert.equal(r.code, 200); assert.equal(r.body.saved, false); assert.equal(r.body.emailDispatched, true); assert.equal(dbEvents().length, 0);
+process.env.SUPABASE_URL = goodUrl; delete process.env.SUPABASE_SERVICE_ROLE_KEY; mockWorld(); r = await run(lead);
+assert.equal(r.code, 200); assert.equal(r.body.saved, false); assert.equal(dbEvents().length, 0);
+process.env.SUPABASE_SERVICE_ROLE_KEY = goodKey;
+
+// 14. phone must be a real number: both phone and email are required, and a placeholder phone is a 400 that stores and sends nothing
+for (const bad of ['', 'none', '123', '555-0100', '(661) 241', 'call me', '1'.repeat(16)]) {
+  mockWorld(); r = await run({ ...lead, phone: bad });
+  assert.equal(r.code, 400, `phone ${JSON.stringify(bad)} should be rejected`); assert.equal(dbEvents().length, 0);
+}
+for (const good of ['6615550100', '(661) 555-0100', '661.555.0100', '+1 661 555 0100', '1-661-555-0100']) {
+  mockWorld(); r = await run({ ...lead, phone: good }); assert.equal(r.code, 200, `phone ${good} should be accepted`);
+}
+
+log('ALL LEAD TESTS PASSED (34 cases)');

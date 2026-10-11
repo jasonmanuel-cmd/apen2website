@@ -3,11 +3,13 @@ import Layout from '../layouts/Layout.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, communities, offer } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
-const reasons = [
-  `Reserve & customize a ${offer.community} home`,
-  'Get floor plans, pricing and the incentive breakdown',
-  `Walk the ${offer.community} community and model plans`,
+const choices = [
+  ['reserve', `Reserve a ${offer.community} home`],
+  ['semi', 'Request model pricing'],
+  ['financing', 'Ask about financing'],
+  ['tour', 'Schedule a tour'],
 ];
+const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`;
 const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${site.name} in Tehachapi, CA.`, { '@type': 'ContactPage' }), breadcrumb([['Home', '/'], ['Contact', '/contact/']])];
 ---
 <Layout
@@ -20,30 +22,45 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
       <div>
         <p class="eyebrow">Contact</p>
         <h1>Talk With Aspen II Homes About <em>Your New Home</em></h1>
-        <ul class="choices">
-          <li><a href="?interest=reserve#form">Reserve a Sunset Retreat home</a></li>
-          <li><a href="?interest=semi#form">Request model pricing</a></li>
-          <li><a href="?interest=financing#form">Ask about financing</a></li>
-          <li><a href="?interest=tour#form">Schedule a call</a></li>
+        <p class="lede">Reserve a {offer.community} home, or choose a semi-custom model. Sending a question commits you to nothing. We explain any reservation terms before you commit.</p>
+        <p class="quick"><a class="btn" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES<span class="sr-only"> to {site.phone}</span></a></p>
+        <ul class="choices" role="list" aria-label="What can we help with?">
+          {choices.map(([key, label]) => <li><a href={`?interest=${key}#form`} data-choice={key}>{label}</a></li>)}
         </ul>
-        <p class="lede">Reserve a {offer.community} home, or choose a semi-custom model. Zero pressure, zero obligation, just information.</p>
-        <ul class="reasons">{reasons.map((r) => <li>{r}</li>)}</ul>
+        <h2 class="sr-only">Contact details</h2>
         <dl class="info">
-          <div><dt class="mono">Call</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
-          <div><dt class="mono">Text</dt><dd><a href={site.sms()}>Text HOMES</a></dd></div>
           <div><dt class="mono">Email</dt><dd><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-          <div><dt class="mono">Address</dt><dd>{site.address}</dd></div>
+          <div><dt class="mono">Address</dt><dd><a href={mapUrl} target="_blank" rel="noopener">{site.address}<span class="sr-only"> (opens map in a new tab)</span></a></dd></div>
+          <div><dt class="mono">Hours</dt><dd>{site.hours}</dd></div>
           {site.license && <div><dt class="mono">License</dt><dd>{site.license}</dd></div>}
         </dl>
         <p class="mono serving">Serving {communities.map((c) => c.name).join(' · ')}</p>
       </div>
-      <div class="card" id="form">
+      <div class="card" id="form" tabindex="-1">
+        <h2 class="sr-only">Send us a message</h2>
         <p class="mono k">Quick form · we reply {site.followUp}</p>
-        <LeadForm source="Contact page" interest="tour" />
+        <LeadForm source="Contact page" interest="tour" compact />
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  // Pills pick the dropdown and jump to the form without a page reload. Without JS they stay plain links.
+  document.querySelectorAll<HTMLAnchorElement>('a[data-choice]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      const select = document.querySelector<HTMLSelectElement>('select[data-interest]');
+      const option = select && [...select.options].find((o) => o.dataset.key === a.dataset.choice);
+      const form = document.getElementById('form');
+      if (!select || !option || !form) return;
+      e.preventDefault();
+      select.value = option.value;
+      history.replaceState(null, '', `?interest=${a.dataset.choice}#form`);
+      form.scrollIntoView();
+      form.focus({ preventScroll: true });
+    });
+  });
+</script>
 
 <style>
   .grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
@@ -51,17 +68,16 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
   .lede { font-size: 1.2rem; color: var(--muted); max-width: 44ch; }
   h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); }
   .choices { list-style: none; padding: 0; margin: 1.2rem 0 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .choices a { display: inline-block; border: 1px solid var(--ink); padding: .6em 1em; text-decoration: none; font: .7rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .choices a { display: inline-flex; align-items: center; min-height: 44px; border: 1px solid var(--ink); padding: .6em 1.1em; text-decoration: none; font: .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
   .choices a:hover { background: var(--ink); color: var(--bone); }
-  .reasons { list-style: none; padding: 0; margin: 1.5rem 0; }
-  .reasons li { padding: .6rem 0 .6rem 1.8rem; position: relative; }
-  .reasons li::before { content: "✓"; position: absolute; left: 0; color: var(--sage); }
+  .quick { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.2rem 0 0; }
   .info { margin: 2rem 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-  .info dt { font-size: .66rem; color: var(--muted); }
+  .info dt { font-size: .75rem; color: var(--muted); }
   .info dd { margin: .2rem 0 0; font-family: var(--display); font-size: 1.25rem; }
   .info a { text-decoration: none; } .info a:hover { color: var(--clay); }
   @media (max-width: 480px) { .info { grid-template-columns: 1fr; } }
-  .serving { font-size: .66rem; color: var(--muted); line-height: 2; }
+  .serving { font-size: .75rem; color: var(--muted); line-height: 2; }
   .card { background: var(--sand-2); padding: clamp(1.5rem, 4vw, 2.5rem); border: 1px solid var(--line); }
-  .k { color: var(--clay); font-size: .66rem; margin: 0 0 1.2rem; }
+  #form:focus { outline: none; box-shadow: none; }
+  .k { color: var(--clay); font-size: .75rem; margin: 0 0 1.2rem; }
 </style>

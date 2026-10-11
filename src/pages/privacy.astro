@@ -7,27 +7,39 @@ import { site } from '../data/site';
   <section class="section wrap prose">
     <p class="eyebrow">Privacy notice</p>
     <h1>Your information, <em>plainly.</em></h1>
+    <p class="mono updated">Last updated: October 11, 2026</p>
 
     <h2>What we collect</h2>
-    <p>When you send a request through our forms, we receive what you type: your name, phone number, email (optional), what you're interested in, the model and community you pick, and any notes.</p>
-    <p>We also count page visits with Vercel Web Analytics, which does not use cookies and does not identify you personally.</p>
+    <p>When you send a request through our forms, we receive what you type: your name, phone number, email address, what you’re interested in, the model and community you pick, and any notes.</p>
+    <p>If you open "Tell us more" on a form, we also receive the optional details you choose to give: how you would like us to reach you, where you are in the process, your timeline, a budget range, and whether you tick the first-time buyer or VA / military boxes. We also record which form and which of our websites the request came from.</p>
+    <p>We count page visits two ways. Vercel Web Analytics does not use cookies and does not identify you personally. Google Analytics uses cookies to measure how visitors find and use the site (pages viewed, approximate location, device and how you arrived). We use it to improve the site and do not use it to run our own advertising. You can block it with your browser’s cookie settings or the <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener" target="_blank">Google Analytics opt-out add-on<span class="sr-only"> (opens in a new tab)</span></a>.</p>
 
     <h2>Why we use it</h2>
-    <p>Only to answer your request: to call, text or email you about homes, financing and tours you asked about. We don't sell your information.</p>
+    <p>Only to answer your request: to call, text or email you about homes, financing and tours you asked about. We don’t sell your information.</p>
 
     <h2>Who handles it</h2>
     <ul>
       <li>The {site.name} team, who receive your request by email.</li>
-      <li>Vercel, which hosts this website.</li>
+      <li>Vercel, which hosts this website and keeps standard server logs that can include your IP address and browser type.</li>
+      <li>Google, which provides Google Analytics and the Gmail inbox where our team reads form emails.</li>
+      <li>BuildZoom, whose badge in our footer loads from their servers and counts how often it is shown.</li>
       <li>Resend, which delivers the form email to our team.</li>
+      <li>Supabase, which stores a copy of your request in our private database so it isn’t lost if an email fails.</li>
     </ul>
     <p>If you ask about financing, we may pass your contact details to the lender you choose to work with, with your permission.</p>
 
+    <h2>How long we keep it</h2>
+    <p>We keep your request for at least one month after you send it, and longer while we are working with you or need it to answer your follow-up questions. You can ask us to delete it at any time (see Your choices below).</p>
+
     <h2>Texts</h2>
-    <p>Giving us your phone number lets us contact you about your request. We won't send you marketing texts unless you agree to them, and you can tell us to stop at any time.</p>
+    <p>Giving us your phone number lets us contact you about your request. We won’t send you marketing texts unless you agree to them, and you can tell us to stop at any time. Message and data rates may apply.</p>
 
     <h2>Your choices</h2>
-    <p>To see, correct or delete what you've sent us, email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.</p>
+    <p>Some browsers send a "Do Not Track" signal. This website does not currently respond to those signals. Google Analytics and the BuildZoom badge may collect information about your visits across different websites over time.</p>
+    <p>To see, correct or delete what you’ve sent us, email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.</p>
+
+    <h2>Children</h2>
+    <p>This website is not meant for children under 16, and we do not knowingly collect their information.</p>
 
     <h2>Contact</h2>
     <p>{site.name}, {site.address}</p>
@@ -36,6 +48,7 @@ import { site } from '../data/site';
 
 <style>
   .prose { max-width: 760px; }
+  .updated { font-size: .75rem; color: var(--muted); margin: 0 0 1.5rem; }
   .prose h2 { font-size: 1.6rem; margin-top: 2.2rem; }
   .prose ul { padding-left: 1.2rem; }
 </style>
