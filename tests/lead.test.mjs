@@ -34,10 +34,16 @@ r = await run(lead); assert.equal(r.code, 502);
 
 // 5. crash cases found in audit: non-string fields, broken JSON, junk email, oversized notes
 globalThis.fetch = async (_url, opts) => { sent = JSON.parse(opts.body); return { ok: true }; };
-r = await run({ name: 123, phone: 456 }); assert.equal(r.code, 200);
+r = await run({ name: 123, phone: 456, email: 'a@b.co' }); assert.equal(r.code, 200);
 r = await run('{bad'); assert.equal(r.code, 400);
 r = await run(['array']); assert.equal(r.code, 400);
-r = await run({ ...lead, email: 'not-an-email' }); assert.equal(r.code, 200); assert.equal(sent.reply_to, undefined);
+// Email is required: missing or malformed is a 400 and nothing is stored or sent.
+sent = undefined;
+r = await run({ ...lead, email: 'not-an-email' }); assert.equal(r.code, 400); assert.equal(r.body.success, false); assert.equal(sent, undefined);
+r = await run({ ...lead, email: '' }); assert.equal(r.code, 400); assert.equal(sent, undefined);
+{ const { email: _drop, ...noEmail } = lead; r = await run(noEmail); assert.equal(r.code, 400); assert.equal(sent, undefined); }
+r = await run({ ...lead, email: ['a@b.co', 'c@d.co'] }); assert.equal(r.code, 400); r = await run({ ...lead, email: { x: 1 } }); assert.equal(r.code, 400);
+r = await run({ ...lead }); assert.equal(r.code, 200); assert.equal(sent.reply_to, 'buyer@example.com');
 r = await run({ ...lead, notes: 'x'.repeat(100000) }); assert.ok(sent.html.length < 6000);
 r = await run({ ...lead, honeypot: 1 }); assert.equal(r.code, 200); // bot: fake success
 // 6. only POST allowed, no CORS headers
@@ -99,9 +105,11 @@ process.env.SUPABASE_SERVICE_ROLE_KEY = 'eyJhbGciOi.payload.sig'; mockWorld(); a
 assert.equal(dbEvents()[0].headers.Authorization, 'Bearer eyJhbGciOi.payload.sig');
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_test';
 // Optional fields the visitor left blank are stored as NULL, not empty strings.
-mockWorld(); await run({ name: 'Solo', phone: '555-0101' });
-assert.equal(dbEvents()[0].body.email, null); assert.equal(dbEvents()[0].body.community, null);
+mockWorld(); await run({ name: 'Solo', phone: '555-0101', email: 'solo@example.com' });
+assert.equal(dbEvents()[0].body.community, null);
 assert.ok(Object.values(dbEvents()[0].body).every((v) => v !== ''));
+// A request with no valid email never reaches the database or the email provider.
+mockWorld(); r = await run({ name: 'Solo', phone: '555-0101' }); assert.equal(r.code, 400); assert.equal(dbEvents().length, 0);
 // The response never exposes the row id.
 mockWorld(); r = await run(lead); assert.ok(!JSON.stringify(r.body).includes(ID));
 

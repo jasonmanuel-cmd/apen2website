@@ -144,6 +144,13 @@ export default async function handler(req, res) {
         error: 'Missing required fields: name and phone number are required.'
       });
     }
+    // The form marks email required; enforce it here too so a missing or malformed address can't slip past the browser check.
+    if (!email) {
+      return reply(req, res, 400, {
+        success: false,
+        error: 'Please enter a valid email address so we can reply.'
+      });
+    }
 
     const leadPayload = { timestamp: new Date().toISOString(), name, phone, email, community, timeline, plan, notes, source };
 

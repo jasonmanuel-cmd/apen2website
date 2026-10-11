@@ -20,7 +20,7 @@ const interests = [
     <label><span>Name <span aria-hidden="true">*</span></span><input name="name" required autocomplete="name" spellcheck="false" /></label>
     <label><span>Phone <span aria-hidden="true">*</span></span><input name="phone" type="tel" required autocomplete="tel" /></label>
   </div>
-  <label>Email<input name="email" type="email" autocomplete="email" spellcheck="false" /></label>
+  <label><span>Email <span aria-hidden="true">*</span></span><input name="email" type="email" required autocomplete="email" spellcheck="false" /></label>
   <label>I'm interested in
     <select name="timeline" data-interest>
       {interests.map(([v, l]) => <option value={l} data-key={v} selected={v === interest}>{l}</option>)}
@@ -108,6 +108,11 @@ const interests = [
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(Object.fromEntries(new FormData(form))),
         });
+        if (res.status === 400) {
+          // Validation problem (e.g. a malformed email): show the server's plain message instead of the generic failure.
+          const problem = await res.json().catch(() => null);
+          if (problem?.error) { status.textContent = problem.error; btn.disabled = false; btn.innerHTML = 'Send My Request <span aria-hidden="true">→</span>'; return; }
+        }
         if (!res.ok) throw new Error();
         form.classList.add('sent');
         status.textContent = "Thank you! Our team will reach out shortly.";
