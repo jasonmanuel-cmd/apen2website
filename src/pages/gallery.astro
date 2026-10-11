@@ -6,16 +6,18 @@ import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/gallery/';
 const title = `New Home Photos & Renderings | ${site.name}`;
-const description = `Photos and artist renderings of ${site.name} floor plans, labeled by model, with links to each plan's specs and floor plan.`;
+const description = `Photos and artist renderings of ${site.name} floor plans, labeled by model, with links to each plan's details and floor plan.`;
 const sets = plans.map((p) => ({ p, imgs: photos(p.folder), name: p.slug === 'sunset-retreat' ? `${p.name} Model` : p.name })).filter((x) => x.imgs.length);
+const noPhotos = plans.filter((p) => !photos(p.folder).length);
 const schema = [webPage(path, title, description, { '@type': 'CollectionPage' }), breadcrumb([['Home', '/'], ['Gallery', path]])];
 ---
 <Layout title={title} description={description} schema={schema}>
   <section class="section wrap">
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Gallery</span></nav>
     <p class="eyebrow">Gallery</p>
-    <h1>New Home Photos: <em>Inside the Floor Plans</em></h1>
-    <p class="lede">Every set is labeled by model. Artist renderings are marked and may differ from completed construction.</p>
+    <h1>Photos and Renderings <em>by Floor Plan</em></h1>
+    <p class="lede">Every set is labeled by model. Artist renderings are marked and may differ from completed construction. Photos may show optional upgrades, furnishings or finishes that are not standard; features and finishes vary by home.</p>
+    {noPhotos.length > 0 && <p class="lede note">{noPhotos.map((p, i) => <>{i > 0 && ', '}<a href={planUrl(p)}>{p.name}</a></>)}: floor plan only, no photos yet.</p>}
     <nav class="jump" aria-label="Jump to a model"><span class="mono">Jump to:</span>{sets.map(({ p, name }) => <a class="chip mono" href={`#${p.slug}`}>{name}</a>)}</nav>
   </section>
   {sets.map(({ p, imgs, name }, n) => (
@@ -23,7 +25,7 @@ const schema = [webPage(path, title, description, { '@type': 'CollectionPage' })
       <div class="head">
         <h2>{name}</h2>
         <p class="mono">{p.sqft.toLocaleString('en-US')} sf · {p.beds} bd · {p.baths} ba · {p.rendering ? 'Artist renderings' : 'Photography'}</p>
-        <a href={planUrl(p)} class="mono more" aria-label={`Specs and floor plan for ${name}`}>Specs & floor plan <span aria-hidden="true">→</span></a>
+        <a href={planUrl(p)} class="mono more" aria-label={`Details and floor plan for ${name}`}>Details & floor plan <span aria-hidden="true">→</span></a>
       </div>
       <Gallery images={imgs} name={name} eagerFirst={n === 0} />
     </section>
@@ -35,6 +37,7 @@ const schema = [webPage(path, title, description, { '@type': 'CollectionPage' })
   .crumbs { color: var(--muted); font-size: .75rem; margin-bottom: 2rem; } .crumbs a { text-decoration: none; }
   h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); }
   .lede { max-width: 60ch; font-size: 1.15rem; color: var(--muted); }
+  .lede.note { font-size: .95rem; } .lede.note a { color: var(--clay); }
   .set { margin-bottom: clamp(48px, 7vw, 88px); }
   .jump { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 1.5rem 0 0; }
   .jump .mono { font-size: .75rem; color: var(--muted); margin-right: .3rem; }
