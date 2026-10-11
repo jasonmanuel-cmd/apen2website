@@ -4,12 +4,14 @@ import LeadForm from '../components/LeadForm.astro';
 import { site, offer, financing, usd, buyingSteps, fromShort } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 const steps = buyingSteps;
-const crumbSchema = breadcrumb([['Home', '/'], ['Financing', '/financing/']]);
+const title = `Financing: 0% Down & ${usd(offer.earlyCredit)} Savings | ${site.name}`;
+const description = `0% down for eligible first-time buyers, up to ${usd(offer.earlyCredit)} early-buyer savings, rate buydown options and closing credits. FHA, VA & conventional.`;
+const crumbSchema = [webPage('/financing/', title, description), breadcrumb([['Home', '/'], ['Financing', '/financing/']])];
 ---
 <Layout
   schema={crumbSchema}
-  title={`Financing: 0% Down & ${usd(offer.earlyCredit)} Savings | ${site.name}`}
-  description={`0% down for eligible first-time buyers, up to ${usd(offer.earlyCredit)} early-buyer savings, rate buydown options and closing credits. FHA, VA & conventional.`}
+  title={title}
+  description={description}
 >
   <section class="hero">
     <div class="wrap">

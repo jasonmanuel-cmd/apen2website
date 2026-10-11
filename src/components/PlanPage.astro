@@ -5,7 +5,7 @@ import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
 import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
-import { breadcrumb, faqPage, webPage } from '../data/schema';
+import { breadcrumb, faqPage, webPage, floorPlan } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
 const imgs = photos(plan.folder);
@@ -13,6 +13,7 @@ const bp = blueprint(plan.folder);
 const pdf = `/plans/${plan.slug}.pdf`;
 const ogSrc = imgs[0]?.src ?? bp;
 const og = ogSrc ? (await getImage({ src: ogSrc, width: 1200, format: 'jpg' })).src : undefined;
+const bpImg = bp ? (await getImage({ src: bp, width: 1200, format: 'jpg' })).src : undefined;
 const i = plans.indexOf(plan);
 const others = [1, 2, 3].map((n) => plans[(i + n) % plans.length]);
 const sr = plan.slug === 'sunset-retreat';
@@ -48,7 +49,8 @@ const qa: [string, string][] = [
 ];
 const path = planUrl(plan);
 const schema = [
-  webPage(path, title, description, og ? { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } } : {}),
+  webPage(path, title, description, { mainEntity: { '@id': `${new URL(path, site.url).href}#floorplan` }, ...(og && { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og, site.url).href } }) }),
+  floorPlan(path, plan, og && new URL(og, site.url).href, bpImg && new URL(bpImg, site.url).href),
   breadcrumb([['Home', '/'], ['Floor plans', '/floor-plans/'], [label, path]]),
   faqPage(qa),
 ];

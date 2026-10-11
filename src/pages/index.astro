@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
 import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort, availability } from '../data/site';
-import { faqPage } from '../data/schema';
+import { faqPage, webPage } from '../data/schema';
 
 // Each section uses a different photo; exteriors already appear on the model cards.
 const pick = (folder: string, caption: string) => photos(folder).find((p) => p.caption === caption)!.src;
@@ -37,13 +37,15 @@ const trust = [
   ...(site.license ? [site.license] : []),
 ];
 const steps = buyingSteps;
-const faqSchema = faqPage(faq);
+const title = `Tehachapi Home Builder: Sunset Retreat from ${fromShort} | ${site.name}`;
+const description = `Sunset Retreat homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down options for eligible first-time buyers. Terms apply.`;
+const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og.src, site.url).href } }), faqPage(faq)];
 ---
 <Layout
-  title={`Tehachapi Home Builder: Sunset Retreat from ${fromShort} | ${site.name}`}
-  description={`Sunset Retreat homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down options for eligible first-time buyers. Terms apply.`}
+  title={title}
+  description={description}
   image={og.src}
-  schema={faqSchema}
+  schema={schema}
 >
   <section class="hero">
     <Image src={hero} alt="Sunset Retreat model exterior with the Tehachapi mountains behind it" class="hero-img" loading="eager" fetchpriority="high" widths={[800, 1280, 1600]} sizes="100vw" />

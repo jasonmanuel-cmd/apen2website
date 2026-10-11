@@ -27,7 +27,8 @@ export const site = {
   verified: 'September 2026',
   // Month the three /guides/ pages were last checked against their sources. Owner: confirm, and update when you re-check.
   guidesReviewed: 'October 2026',
-  guidesReviewedISO: '2026-10',
+  guidesPublishedISO: '2026-10-05',
+  guidesReviewedISO: '2026-10-11', // last content edit; update with guidesReviewed
 };
 
 // Third-party listings the owner has claimed (2026-10-05). Feeds schema sameAs and the footer "Find us on" links.

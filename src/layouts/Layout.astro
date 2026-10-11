@@ -11,6 +11,7 @@ import '@fontsource/source-serif-4/latin-400-italic.css';
 import '@fontsource/source-serif-4/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
+import { ORG_ID, SITE_ID } from '../data/schema';
 import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl, serviceAreaNames, profiles } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
 const { title, description, schema, image, noindex } = Astro.props;
@@ -18,13 +19,17 @@ const canonical = new URL(Astro.url.pathname, site.url).href;
 const org = {
   '@context': 'https://schema.org',
   '@type': 'HomeAndConstructionBusiness',
-  name: site.name, foundingDate: String(site.since), url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `${offer.community} homes from ${usd(offer.from)}`, telephone: site.phone, email: site.email,
+  '@id': ORG_ID,
+  name: site.name, foundingDate: String(site.since), url: site.url, logo: `${site.url}/logo.png`, image: `${site.url}/og-default.png`, priceRange: `${offer.community} homes from ${usd(offer.from)}`, telephone: site.phoneHref.replace('tel:', ''), email: site.email,
   address: { '@type': 'PostalAddress', streetAddress: '785 Tucker Road G295', addressLocality: 'Tehachapi', addressRegion: 'CA', postalCode: '93561', addressCountry: 'US' },
   ...(site.license && { identifier: { '@type': 'PropertyValue', propertyID: 'CSLB License', value: site.license.replace(/\D/g, '') } }),
+  // CSLB record checked 2026-10-05: Class B, General Building.
+  ...(site.license && { hasCredential: { '@type': 'EducationalOccupationalCredential', credentialCategory: 'license', name: 'California contractor license, Class B General Building', identifier: site.license.replace(/\D/g, ''), recognizedBy: { '@type': 'GovernmentOrganization', name: 'Contractors State License Board', url: 'https://www.cslb.ca.gov/' } } }),
   areaServed: serviceAreaNames,
   sameAs: profiles.map(([, href]) => href),
   openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '07:00', closes: '19:00' }],
 };
+const website = { '@context': 'https://schema.org', '@type': 'WebSite', '@id': SITE_ID, name: site.name, url: site.url, publisher: { '@id': ORG_ID } };
 const path = Astro.url.pathname;
 // Spec §04 navigation, minus Build on Your Lot (owner decision D12: spec and semi-custom homes only).
 const nav: [string, string, [string, string][]][] = [
@@ -80,6 +85,7 @@ const nav: [string, string, [string, string][]][] = [
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="sitemap" href="/sitemap.xml" />
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  <script type="application/ld+json" set:html={JSON.stringify(website)} />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
   <!-- Vercel Web Analytics: cookieless page views. Enable it in Vercel > Project > Analytics. -->
   <script defer src="/_vercel/insights/script.js"></script>
