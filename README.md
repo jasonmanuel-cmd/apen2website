@@ -52,6 +52,45 @@ The leads database runs on Supabase's free plan, and free projects can be paused
 - A failing run (database unreachable, keys missing) shows as a non-200 in Vercel > the project > Settings > Cron Jobs, and in the function logs. That is the early warning that leads are not being stored.
 - Upgrading the Supabase plan removes the need for this, but the check is still a cheap health signal.
 
+## HQ: leads and traffic in one place
+
+`/hq/` is the staff dashboard. It has two tabs and opens with the same password as `/staff/`:
+
+- **Leads** — the full lead inbox: statuses, assignment, follow-up dates, notes, search, and the email-not-sent filter. It reads the existing `/api/staff/leads` endpoint, so the old `/staff/` page keeps working unchanged.
+- **Traffic** — sessions, unique visitors, page views, pages per session, engaged time, where visits came from, top and entry pages, devices, browsers, operating systems, busiest hours, and country/region/city.
+
+Neither page is linked from the site, both send `noindex`, and both are in `robots.txt` and the `vercel.json` headers.
+
+### What has to happen before traffic appears
+
+Run `supabase/analytics-schema.sql` once in the Supabase SQL editor, in the **same** project that already holds `leads`. It adds `sessions`, `visits` and a `bump_session` function next to the existing table and does not touch `leads`. Without it the page loads but the Traffic tab shows its empty state; nothing else breaks.
+
+### What is collected, and what is not
+
+- **No IP is ever stored.** The server derives a salted hash of the edge IP to count unique visitors and then discards the IP. The salt includes the date, so the hash changes every day and one visitor cannot be tracked across days.
+- **No cookies and no cross-site identifiers.** The session id is a random UUID in `sessionStorage`, so it clears when the tab closes.
+- **Referrers are stored as host only** (`google.com`), never the full URL, which would carry the search terms someone typed.
+- **Geography is edge-provided** country/state/city. Nothing more precise is available or collected.
+- **Bots are excluded** from every figure (`device_type = 'bot'` is filtered at query time).
+- **Do Not Track and Global Privacy Control are honoured**, and there is an explicit opt-out in `localStorage`.
+- The browser sends no IP to `/api/track` at all — hashing happens server-side.
+
+### Files
+
+- `public/analytics.js` — the tracker, loaded on public pages only.
+- `api/track.js` — ingest. Best effort: a database failure returns 202 and the visitor sees nothing.
+- `api/hq/analytics.js` — the Traffic tab data, behind `STAFF_TOKEN`.
+- `supabase/analytics-schema.sql` — run once by hand.
+
+### Environment variables
+
+- `STAFF_TOKEN` (required, 20+ characters) opens both `/staff/` and `/hq/`.
+- `ANALYTICS_SALT` (optional) salts the visitor hash. Set it once and leave it. Without it a fixed default is used, which still rotates daily but means two sites sharing the default could be correlated. Changing it invalidates old hashes, so unique counts dip for a day.
+
+### Tests
+
+`npm test` runs six suites, all with Supabase mocked so nothing is contacted: the existing lead, keepalive and staff suites, plus `track`, `hq-analytics` and `hq-ui`. `hq-ui` drives the built `/hq` bundle through a DOM shim, so the render path, empty state and error path are exercised rather than only syntax-checked. Run `npm run build` before `npm test`, since `hq-ui` reads `dist/`.
+
 ## Waiting on the owner (from the 2026-10-02 audit)
 
 Code changes can't settle these; each needs a written answer from the owner or lender before the copy changes.

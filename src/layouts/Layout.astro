@@ -159,6 +159,15 @@ const nav: [string, string, [string, string][]][] = [
     <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
   </nav>
   <SpeedInsights />
+  <!-- First-party traffic analytics (/analytics.js, served from public/). No cookies, no IP sent
+       from the browser, and it opts out on Do Not Track, Global Privacy Control, or the visitor's
+       explicit choice. is:inline so it is not bundled or preloaded; it loads after paint. Any
+       failure is swallowed, so it can never block the page. -->
+  <script is:inline>
+    import('/analytics.js')
+      .then(function (m) { m.initAnalytics(); m.trackPageView(document.title); })
+      .catch(function () {});
+  </script>
   <script is:inline>
     // Esc dismisses an open nav dropdown (WCAG 1.4.13); it reopens on the next hover or focus entry.
     document.querySelectorAll('.dd').forEach(function (dd) {
