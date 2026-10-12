@@ -4,8 +4,9 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import { fileURLToPath } from 'node:url';
 
-const DIST = new URL('../dist/', import.meta.url).pathname.replace(/^\//, '');
+const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 const html = fs.readFileSync(`${DIST}hq/index.html`, 'utf8');
 const bundleName = html.match(/_astro\/index\.astro_astro_type_script[^"]+\.js/)[0];
 const code = fs.readFileSync(`${DIST}${bundleName}`, 'utf8');

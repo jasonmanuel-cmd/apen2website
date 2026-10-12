@@ -122,3 +122,12 @@ Built pages say only what the data file can support. These items stay unpublishe
 - Set `RESEND_API_KEY`, `NOTIFICATION_EMAIL` and `RESEND_FROM` in Vercel. Without the key, the form now tells visitors to call instead of pretending it sent.
 - Turn on Vercel > Analytics to start the cookieless page-view counts (the script is already in the layout).
 - After deploying, submit the sitemap for whichever host is canonical in Google Search Console and request indexing of the main pages.
+
+## Chat assistant and appointments
+
+- Widget: `src/components/ChatWidget.astro` (loaded by `Layout.astro`). Talks to `api/chat.js`.
+- Brain: `lib/chat-brain.js` (Anthropic Messages API, three tools: `save_contact`, `request_appointment`, `handoff`). Rules and facts the bot may state live in `lib/chat-knowledge.js`; `tests/chat.test.mjs` fails if those facts drift from `src/data/site.ts`.
+- Storage: `supabase/chat-schema.sql` (conversations, messages, appointments; RLS on, no policies). Run it once in the Supabase SQL editor. Chat leads land in `public.leads` with source `Website chat` and are emailed to staff.
+- Staff: `/hq/` has Chats and Appointments tabs (`api/hq/chat.js`, same STAFF_TOKEN). Appointments are requests until staff confirm them.
+- Env: `ANTHROPIC_API_KEY` (required), `CHAT_MODEL` (optional). Without the key the widget tells visitors to call the office.
+- Texting (Twilio) is not built yet; `lib/chat-brain.js` is written so an SMS webhook can reuse it.

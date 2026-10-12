@@ -41,6 +41,8 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
       <div class="tabs" role="tablist" aria-label="HQ sections">
         <button role="tab" id="tab-leads" aria-controls="view-leads" aria-selected="true" tabindex="0">Leads</button>
         <button role="tab" id="tab-analytics" aria-controls="view-analytics" aria-selected="false" tabindex="-1">Traffic</button>
+        <button role="tab" id="tab-chats" aria-controls="view-chats" aria-selected="false" tabindex="-1">Chats <span id="badge-chats" class="badge" hidden></span></button>
+        <button role="tab" id="tab-appts" aria-controls="view-appts" aria-selected="false" tabindex="-1">Appointments <span id="badge-appts" class="badge" hidden></span></button>
       </div>
       <div class="bar">
         <p id="counts" class="mono" role="status" aria-live="polite"></p>
@@ -69,6 +71,20 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         <div class="range" role="group" aria-label="Date range" id="range"></div>
         <p id="an-msg" class="msg" role="status" aria-live="polite"></p>
         <div id="an-body"></div>
+      </div>
+
+      <!-- Chats -->
+      <div id="view-chats" role="tabpanel" aria-labelledby="tab-chats" hidden>
+        <div class="range" role="group" aria-label="Filter chats" id="chat-filters"></div>
+        <p id="chat-msg" class="msg" role="status" aria-live="polite"></p>
+        <ul id="chat-list" role="list" class="plain"></ul>
+      </div>
+
+      <!-- Appointments -->
+      <div id="view-appts" role="tabpanel" aria-labelledby="tab-appts" hidden>
+        <div class="range" role="group" aria-label="Filter appointments" id="appt-filters"></div>
+        <p id="appt-msg" class="msg" role="status" aria-live="polite"></p>
+        <ul id="appt-list" role="list" class="plain"></ul>
       </div>
     </section>
   </main>
@@ -131,7 +147,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
     const signOut = (msg = '') => {
       token = '';
       try { sessionStorage.removeItem(KEY); } catch {}
-      state.leads = []; $('list').replaceChildren(); $('an-body').replaceChildren(); $('token').value = '';
+      state.leads = []; $('list').replaceChildren(); $('an-body').replaceChildren(); $('chat-list').replaceChildren(); $('appt-list').replaceChildren(); setBadge('badge-chats', 0); setBadge('badge-appts', 0); $('token').value = '';
       $('login-msg').textContent = msg;
       show(false);
       if (msg) $('token').focus();
@@ -346,6 +362,112 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
           on: { click: () => { state.days = d; buildRanges(); loadAnalytics(); } } })));
     };
 
+    // ------------------------------------------------------- chats + appointments
+
+    const hq = async (path, init = {}) => {
+      const res = await fetch(`/api/hq/chat${path}`, {
+        ...init,
+        headers: { Authorization: `Bearer ${token}`, ...(init.body ? { 'Content-Type': 'application/json' } : {}) }
+      });
+      let data = null;
+      try { data = await res.json(); } catch {}
+      if (res.status === 401) throw new AuthError(data?.error || 'Wrong password.');
+      if (!res.ok || !data?.ok) throw new Error(data?.error || 'Something went wrong. Try again.');
+      return data;
+    };
+    const setBadge = (id, n) => { const b = $(id); b.textContent = n ? String(n) : ''; b.hidden = !n; };
+    const chatState = { filter: 'all', appt: 'open' };
+    const APPT_LABEL = { requested: 'Requested', confirmed: 'Confirmed', completed: 'Completed', cancelled: 'Cancelled', no_show: 'No-show' };
+    const clock = (t) => { const [h, m] = String(t).split(':').map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
+
+    const renderMessages = (box, messages) => {
+      box.replaceChildren(...messages.map((m) => el('p', { class: `bubble ${m.role}`, text: `${m.role === 'user' ? 'Visitor' : 'Assistant'}: ${m.content}` })));
+    };
+
+    const chatItem = (c) => {
+      const who = c.lead ? `${c.lead.name} · ${c.lead.phone}` : 'No contact details';
+      const body = el('div', { class: 'thread' });
+      const resolve = el('button', { type: 'button', class: 'chip', text: c.resolved ? 'Reopen' : 'Mark handled',
+        on: { click: async () => {
+          try { await hq(`?view=conversations&id=${encodeURIComponent(c.id)}`, { method: 'PATCH', body: JSON.stringify({ resolved: !c.resolved }) }); loadChats(); }
+          catch (err) { if (err instanceof AuthError) signOut('Your session ended. Sign in again.'); else $('chat-msg').textContent = err.message; }
+        } } });
+      const details = el('details', {},
+        el('summary', {},
+          el('strong', { text: who }),
+          c.needs_human && !c.resolved ? el('span', { class: 'flag', text: ' Needs a person' }) : null,
+          el('span', { class: 'mono hint', text: ` ${c.message_count} messages · ${when(c.last_message_at)}` })),
+        c.handoff_reason ? el('p', { class: 'mono hint', text: `Reason: ${c.handoff_reason}` }) : null,
+        c.lead?.email ? el('p', { class: 'mono hint', text: c.lead.email }) : null,
+        body, resolve);
+      details.addEventListener('toggle', async () => {
+        if (!details.open || body.childElementCount) return;
+        body.textContent = 'Loading…';
+        try { const d = await hq(`?view=messages&id=${encodeURIComponent(c.id)}`); renderMessages(body, d.messages); }
+        catch (err) { body.textContent = err instanceof AuthError ? 'Session ended.' : err.message; }
+      });
+      return el('li', { class: 'card' }, details);
+    };
+
+    let chatSeq = 0;
+    const loadChats = async () => {
+      const mine = ++chatSeq;
+      $('chat-msg').textContent = 'Loading…';
+      try {
+        const d = await hq(`?view=conversations&filter=${chatState.filter}`);
+        if (mine !== chatSeq) return;
+        setBadge('badge-chats', d.needHuman); setBadge('badge-appts', d.openAppointments);
+        $('chat-list').replaceChildren(...d.conversations.map(chatItem));
+        $('chat-msg').textContent = d.conversations.length ? '' : (chatState.filter === 'human' ? 'No chats need a person.' : 'No chats yet.');
+      } catch (err) {
+        if (mine !== chatSeq) return;
+        if (err instanceof AuthError) return signOut('Your session ended. Sign in again.');
+        $('chat-msg').textContent = err.message;
+      }
+    };
+
+    const apptItem = (a) => {
+      const set = async (status) => {
+        try { await hq(`?view=appointments&id=${encodeURIComponent(a.id)}`, { method: 'PATCH', body: JSON.stringify({ status }) }); loadAppts(); }
+        catch (err) { if (err instanceof AuthError) signOut('Your session ended. Sign in again.'); else $('appt-msg').textContent = err.message; }
+      };
+      const next = a.status === 'requested' ? [['confirmed', 'Confirm']] : a.status === 'confirmed' ? [['completed', 'Completed'], ['no_show', 'No-show']] : [];
+      const actions = [...next, ...(a.status === 'requested' || a.status === 'confirmed' ? [['cancelled', 'Cancel']] : [])];
+      return el('li', { class: 'card' },
+        el('h3', { text: `${a.kind === 'tour' ? 'Tour' : 'Call'}: ${a.name}` }),
+        el('p', { class: 'mono', text: `${shortDate(a.preferred_date)} at ${clock(a.preferred_time)} (Tehachapi time) · ${APPT_LABEL[a.status] || a.status}` }),
+        el('p', { class: 'mono hint' }, el('a', { href: `tel:${phoneDigits(a.phone)}`, text: a.phone }), a.email && EMAIL.test(a.email) ? ` · ${a.email}` : ''),
+        a.notes ? el('p', { class: 'small', text: a.notes }) : null,
+        el('div', { class: 'bar-btns' }, actions.map(([st, label]) => el('button', { type: 'button', class: 'chip', text: label, on: { click: () => set(st) } }))));
+    };
+
+    let apptSeq = 0;
+    const loadAppts = async () => {
+      const mine = ++apptSeq;
+      $('appt-msg').textContent = 'Loading…';
+      try {
+        const d = await hq(`?view=appointments&status=${chatState.appt}`);
+        if (mine !== apptSeq) return;
+        $('appt-list').replaceChildren(...d.appointments.map(apptItem));
+        $('appt-msg').textContent = d.appointments.length ? 'Requests are not bookings until you confirm them with the visitor.' : 'No appointments.';
+        loadChatBadges();
+      } catch (err) {
+        if (mine !== apptSeq) return;
+        if (err instanceof AuthError) return signOut('Your session ended. Sign in again.');
+        $('appt-msg').textContent = err.message;
+      }
+    };
+    const loadChatBadges = () => hq('?view=conversations&limit=1').then((d) => { setBadge('badge-chats', d.needHuman); setBadge('badge-appts', d.openAppointments); }, () => {});
+
+    const buildChatFilters = () => {
+      $('chat-filters').replaceChildren(...[['all', 'All chats'], ['human', 'Needs a person']].map(([v, l]) =>
+        el('button', { type: 'button', class: 'chip', 'aria-pressed': String(chatState.filter === v), text: l,
+          on: { click: () => { chatState.filter = v; buildChatFilters(); loadChats(); } } })));
+      $('appt-filters').replaceChildren(...[['open', 'Open'], ['requested', 'Requested'], ['completed', 'Completed'], ['cancelled', 'Cancelled'], ['all', 'All']].map(([v, l]) =>
+        el('button', { type: 'button', class: 'chip', 'aria-pressed': String(chatState.appt === v), text: l,
+          on: { click: () => { chatState.appt = v; buildChatFilters(); loadAppts(); } } })));
+    };
+
     // ----------------------------------------------------------------- tabs
 
     const tabs = [...document.querySelectorAll('[role="tab"]')];
@@ -358,6 +480,8 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
       });
       // Load the traffic view the first time it is opened, so signing in stays fast.
       if (tab.id === 'tab-analytics' && !$('an-body').childElementCount) loadAnalytics();
+      if (tab.id === 'tab-chats') loadChats();
+      if (tab.id === 'tab-appts') loadAppts();
     };
     tabs.forEach((tab, i) => {
       tab.addEventListener('click', () => selectTab(tab));
@@ -383,6 +507,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         await loadLeads(false, true);
         try { sessionStorage.setItem(KEY, token); } catch {}
         $('login-msg').textContent = '';
+        loadChatBadges();
       } catch (err) {
         if (!(err instanceof AuthError)) { $('login-msg').textContent = err.message; show(false); }
         else { token = ''; $('login-msg').textContent = err.message; $('token').focus(); }
@@ -392,8 +517,10 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
     });
     $('logout').addEventListener('click', () => signOut());
     $('refresh').addEventListener('click', () => {
-      const onTraffic = $('tab-analytics').getAttribute('aria-selected') === 'true';
-      (onTraffic ? loadAnalytics() : loadLeads()).catch(() => {});
+      const on = (id) => $(id).getAttribute('aria-selected') === 'true';
+      if (on('tab-chats')) return loadChats();
+      if (on('tab-appts')) return loadAppts();
+      (on('tab-analytics') ? loadAnalytics() : loadLeads()).catch(() => {});
     });
     $('more').addEventListener('click', () => { state.offset = state.leads.length; loadLeads(true).catch(() => {}); });
     $('unsent').addEventListener('change', (e) => { state.unsent = e.target.checked; loadLeads().catch(() => {}); });
@@ -402,7 +529,8 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
 
     buildFilters();
     buildRanges();
-    if (token) { show(true); loadLeads().catch(() => {}); }
+    buildChatFilters();
+    if (token) { show(true); loadLeads().catch(() => {}); loadChatBadges(); }
   </script>
 
   <style is:global>
@@ -471,6 +599,14 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
     .stat .k { color: var(--muted); margin: 0 0 .3rem; text-transform: uppercase; letter-spacing: .1em; font-size: .7rem; }
     .stat .v { font: 400 2rem var(--display); margin: 0; line-height: 1; }
     .stat .s { color: var(--muted); margin: .3rem 0 0; font-size: .7rem; }
+    .plain { list-style: none; padding: 0; margin: 0; }
+    .badge { display: inline-block; min-width: 1.4em; padding: 0 .4em; margin-left: .3em; background: var(--rust); color: var(--bone); border-radius: 999px; font: 500 .75rem var(--mono); text-align: center; }
+    .flag { color: var(--rust); font-weight: 600; }
+    .thread { margin: .8rem 0; display: grid; gap: .4rem; }
+    .bubble { margin: 0; padding: .5rem .75rem; font-size: .95rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .bubble.user { background: var(--sand-2); }
+    .bubble.assistant { background: var(--paper); border: 1px solid var(--line); }
+    summary { cursor: pointer; }
     .card { background: var(--paper); border: 1px solid var(--line); padding: 1.1rem 1.25rem; margin-bottom: .75rem; }
     .card .hint { color: var(--muted); margin: 0 0 .9rem; }
     .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: .75rem; align-items: start; }

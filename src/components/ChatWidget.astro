@@ -1,0 +1,151 @@
+---
+// Floating chat assistant. Talks to /api/chat (lib/chat-brain.js). Loads nothing from the network until
+// the visitor opens it. Everything the server sends is written with textContent, never as HTML.
+import { site } from '../data/site';
+---
+<div id="chat" class="chat" data-phone={site.phone} hidden>
+  <button id="chat-open" class="chat-fab" type="button" aria-expanded="false" aria-controls="chat-panel">
+    <span class="chat-fab-dot" aria-hidden="true"></span> Chat with us
+  </button>
+
+  <section id="chat-panel" class="chat-panel" role="dialog" aria-label={`Chat with ${site.name}`} hidden>
+    <header class="chat-head">
+      <div>
+        <p class="chat-title">{site.name}</p>
+        <p class="chat-sub">AI assistant · <a href={site.phoneHref}>{site.phone}</a></p>
+      </div>
+      <button id="chat-close" class="chat-x" type="button" aria-label="Close chat">×</button>
+    </header>
+
+    <div id="chat-log" class="chat-log" role="log" aria-live="polite" aria-label="Conversation"></div>
+
+    <div id="chat-chips" class="chat-chips" role="group" aria-label="Quick questions">
+      <button type="button" class="chat-chip">Schedule a tour</button>
+      <button type="button" class="chat-chip">See the floor plans</button>
+      <button type="button" class="chat-chip">Ask about financing</button>
+    </div>
+
+    <form id="chat-form" class="chat-form" autocomplete="off">
+      <label class="sr-only" for="chat-input">Your message</label>
+      <input id="chat-input" name="message" type="text" maxlength="600" placeholder="Type your message" enterkeyhint="send" />
+      <!-- Bot trap: hidden from people, tempting to scripts. -->
+      <input class="chat-hp" name="honeypot" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button id="chat-send" class="chat-send" type="submit">Send</button>
+    </form>
+    <p class="chat-note">You are chatting with an AI assistant, not a person. Please don’t share Social Security, bank or card numbers. If you share your phone or email, we may contact you about your inquiry. <a href="/privacy/">Privacy</a></p>
+  </section>
+</div>
+
+<script>
+  const root = document.getElementById('chat');
+  if (root) {
+    const phone = root.dataset.phone;
+    const $ = (id) => document.getElementById(id);
+    const fab = $('chat-open'), panel = $('chat-panel'), log = $('chat-log'), form = $('chat-form');
+    const input = $('chat-input'), send = $('chat-send'), chips = $('chat-chips');
+    const SID_KEY = 'a2_chat_sid', LOG_KEY = 'a2_chat_log', OPEN_KEY = 'a2_chat_open';
+    const store = {
+      get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+      set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
+    };
+    const sid = () => {
+      let id = store.get(SID_KEY);
+      if (!id) { id = crypto.randomUUID(); store.set(SID_KEY, id); }
+      return id;
+    };
+    let msgs = [];
+    try { msgs = JSON.parse(store.get(LOG_KEY) || '[]').slice(-60); } catch { msgs = []; }
+
+    const bubble = (role, text) => {
+      const b = document.createElement('p');
+      b.className = `chat-msg chat-${role}`;
+      b.textContent = text;
+      log.append(b);
+      log.scrollTop = log.scrollHeight;
+      return b;
+    };
+    const remember = (role, text) => { msgs.push({ role, text }); store.set(LOG_KEY, JSON.stringify(msgs.slice(-60))); };
+
+    const greet = () => bubble('bot', `Hi, I’m the ${root.querySelector('.chat-title').textContent} AI assistant. I can answer quick questions about our homes and set up a tour request. What can I help with?`);
+    const render = () => { log.replaceChildren(); greet(); msgs.forEach((m) => bubble(m.role, m.text)); if (msgs.length) chips.hidden = true; };
+
+    const setOpen = (open, focus = true) => {
+      panel.hidden = !open;
+      fab.hidden = open;
+      fab.setAttribute('aria-expanded', String(open));
+      store.set(OPEN_KEY, open ? '1' : '0');
+      if (open) { if (!log.childElementCount) render(); if (focus) input.focus(); }
+      else if (focus) fab.focus();
+    };
+
+    let busy = false;
+    const ask = async (text) => {
+      text = text.trim();
+      if (!text || busy) return;
+      busy = true; send.disabled = true; chips.hidden = true;
+      bubble('you', text); remember('you', text);
+      input.value = '';
+      const typing = bubble('bot', 'Typing…'); typing.classList.add('chat-typing');
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sid: sid(), message: text, honeypot: form.elements.honeypot.value }),
+          signal: AbortSignal.timeout(30000),
+        });
+        let data = null;
+        try { data = await res.json(); } catch {}
+        const reply = data?.reply || data?.error || `Sorry, something went wrong. Please call ${phone}.`;
+        typing.remove(); bubble('bot', reply); if (data?.reply) remember('bot', reply);
+      } catch {
+        typing.remove(); bubble('bot', `Sorry, I can’t reach the assistant right now. Please call ${phone}.`);
+      } finally {
+        busy = false; send.disabled = false; input.focus();
+      }
+    };
+
+    fab.addEventListener('click', () => setOpen(true));
+    $('chat-close').addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) setOpen(false); });
+    form.addEventListener('submit', (e) => { e.preventDefault(); ask(input.value); });
+    chips.querySelectorAll('.chat-chip').forEach((c) => c.addEventListener('click', () => ask(c.textContent)));
+
+    root.hidden = false; // shown only when JavaScript is running
+    if (store.get(OPEN_KEY) === '1') setOpen(true, false);
+  }
+</script>
+
+<style is:global>
+  .chat { position: fixed; right: 1rem; bottom: 1rem; z-index: 40; font-family: var(--serif); }
+  .chat[hidden], .chat [hidden] { display: none !important; }
+  .chat-fab { display: inline-flex; align-items: center; gap: .6rem; min-height: 48px; padding: .7rem 1.2rem; border: 0; border-radius: 999px; background: var(--clay); color: var(--bone); font: 500 .8rem var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 20px rgb(var(--ink-rgb) / .28); }
+  .chat-fab:hover { background: var(--clay-hover, var(--clay)); }
+  .chat-fab:focus-visible, .chat-x:focus-visible, .chat-send:focus-visible, .chat-chip:focus-visible, .chat-form input:focus-visible { outline: 3px solid var(--gold, #C98A00); outline-offset: 2px; }
+  .chat-fab-dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--gold, #C98A00); }
+  .chat-panel { display: flex; flex-direction: column; width: min(380px, calc(100vw - 2rem)); height: min(560px, calc(100dvh - 2rem)); background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-top: 4px solid var(--clay); box-shadow: 0 12px 40px rgb(var(--ink-rgb) / .3); }
+  .chat-head { display: flex; justify-content: space-between; gap: .75rem; align-items: flex-start; padding: .8rem 1rem; border-bottom: 1px solid var(--line); }
+  .chat-title { margin: 0; font-family: var(--display); font-size: 1.15rem; line-height: 1.2; }
+  .chat-sub { margin: .15rem 0 0; font: .75rem var(--mono); color: var(--muted); }
+  .chat-x { min-width: 44px; min-height: 44px; margin: -.5rem -.5rem 0 0; border: 0; background: transparent; color: var(--ink); font-size: 1.6rem; line-height: 1; cursor: pointer; }
+  .chat-log { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .6rem; }
+  .chat-msg { margin: 0; max-width: 88%; padding: .6rem .85rem; font-size: .98rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .chat-bot { align-self: flex-start; background: var(--sand-2); }
+  .chat-you { align-self: flex-end; background: var(--clay); color: var(--bone); }
+  .chat-typing { color: var(--muted); font-style: italic; }
+  .chat-chips { display: flex; flex-wrap: wrap; gap: .4rem; padding: 0 1rem .6rem; }
+  .chat-chip { min-height: 44px; padding: .4rem .85rem; border: 1px solid var(--ink); background: transparent; color: var(--ink); font: .75rem var(--mono); letter-spacing: .04em; cursor: pointer; }
+  .chat-chip:hover { background: var(--ink); color: var(--bone); }
+  .chat-form { display: flex; gap: .5rem; padding: .6rem 1rem; border-top: 1px solid var(--line); }
+  .chat-form input[type="text"]:not(.chat-hp) { flex: 1; min-width: 0; min-height: 44px; padding: .5rem .7rem; border: 1px solid var(--ink); background: #fff; color: var(--ink); font: 1rem var(--serif); }
+  .chat-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .chat-send { min-height: 44px; padding: .5rem 1.1rem; border: 0; background: var(--clay); color: var(--bone); font: 500 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .chat-send:disabled { opacity: .6; cursor: default; }
+  .chat-note { margin: 0; padding: 0 1rem .8rem; font-size: .75rem; line-height: 1.4; color: var(--muted); }
+  @media (max-width: 760px) {
+    /* Clear the fixed Call / Contact / Schedule bar. */
+    .chat { right: .75rem; bottom: calc(3.9rem + env(safe-area-inset-bottom, 0px)); }
+    .chat-panel { height: min(560px, calc(100dvh - 5.5rem)); }
+  }
+  @media (prefers-reduced-motion: no-preference) { .chat-panel { animation: chat-in .18s ease-out; } }
+  @keyframes chat-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+</style>

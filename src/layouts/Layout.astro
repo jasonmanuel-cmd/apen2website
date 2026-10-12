@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import SpeedInsights from '@vercel/speed-insights/astro';
+import ChatWidget from '../components/ChatWidget.astro';
 import logoMark from '../assets/logo-mark.png';
 import logoWord from '../assets/logo-wordmark.png';
 import logoFull from '../assets/logo-full.png';
@@ -159,6 +160,7 @@ const nav: [string, string, [string, string][]][] = [
     <a href="/contact/?interest=tour#form" class="primary">Schedule a tour</a>
   </nav>
   <SpeedInsights />
+  <ChatWidget />
   <!-- First-party traffic analytics (/analytics.js, served from public/). No cookies, no IP sent
        from the browser, and it opts out on Do Not Track, Global Privacy Control, or the visitor's
        explicit choice. is:inline so it is not bundled or preloaded; it loads after paint. Any
