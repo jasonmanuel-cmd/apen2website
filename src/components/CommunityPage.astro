@@ -36,7 +36,7 @@ const schema = [
   <section class="section">
     <div class="wrap">
       <p class="eyebrow">{home ? 'Models' : `Models to ask about in ${c.name}`}</p>
-      <h2>Six floor plans, <em>ready for your finishes.</em></h2>
+      <h2>Six floor plans, <em>{home ? 'one current release.' : 'to ask about.'}</em></h2>
       {home && <p class="muted">The current {offer.community} release in Tehachapi uses the {offer.community} model, from {usd(offer.from)}. Ask us where the other models can be built next.</p>}
       <div class="grid">{plans.map((p) => <PlanCard plan={p} />)}</div>
       <p><a class="btn btn-ghost" href="/floor-plans/">Compare all floor plans</a></p>
@@ -60,9 +60,9 @@ const schema = [
         <p class="eyebrow">Building in {c.name}?</p>
         <h2>Ask about <em>availability.</em></h2>
         <p class="muted">Tell us what you’re looking for and we’ll let you know which homes and models are available.</p>
-        <p class="mono also">We also take inquiries from nearby communities. <a href="/areas/">See areas we serve</a></p>
+        <p class="mono also">We also take inquiries from other communities. <a href="/areas/">See areas we serve</a></p>
       </div>
-      <LeadForm community={c.name} source={`Community page: ${c.name}`} />
+      <LeadForm community={c.name} source={`Community page: ${c.name}`} compact />
     </div>
   </section>
 </Layout>
