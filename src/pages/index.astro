@@ -54,7 +54,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       <div class="copy">
         <p class="eyebrow reveal">Now reserving · {offer.community}, {offer.city}</p>
         <h1>{offer.community} homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
-        <p class="lede">Reserve a home at {offer.community}, or choose one of six semi-custom models in Tehachapi and eastern Kern County.</p>
+        <p class="lede">Reserve a home at {offer.community}, or ask about our other floor plans in Tehachapi and eastern Kern County.</p>
         <p class="asof mono reveal" style="animation-delay:.25s">Pricing and availability change. Contact us to confirm what is available today. <a href="/available-homes/#availability">Current release details <span aria-hidden="true">→</span></a></p>
         <div class="ctas reveal" style="animation-delay:.3s">
           <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
@@ -165,7 +165,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       </div>
       <div class="comm-grid">
         {communities.filter((c) => c.published).map((c) => <a href={areaUrl(c)} class="comm"><h3>{c.name}</h3><p class="muted">{c.short}</p><span class="mono">Explore <span aria-hidden="true">→</span></span></a>)}
-        <a href="/areas/" class="comm"><h3>Nearby communities</h3><p class="muted">{serviceAreaNames.filter((n) => n !== 'Tehachapi').join(', ')}. Availability confirmed case by case.</p><span class="mono">Areas we serve <span aria-hidden="true">→</span></span></a>
+        <a href="/areas/" class="comm"><h3>Other communities</h3><p class="muted">{serviceAreaNames.filter((n) => n !== 'Tehachapi').join(', ')}. Availability confirmed case by case.</p><span class="mono">Areas we serve <span aria-hidden="true">→</span></span></a>
       </div>
     </div>
   </section>
@@ -188,7 +188,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       <div>
         <p class="eyebrow">Talk to our team</p>
         <h2>Your brand-new home starts with <em>a conversation.</em></h2>
-        <p class="muted">Reserve a {offer.community} home, or choose a semi-custom model. No pressure, just answers.</p>
+        <p class="muted">Reserve a {offer.community} home, or ask about our other floor plans. No pressure, just answers.</p>
         <p class="direct mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={site.sms()}>Text HOMES</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
       </div>
       <LeadForm source="Home page" compact />

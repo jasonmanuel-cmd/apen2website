@@ -14,14 +14,14 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
     <nav class="mono crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <span aria-current="page">Areas we serve</span></nav>
     <p class="eyebrow">Areas we serve</p>
     <h1>Areas We Serve in <em>Eastern Kern County</em></h1>
-    <p class="lede">We’re based in Tehachapi, home of our current <a href="/available-homes/">{offer.community} release</a> from {usd(offer.from)}. We also take inquiries from buyers in nearby communities; availability is confirmed case by case.</p>
+    <p class="lede">We’re based in Tehachapi, home of our current <a href="/available-homes/">{offer.community} release</a> from {usd(offer.from)}. We also take inquiries from buyers in other communities across eastern Kern County; availability is confirmed case by case.</p>
   </section>
 
   <section class="section areas">
     <div class="wrap grid">
       {published.map((c) => (
         <a class="area live" href={areaUrl(c)}>
-          <p class="mono k">Building now</p>
+          <p class="mono k">Current release</p>
           <h2>{c.name}</h2>
           <p>{c.short}</p>
           <span class="mono">Explore {c.name} <span aria-hidden="true">→</span></span>
@@ -29,7 +29,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
       ))}
       <div class="area">
         <p class="mono k">Inquiries welcome</p>
-        <h2>Nearby communities</h2>
+        <h2>Other communities</h2>
         <ul>{serviceAreaNames.filter((n) => !published.some((c) => c.name === n)).map((n) => <li>{n}</li>)}</ul>
         <p>Tell us where you’d like to live and we’ll confirm what’s available there.</p>
         <a class="btn" href="/contact/?interest=unsure#form">Ask about my area</a>
