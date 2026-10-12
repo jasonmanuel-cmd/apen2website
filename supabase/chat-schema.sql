@@ -1,8 +1,8 @@
 -- =============================================================================
 -- Aspen II Homes — website chat and appointments schema
 -- =============================================================================
--- Run once in the Supabase SQL editor, in the SAME project that holds `leads`.
--- Adds three tables next to `leads`; it does not change the leads table.
+-- Safe to re-run (everything is `if not exists`). Run in the Supabase SQL editor, in the SAME project that holds `leads`.
+-- Adds four tables next to `leads`; it does not change the leads table.
 --
 -- Security posture, same as leads / sessions / visits:
 --   * RLS is ENABLED and NO policies exist, so the anon key can read and write
@@ -53,6 +53,24 @@ create table if not exists public.appointments (
 );
 create index if not exists appointments_status_idx on public.appointments (status, preferred_date);
 
+-- A message left for the team to call the visitor back.
+create table if not exists public.callbacks (
+  id               uuid primary key default gen_random_uuid(),
+  created_at       timestamptz not null default now(),
+  conversation_id  text references public.conversations (id) on delete set null,
+  lead_id          uuid,
+  name             text not null,
+  phone            text not null,
+  email            text,
+  message          text not null,
+  best_time        text,
+  status           text not null default 'requested'
+                     check (status in ('requested','called','no_answer','closed')),
+  staff_notes      text
+);
+create index if not exists callbacks_status_idx on public.callbacks (status, created_at desc);
+
 alter table public.conversations enable row level security;
 alter table public.messages      enable row level security;
 alter table public.appointments  enable row level security;
+alter table public.callbacks     enable row level security;

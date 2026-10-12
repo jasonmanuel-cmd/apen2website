@@ -126,8 +126,9 @@ Built pages say only what the data file can support. These items stay unpublishe
 ## Chat assistant and appointments
 
 - Widget: `src/components/ChatWidget.astro` (loaded by `Layout.astro`). Talks to `api/chat.js`.
-- Brain: `lib/chat-brain.js` (Anthropic Messages API, three tools: `save_contact`, `request_appointment`, `handoff`). Rules and facts the bot may state live in `lib/chat-knowledge.js`; `tests/chat.test.mjs` fails if those facts drift from `src/data/site.ts`.
+- Brain: `lib/chat-brain.js` (Anthropic Messages API, four tools: `save_contact`, `request_callback`, `request_appointment`, `handoff`). Chats are capped at 7 visitor messages (`MAX_VISITOR_MESSAGES` in `lib/chat-knowledge.js`); the bot is told which message it is on and steers toward a callback or tour request as the cap nears. Rules and facts the bot may state live in `lib/chat-knowledge.js`; `tests/chat.test.mjs` fails if those facts drift from `src/data/site.ts`.
 - Storage: `supabase/chat-schema.sql` (conversations, messages, appointments; RLS on, no policies). Run it once in the Supabase SQL editor. Chat leads land in `public.leads` with source `Website chat` and are emailed to staff.
-- Staff: `/hq/` has Chats and Appointments tabs (`api/hq/chat.js`, same STAFF_TOKEN). Appointments are requests until staff confirm them.
+- Staff: `/hq/` has Chats, Callbacks and Appointments tabs (`api/hq/chat.js`, same STAFF_TOKEN). Appointments are requests until staff confirm them.
 - Env: `ANTHROPIC_API_KEY` (required), `CHAT_MODEL` (optional). Without the key the widget tells visitors to call the office.
+- Google Voice: it has no API, so it cannot be automated. Staff emails and the Callbacks tab carry tap-to-call and tap-to-text links; on a phone where Google Voice is the default calling/texting app they open there. Real two-way texting needs the number moved to Twilio.
 - Texting (Twilio) is not built yet; `lib/chat-brain.js` is written so an SMS webhook can reuse it.

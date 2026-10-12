@@ -42,6 +42,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         <button role="tab" id="tab-leads" aria-controls="view-leads" aria-selected="true" tabindex="0">Leads</button>
         <button role="tab" id="tab-analytics" aria-controls="view-analytics" aria-selected="false" tabindex="-1">Traffic</button>
         <button role="tab" id="tab-chats" aria-controls="view-chats" aria-selected="false" tabindex="-1">Chats <span id="badge-chats" class="badge" hidden></span></button>
+        <button role="tab" id="tab-calls" aria-controls="view-calls" aria-selected="false" tabindex="-1">Callbacks <span id="badge-calls" class="badge" hidden></span></button>
         <button role="tab" id="tab-appts" aria-controls="view-appts" aria-selected="false" tabindex="-1">Appointments <span id="badge-appts" class="badge" hidden></span></button>
       </div>
       <div class="bar">
@@ -78,6 +79,13 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         <div class="range" role="group" aria-label="Filter chats" id="chat-filters"></div>
         <p id="chat-msg" class="msg" role="status" aria-live="polite"></p>
         <ul id="chat-list" role="list" class="plain"></ul>
+      </div>
+
+      <!-- Callbacks -->
+      <div id="view-calls" role="tabpanel" aria-labelledby="tab-calls" hidden>
+        <div class="range" role="group" aria-label="Filter callbacks" id="call-filters"></div>
+        <p id="call-msg" class="msg" role="status" aria-live="polite"></p>
+        <ul id="call-list" role="list" class="plain"></ul>
       </div>
 
       <!-- Appointments -->
@@ -147,7 +155,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
     const signOut = (msg = '') => {
       token = '';
       try { sessionStorage.removeItem(KEY); } catch {}
-      state.leads = []; $('list').replaceChildren(); $('an-body').replaceChildren(); $('chat-list').replaceChildren(); $('appt-list').replaceChildren(); setBadge('badge-chats', 0); setBadge('badge-appts', 0); $('token').value = '';
+      state.leads = []; $('list').replaceChildren(); $('an-body').replaceChildren(); $('chat-list').replaceChildren(); $('appt-list').replaceChildren(); $('call-list').replaceChildren(); setBadge('badge-chats', 0); setBadge('badge-appts', 0); setBadge('badge-calls', 0); $('token').value = '';
       $('login-msg').textContent = msg;
       show(false);
       if (msg) $('token').focus();
@@ -376,7 +384,8 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
       return data;
     };
     const setBadge = (id, n) => { const b = $(id); b.textContent = n ? String(n) : ''; b.hidden = !n; };
-    const chatState = { filter: 'all', appt: 'open' };
+    const chatState = { filter: 'all', appt: 'open', call: 'open' };
+    const CALL_LABEL = { requested: 'Call back', called: 'Called', no_answer: 'No answer', closed: 'Closed' };
     const APPT_LABEL = { requested: 'Requested', confirmed: 'Confirmed', completed: 'Completed', cancelled: 'Cancelled', no_show: 'No-show' };
     const clock = (t) => { const [h, m] = String(t).split(':').map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
 
@@ -416,7 +425,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
       try {
         const d = await hq(`?view=conversations&filter=${chatState.filter}`);
         if (mine !== chatSeq) return;
-        setBadge('badge-chats', d.needHuman); setBadge('badge-appts', d.openAppointments);
+        setBadge('badge-chats', d.needHuman); setBadge('badge-appts', d.openAppointments); setBadge('badge-calls', d.openCallbacks);
         $('chat-list').replaceChildren(...d.conversations.map(chatItem));
         $('chat-msg').textContent = d.conversations.length ? '' : (chatState.filter === 'human' ? 'No chats need a person.' : 'No chats yet.');
       } catch (err) {
@@ -457,12 +466,49 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         $('appt-msg').textContent = err.message;
       }
     };
-    const loadChatBadges = () => hq('?view=conversations&limit=1').then((d) => { setBadge('badge-chats', d.needHuman); setBadge('badge-appts', d.openAppointments); }, () => {});
+    const loadChatBadges = () => hq('?view=conversations&limit=1').then((d) => { setBadge('badge-chats', d.needHuman); setBadge('badge-appts', d.openAppointments); setBadge('badge-calls', d.openCallbacks); }, () => {});
+
+    const callItem = (c) => {
+      const set = async (status) => {
+        try { await hq(`?view=callbacks&id=${encodeURIComponent(c.id)}`, { method: 'PATCH', body: JSON.stringify({ status }) }); loadCalls(); }
+        catch (err) { if (err instanceof AuthError) signOut('Your session ended. Sign in again.'); else $('call-msg').textContent = err.message; }
+      };
+      const actions = c.status === 'requested' ? [['called', 'Mark called'], ['no_answer', 'No answer'], ['closed', 'Close']] : c.status === 'no_answer' ? [['called', 'Mark called'], ['closed', 'Close']] : [];
+      return el('li', { class: 'card' },
+        el('h3', { text: c.name }),
+        el('p', { class: 'mono', text: `${when(c.created_at)} · ${CALL_LABEL[c.status] || c.status}${c.best_time ? ` · Best time: ${c.best_time}` : ''}` }),
+        el('p', { class: 'small', text: c.message }),
+        el('div', { class: 'bar-btns' },
+          el('a', { class: 'btn', href: `tel:${phoneDigits(c.phone)}`, text: `Call ${c.phone}` }),
+          el('a', { class: 'btn ghost', href: `sms:${phoneDigits(c.phone)}`, text: 'Text' }),
+          actions.map(([st, label]) => el('button', { type: 'button', class: 'chip', text: label, on: { click: () => set(st) } }))),
+        c.email && EMAIL.test(c.email) ? el('p', { class: 'mono hint', text: c.email }) : null);
+    };
+
+    let callSeq = 0;
+    const loadCalls = async () => {
+      const mine = ++callSeq;
+      $('call-msg').textContent = 'Loading…';
+      try {
+        const d = await hq(`?view=callbacks&status=${chatState.call}`);
+        if (mine !== callSeq) return;
+        $('call-list').replaceChildren(...d.callbacks.map(callItem));
+        $('call-msg').textContent = d.callbacks.length ? '' : 'No callbacks.';
+        loadChatBadges();
+      } catch (err) {
+        if (mine !== callSeq) return;
+        if (err instanceof AuthError) return signOut('Your session ended. Sign in again.');
+        $('call-msg').textContent = err.message;
+      }
+    };
 
     const buildChatFilters = () => {
       $('chat-filters').replaceChildren(...[['all', 'All chats'], ['human', 'Needs a person']].map(([v, l]) =>
         el('button', { type: 'button', class: 'chip', 'aria-pressed': String(chatState.filter === v), text: l,
           on: { click: () => { chatState.filter = v; buildChatFilters(); loadChats(); } } })));
+      $('call-filters').replaceChildren(...[['open', 'To call back'], ['called', 'Called'], ['no_answer', 'No answer'], ['all', 'All']].map(([v, l]) =>
+        el('button', { type: 'button', class: 'chip', 'aria-pressed': String(chatState.call === v), text: l,
+          on: { click: () => { chatState.call = v; buildChatFilters(); loadCalls(); } } })));
       $('appt-filters').replaceChildren(...[['open', 'Open'], ['requested', 'Requested'], ['completed', 'Completed'], ['cancelled', 'Cancelled'], ['all', 'All']].map(([v, l]) =>
         el('button', { type: 'button', class: 'chip', 'aria-pressed': String(chatState.appt === v), text: l,
           on: { click: () => { chatState.appt = v; buildChatFilters(); loadAppts(); } } })));
@@ -482,6 +528,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
       if (tab.id === 'tab-analytics' && !$('an-body').childElementCount) loadAnalytics();
       if (tab.id === 'tab-chats') loadChats();
       if (tab.id === 'tab-appts') loadAppts();
+      if (tab.id === 'tab-calls') loadCalls();
     };
     tabs.forEach((tab, i) => {
       tab.addEventListener('click', () => selectTab(tab));
@@ -520,6 +567,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
       const on = (id) => $(id).getAttribute('aria-selected') === 'true';
       if (on('tab-chats')) return loadChats();
       if (on('tab-appts')) return loadAppts();
+      if (on('tab-calls')) return loadCalls();
       (on('tab-analytics') ? loadAnalytics() : loadLeads()).catch(() => {});
     });
     $('more').addEventListener('click', () => { state.offset = state.leads.length; loadLeads(true).catch(() => {}); });

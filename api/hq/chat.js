@@ -3,7 +3,9 @@
 //   GET   ?view=conversations [&filter=all|human] [&limit=50]   -> conversations (+ lead name/phone) and counts
 //   GET   ?view=messages&id=<conversation id>                   -> that conversation's messages, oldest first
 //   GET   ?view=appointments [&status=open|all|<status>]        -> appointment requests
+//   GET   ?view=callbacks [&status=open|all|<status>]           -> callback requests (messages left for the team)
 //   PATCH ?view=appointments&id=<uuid>  { status?, staff_notes? }
+//   PATCH ?view=callbacks&id=<uuid>     { status?, staff_notes? }
 //   PATCH ?view=conversations&id=<id>   { resolved? }
 // Access: Authorization: Bearer <STAFF_TOKEN>, same password as /staff/ and the rest of /hq.
 // Never cached, same-origin only, and errors never echo database messages or visitor text.
@@ -12,6 +14,7 @@ import { supabaseConfig, supabase } from '../../lib/supabase-rest.js';
 
 const MIN_TOKEN = 20;
 const APPT_STATUSES = ['requested', 'confirmed', 'completed', 'cancelled', 'no_show'];
+const CALLBACK_STATUSES = ['requested', 'called', 'no_answer', 'closed'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SID = /^[A-Za-z0-9-]{16,64}$/;
 const str = (v, max = 200) => (v == null ? '' : String(v)).trim().slice(0, max);
@@ -64,12 +67,13 @@ export default async function handler(req, res) {
           const ls = await (await supabase(db, `leads?select=id,name,phone,email&id=in.(${ids.join(',')})`)).json();
           for (const l of ls) leads.set(l.id, l);
         }
-        const [needHuman, openAppts] = await Promise.all([
+        const [needHuman, openAppts, openCallbacks] = await Promise.all([
           count(db, 'conversations?needs_human=eq.true&resolved=eq.false'),
-          count(db, 'appointments?status=eq.requested')
+          count(db, 'appointments?status=eq.requested'),
+          count(db, 'callbacks?status=eq.requested')
         ]);
         return out(res, 200, {
-          ok: true, needHuman, openAppointments: openAppts,
+          ok: true, needHuman, openAppointments: openAppts, openCallbacks,
           conversations: convs.map((c) => ({ ...c, lead: leads.get(c.lead_id) || null }))
         });
       }
@@ -93,6 +97,20 @@ export default async function handler(req, res) {
         const appointments = await (await supabase(db, `appointments?${p}`)).json();
         return out(res, 200, { ok: true, appointments });
       }
+      if (view === 'callbacks') {
+        const status = str(q.status, 12) || 'open';
+        const p = new URLSearchParams({
+          select: 'id,created_at,conversation_id,name,phone,email,message,best_time,status,staff_notes',
+          order: 'created_at.desc', limit: '100'
+        });
+        if (status === 'open') p.append('status', 'eq.requested');
+        else if (status !== 'all') {
+          if (!CALLBACK_STATUSES.includes(status)) return out(res, 400, { ok: false, error: 'Unknown status.' });
+          p.append('status', `eq.${status}`);
+        }
+        const callbacks = await (await supabase(db, `callbacks?${p}`)).json();
+        return out(res, 200, { ok: true, callbacks });
+      }
       return out(res, 400, { ok: false, error: 'Unknown view.' });
     }
 
@@ -114,6 +132,19 @@ export default async function handler(req, res) {
       const r = await (await supabase(db, `appointments?id=eq.${id}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(patch) })).json();
       if (!r.length) return out(res, 404, { ok: false, error: 'Not found.' });
       return out(res, 200, { ok: true, appointment: r[0] });
+    }
+    if (view === 'callbacks') {
+      if (!UUID.test(id)) return out(res, 400, { ok: false, error: 'Bad callback id.' });
+      const patch = {};
+      if (body.status !== undefined) {
+        if (!CALLBACK_STATUSES.includes(body.status)) return out(res, 400, { ok: false, error: 'Unknown status.' });
+        patch.status = body.status;
+      }
+      if (body.staff_notes !== undefined) patch.staff_notes = str(body.staff_notes, 2000) || null;
+      if (!Object.keys(patch).length) return out(res, 400, { ok: false, error: 'Nothing to update.' });
+      const r = await (await supabase(db, `callbacks?id=eq.${id}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(patch) })).json();
+      if (!r.length) return out(res, 404, { ok: false, error: 'Not found.' });
+      return out(res, 200, { ok: true, callback: r[0] });
     }
     if (view === 'conversations') {
       if (!SID.test(id)) return out(res, 400, { ok: false, error: 'Bad conversation id.' });

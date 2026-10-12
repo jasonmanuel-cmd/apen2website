@@ -23,6 +23,7 @@ import { site } from '../data/site';
       <button type="button" class="chat-chip">Schedule a tour</button>
       <button type="button" class="chat-chip">See the floor plans</button>
       <button type="button" class="chat-chip">Ask about financing</button>
+      <button type="button" class="chat-chip">Leave a message for a call back</button>
     </div>
 
     <form id="chat-form" class="chat-form" autocomplete="off">
@@ -32,7 +33,7 @@ import { site } from '../data/site';
       <input class="chat-hp" name="honeypot" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <button id="chat-send" class="chat-send" type="submit">Send</button>
     </form>
-    <p class="chat-note">You are chatting with an AI assistant, not a person. Please don’t share Social Security, bank or card numbers. If you share your phone or email, we may contact you about your inquiry. <a href="/privacy/">Privacy</a></p>
+    <p class="chat-note">You are chatting with an AI assistant, not a person. Chats are short; a person from our team follows up. Please don’t share Social Security, bank or card numbers. If you share your phone or email, we may contact you about your inquiry. <a href="/privacy/">Privacy</a></p>
   </section>
 </div>
 
@@ -43,7 +44,7 @@ import { site } from '../data/site';
     const $ = (id) => document.getElementById(id);
     const fab = $('chat-open'), panel = $('chat-panel'), log = $('chat-log'), form = $('chat-form');
     const input = $('chat-input'), send = $('chat-send'), chips = $('chat-chips');
-    const SID_KEY = 'a2_chat_sid', LOG_KEY = 'a2_chat_log', OPEN_KEY = 'a2_chat_open';
+    const SID_KEY = 'a2_chat_sid', LOG_KEY = 'a2_chat_log', OPEN_KEY = 'a2_chat_open', DONE_KEY = 'a2_chat_done';
     const store = {
       get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
       set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
@@ -66,7 +67,7 @@ import { site } from '../data/site';
     };
     const remember = (role, text) => { msgs.push({ role, text }); store.set(LOG_KEY, JSON.stringify(msgs.slice(-60))); };
 
-    const greet = () => bubble('bot', `Hi, I’m the ${root.querySelector('.chat-title').textContent} AI assistant. I can answer quick questions about our homes and set up a tour request. What can I help with?`);
+    const greet = () => bubble('bot', `Hi, I’m the ${root.querySelector('.chat-title').textContent} AI assistant. I can answer quick questions about our homes, set up a tour request, or take a message so our team can call you back. What can I help with?`);
     const render = () => { log.replaceChildren(); greet(); msgs.forEach((m) => bubble(m.role, m.text)); if (msgs.length) chips.hidden = true; };
 
     const setOpen = (open, focus = true) => {
@@ -78,6 +79,18 @@ import { site } from '../data/site';
       else if (focus) fab.focus();
     };
 
+    // The chat is short on purpose. When the server says it is over, hand the visitor to a person.
+    const finish = () => {
+      store.set(DONE_KEY, '1');
+      form.hidden = true; chips.hidden = true;
+      if (!$('chat-end')) {
+        const end = document.createElement('p'); end.id = 'chat-end'; end.className = 'chat-end';
+        const call = document.createElement('a'); call.href = `tel:${phone.replace(/[^\d+]/g, '')}`; call.textContent = `Call ${phone}`;
+        const form2 = document.createElement('a'); form2.href = '/contact/'; form2.textContent = 'Use the contact form';
+        end.append(call, ' · ', form2);
+        log.after(end);
+      }
+    };
     let busy = false;
     const ask = async (text) => {
       text = text.trim();
@@ -97,6 +110,7 @@ import { site } from '../data/site';
         try { data = await res.json(); } catch {}
         const reply = data?.reply || data?.error || `Sorry, something went wrong. Please call ${phone}.`;
         typing.remove(); bubble('bot', reply); if (data?.reply) remember('bot', reply);
+        if (data?.done) finish();
       } catch {
         typing.remove(); bubble('bot', `Sorry, I can’t reach the assistant right now. Please call ${phone}.`);
       } finally {
@@ -110,6 +124,7 @@ import { site } from '../data/site';
     form.addEventListener('submit', (e) => { e.preventDefault(); ask(input.value); });
     chips.querySelectorAll('.chat-chip').forEach((c) => c.addEventListener('click', () => ask(c.textContent)));
 
+    if (store.get(DONE_KEY) === '1') finish();
     root.hidden = false; // shown only when JavaScript is running
     if (store.get(OPEN_KEY) === '1') setOpen(true, false);
   }
@@ -131,6 +146,8 @@ import { site } from '../data/site';
   .chat-msg { margin: 0; max-width: 88%; padding: .6rem .85rem; font-size: .98rem; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
   .chat-bot { align-self: flex-start; background: var(--sand-2); }
   .chat-you { align-self: flex-end; background: var(--clay); color: var(--bone); }
+  .chat-end { margin: 0; padding: .6rem 1rem; border-top: 1px solid var(--line); font: 500 .8rem var(--mono); }
+  .chat-end a { color: var(--clay); }
   .chat-typing { color: var(--muted); font-style: italic; }
   .chat-chips { display: flex; flex-wrap: wrap; gap: .4rem; padding: 0 1rem .6rem; }
   .chat-chip { min-height: 44px; padding: .4rem .85rem; border: 1px solid var(--ink); background: transparent; color: var(--ink); font: .75rem var(--mono); letter-spacing: .04em; cursor: pointer; }
