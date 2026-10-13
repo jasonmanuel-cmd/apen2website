@@ -14,6 +14,8 @@ import { site } from '../data/site';
     <p>If you open "Tell us more" on a form, we also receive the optional details you choose to give: how you would like us to reach you, where you are in the process, your timeline, a budget range, and whether you tick the first-time buyer or VA / military boxes. We also record which form and which of our websites the request came from.</p>
     <p>We count page visits three ways. Our own traffic analytics uses no cookies and sets no identifiers on your device. It records which pages you viewed, how long you spent on each, the site you arrived from, and your browser and device type. It does not record your IP address: our server counts unique visitors using a scrambled value that changes every day, so no one can be tracked from one visit to the next, and we keep the region you visited from, not a precise location. If your browser sends a “Do Not Track” or “Global Privacy Control” signal, our analytics is switched off for that visit. Vercel Web Analytics does not use cookies and does not identify you personally. Google Analytics uses cookies to measure how visitors find and use the site (pages viewed, approximate location, device and how you arrived). We use it to improve the site and do not use it to run our own advertising. You can block it with your browser’s cookie settings or the <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener" target="_blank">Google Analytics opt-out add-on<span class="sr-only"> (opens in a new tab)</span></a>.</p>
 
+    <p>If you use the chat assistant on this site, we keep the messages you type and the assistant’s replies, and if you give your name, phone number or email there, we save them as a request just like a form. The assistant is an AI, not a person. Please don’t type Social Security, bank or card numbers into the chat. If you ask for a tour or call, we save the date and time you ask for. Our team reads chats to follow up with you.</p>
+
     <h2>Why we use it</h2>
     <p>Only to answer your request: to call, text or email you about homes, financing and tours you asked about. We don’t sell your information.</p>
 
@@ -25,6 +27,7 @@ import { site } from '../data/site';
       <li>BuildZoom, whose badge in our footer loads from their servers and counts how often it is shown.</li>
       <li>Resend, which delivers the form email to our team.</li>
       <li>Supabase, which stores a copy of your request in our private database so it isn’t lost if an email fails.</li>
+      <li>Anthropic, whose AI model writes the chat assistant’s replies. The messages you type in the chat are sent to it for that purpose.</li>
     </ul>
     <p>If you ask about financing, we may pass your contact details to the lender you choose to work with, with your permission.</p>
 
