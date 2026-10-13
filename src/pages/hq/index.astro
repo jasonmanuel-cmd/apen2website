@@ -118,7 +118,8 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         else if (k === 'on') for (const [ev, fn] of Object.entries(v)) n.addEventListener(ev, fn);
         else n.setAttribute(k, v === true ? '' : v);
       }
-      for (const kid of kids.flat()) if (kid != null) n.append(kid);
+      // `cond && el(...)` yields false when cond is false; append(false) would print the word "false".
+      for (const kid of kids.flat()) if (kid != null && kid !== false) n.append(kid);
       return n;
     };
 
@@ -292,12 +293,16 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
 
     const chart = (daily) => {
       if (!daily.length) return el('p', { class: 'muted small', text: 'No data yet.' });
-      const max = Math.max(...daily.map((d) => d.sessions), 1);
+      // Each column stacks page views above sessions, so the tallest column is the largest page-view total.
+      const max = Math.max(...daily.map((d) => Math.max(d.pageViews, d.sessions)), 1);
+      const pct = (n) => `height:${(n / max) * 100}%`;
       return el('div', { class: 'chart', role: 'img', 'aria-label': `Sessions per day over ${daily.length} days` },
-        ...daily.map((d) => el('div', { class: 'col', title: `${shortDate(d.day)}: ${d.sessions} sessions, ${d.pageViews} page views` },
-          el('span', { class: 'stack', style: `height:${(d.sessions / max) * 100}%` },
-            d.pageViews > d.sessions && el('span', { class: 'stack pv', style: `height:${((d.pageViews - d.sessions) / max) * 100}%` })),
-          el('span', { class: 'lbl', text: shortDate(d.day).replace(/^\w+ /, '') }))));
+        ...daily.map((d, i) => el('div', { class: 'col', title: `${shortDate(d.day)}: ${d.sessions} sessions, ${d.pageViews} page views` },
+          el('span', { class: 'plot' },
+            d.pageViews > d.sessions ? el('span', { class: 'stack pv', style: pct(d.pageViews - d.sessions) }) : null,
+            el('span', { class: 'stack', style: pct(d.sessions) })),
+          // Thirty crowded labels are unreadable; label the first column and roughly every sixth, the tooltip has the rest.
+          el('span', { class: i >= daily.length * 0.8 ? 'lbl end' : 'lbl', 'aria-hidden': 'true', text: i % Math.ceil(daily.length / 6) === 0 ? shortDate(d.day) : '' }))));
     };
 
     const renderAnalytics = (d) => {
@@ -608,8 +613,8 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
     .msg { min-height: 1.4em; margin: 0; font-size: .9rem; color: var(--muted); }
     #login-msg { color: var(--rust); }
 
-    .tabs { display: flex; gap: .25rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; }
-    .tabs button { min-height: 44px; padding: .6em 1.2em; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); font: 600 .95rem var(--display); cursor: pointer; }
+    .tabs { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--line); margin-bottom: 1rem; }
+    .tabs button { min-height: 44px; padding: .6em 1em; background: none; border: 0; border-bottom: 3px solid transparent; color: var(--muted); font: 600 .95rem var(--display); cursor: pointer; }
     .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
     .bar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
     .bar p { margin: 0; color: var(--muted); }
@@ -666,9 +671,12 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
     .bv { font: .75rem var(--mono); color: var(--muted); min-width: 2.5ch; text-align: right; }
     .chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; }
     .col { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: .3rem; }
-    .stack { display: block; width: 100%; background: var(--clay); border-radius: 2px 2px 0 0; min-height: 2px; }
-    .stack.pv { background: var(--gold); border-radius: 0; }
-    .lbl { font: .6rem var(--mono); color: var(--muted); white-space: nowrap; }
+    .plot { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+    .stack { display: block; width: 100%; background: var(--clay); min-height: 2px; }
+    .stack.pv { background: var(--gold); }
+    .plot > :first-child { border-radius: 2px 2px 0 0; }
+    .lbl { font: .75rem var(--mono); color: var(--muted); white-space: nowrap; height: 1.2em; overflow: visible; align-self: flex-start; }
+    .lbl.end { align-self: flex-end; } /* near the right edge, grow leftwards so the label never pushes the page wider */
     .hours { display: flex; align-items: flex-end; gap: 2px; height: 100px; }
     .hr { flex: 1; background: var(--clay); border-radius: 2px 2px 0 0; min-height: 2px; }
     .footnote { color: var(--muted); line-height: 1.6; margin: 1rem 0 0; }
