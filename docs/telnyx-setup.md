@@ -20,7 +20,7 @@ for approval (sources vary). Do the registration first; everything else can be s
 2. **Register the business that is sending.** That should be the legal entity customers deal with
    (Aspen II Homes, Inc., CSLB #1004058, with its own EIN), not Chaotically Organized AI. Confirm with the owner.
 3. In the Telnyx portal, register a **brand** and a **campaign** under Messaging (the 10DLC section; menu names change, see
-   Telnyx's 10DLC guide: https://support.telnyx.com/en/articles/5634625-10dlc-fees-and-charges). A draft for the campaign form is at the bottom of this file.
+   Telnyx's 10DLC guide: https://support.telnyx.com/en/articles/5634625-10dlc-fees-and-charges). The exact answers to type are in `docs/telnyx-registration.md`; publish https://aspen2homes.com/sms-terms/ first.
 4. Create a **messaging profile**, attach the number to it, and attach the approved campaign to the number.
 
 ## 2. Keys and settings (you)
@@ -68,16 +68,6 @@ current number or also move to the new one (Telnyx can forward calls to a cell p
   already parsed the request body, the signature cannot be checked; the URL secret still applies and a warning is logged.
 - Cost (third-party figures, confirm on Telnyx's pricing page): roughly 0.4 cents plus carrier fees per outbound text, and a small monthly campaign fee.
 
-## Draft answers for the campaign form (review before submitting; not legal advice)
+## Registration answers
 
-- **Use case:** customer care / low-volume mixed (answering inbound questions and scheduling tours).
-- **Description:** Aspen II Homes, Inc. is a licensed California home builder in Tehachapi. Prospective buyers text our number to ask about homes,
-  floor plans and tours. An automated assistant replies to those inbound texts, collects a name and callback request, and our staff follow up.
-  We only reply to people who text us first.
-- **How people opt in:** They text our number first (the website invites them to "Text HOMES to [number]"). Our privacy policy at
-  https://aspen2homes.com/privacy/ describes text messaging. No one is added to a marketing list.
-- **Opt-out / help:** Replying STOP ends all texts immediately; HELP returns our company name, license number, phone number and hours.
-- **Sample messages:**
-  1. "Aspen II Homes automated assistant here. Happy to help. Are you looking for a tour, floor plans or financing info?"
-  2. "Got it, the team will call you back. You can also call (661) 241-0306, 7am-7pm daily. Reply STOP to stop texts."
-  3. "Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 241-0306, 7am-7pm daily. Reply STOP to stop texts."
+The exact text for every field of the brand and campaign forms is in `docs/telnyx-registration.md`. Review it before submitting (not legal advice).
