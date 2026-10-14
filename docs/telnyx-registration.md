@@ -87,3 +87,5 @@ The live first reply of every text thread ends with that "Msg&data rates may app
 
 - Use this number only to answer people who texted it. Do not use it to text people who only filled in a form; that is outside what you registered.
 - If the program changes (for example you want to send reminders), update the campaign first.
+- The website form says it may call or email you and that it does not sign you up for texts; the "Text" contact option was removed from the form. If you later want to text form leads, update the campaign (opt-in via web form) and this wording together.
+- The legal name on the site (Aspen II Homes, Inc.) must match the IRS letter exactly. If the letter differs, change `currentEntity` in `src/data/site.ts` before submitting.
