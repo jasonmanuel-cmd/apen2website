@@ -3,6 +3,8 @@
 // The database write comes first, so a lead survives an email outage. Both are best effort
 // individually; the visitor only sees a failure when the lead could be neither stored nor emailed.
 // Same-origin only: no CORS headers, so other websites can't post leads through it.
+import { assessLead, normalizeText } from '../lib/spam.js';
+
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -65,7 +67,9 @@ const saveLead = async (db, l) => {
       notes: orNull(l.notes),
       source: l.source,
       origin_domain: orNull(l.originDomain),
-      raw: { tags: l.tags }
+      // Suspected spam is kept (so a real buyer can be rescued from /hq/) but filed as spam and never emailed.
+      ...(l.spam && { status: 'spam' }),
+      raw: { tags: l.tags, ...(l.spam && { spam: l.spam }) }
     })
   }, DB_TIMEOUT_MS);
   const rows = await res.json();
@@ -78,6 +82,30 @@ const recordEmail = (db, id, sent, error) =>
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ email_sent: sent, email_error: error })
   }, DB_RECORD_TIMEOUT_MS);
+
+// Per-address limit on submissions, in memory (resets on redeploy; enough to stop a script hammering the form).
+const RATE_LIMIT = 8;
+const RATE_WINDOW_MS = 10 * 60_000;
+const submissions = new Map();
+const rateOk = (ip) => {
+  const now = Date.now();
+  const rec = submissions.get(ip);
+  if (!rec || rec.resetAt <= now) { submissions.set(ip, { n: 1, resetAt: now + RATE_WINDOW_MS }); return true; }
+  rec.n += 1;
+  return rec.n <= RATE_LIMIT;
+};
+const sweeper = setInterval(() => { const now = Date.now(); for (const [k, v] of submissions) if (v.resetAt <= now) submissions.delete(k); }, RATE_WINDOW_MS);
+if (sweeper.unref) sweeper.unref();
+// Vercel sets x-forwarded-for; local tests and odd clients without it are simply not rate limited.
+const clientIp = (req) => str(req.headers?.['x-forwarded-for'], 200).split(',')[0].trim();
+
+// The same person sending the same message again within a day is a duplicate (or a spammer re-sending).
+const isDuplicate = async (db, { email, notes }) => {
+  const since = new Date(Date.now() - 864e5).toISOString();
+  const res = await supabase(db, `leads?select=notes&email=eq.${encodeURIComponent(email)}&created_at=gte.${encodeURIComponent(since)}&limit=20`, {}, 2500);
+  const want = normalizeText(notes);
+  return (await res.json()).some((r) => normalizeText(r.notes ?? '') === want);
+};
 
 // A plain HTML form post (JavaScript off or blocked) gets a page back instead of raw JSON.
 const isFormPost = (req) => /application\/x-www-form-urlencoded|multipart\/form-data/i.test(req.headers?.['content-type'] || '');
@@ -100,6 +128,10 @@ const reply = (req, res, code, body) => {
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+  }
+  const ip = clientIp(req);
+  if (ip && !rateOk(ip)) {
+    return reply(req, res, 429, { success: false, error: `Too many requests from your connection. ${CALL}` });
   }
 
   let data;
@@ -169,19 +201,37 @@ export default async function handler(req, res) {
     // 3. Store the lead first (Supabase, see .env.example). If this fails the lead can still reach the
     // team by email, so a database problem is logged and the request carries on.
     const db = supabaseConfig();
+
+    // Spam check (lib/spam.js). Suspected spam is stored with status "spam" and is not emailed.
+    let duplicate = false;
+    if (db && email) {
+      try { duplicate = await isDuplicate(db, { email, notes }); } catch (err) { console.error('Duplicate check failed:', errTag(err)); }
+    }
+    const verdict = assessLead({
+      name, notes, duplicate,
+      elapsedMs: data.elapsedMs === '' || data.elapsedMs == null ? undefined : Number(data.elapsedMs)
+    });
+    const spam = verdict.spam ? { score: verdict.score, reasons: verdict.reasons } : null;
+    if (spam) console.log('[ASPEN II SPAM]', JSON.stringify({ score: spam.score, source }));
+
     let leadId = null;
     if (db) {
       try {
         const originDomain = str(req.headers?.host, 100).toLowerCase().replace(/:\d+$/, '');
         leadId = await saveLead(db, {
           name, phone, email, timeline, plan, community, contactPref, stage, when, budget,
-          firstTime, military, notes, source, originDomain, tags
+          firstTime, military, notes, source, originDomain, tags, spam
         });
       } catch (err) {
         console.error('Lead NOT stored in database:', errTag(err));
       }
     } else {
       console.error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set; lead will not be stored.');
+    }
+
+    // Spam is filed and stays quiet: no email, and the sender sees the same thank-you a real visitor would.
+    if (spam) {
+      return reply(req, res, 200, { success: true, message: 'Consultation request received successfully.', emailDispatched: false, saved: Boolean(leadId) });
     }
 
     // 4. Email the lead via Resend (see .env.example).

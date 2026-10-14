@@ -410,7 +410,7 @@ import '@fontsource/ibm-plex-mono/latin-500.css';
         el('summary', {},
           el('strong', { text: who }),
           c.needs_human && !c.resolved ? el('span', { class: 'flag', text: ' Needs a person' }) : null,
-          el('span', { class: 'mono hint', text: ` ${c.message_count} messages · ${when(c.last_message_at)}` })),
+          el('span', { class: 'mono hint', text: ` ${c.channel === 'sms' ? 'Text · ' : ''}${c.message_count} messages · ${when(c.last_message_at)}` })),
         c.handoff_reason ? el('p', { class: 'mono hint', text: `Reason: ${c.handoff_reason}` }) : null,
         c.lead?.email ? el('p', { class: 'mono hint', text: c.lead.email }) : null,
         body, resolve);
