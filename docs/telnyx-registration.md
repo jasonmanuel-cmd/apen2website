@@ -65,7 +65,7 @@ Publish first: the page https://aspen2homes.com/sms-terms/ must be live (merge t
 - Opt-out: `You're unsubscribed and will get no more texts from this number. Call (661) 241-0306 any time.`
 - Help: `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 241-0306, 7am-7pm daily. Reply STOP to stop texts.`
 
-> Note: the live first reply does not yet carry the "Msg&data rates ... Reply STOP" sentence. Tell me and I will add it to the assistant, because some reviewers want it in the first message; the terms page already states it.
+The live first reply of every text thread ends with that "Msg&data rates may apply. Reply STOP to stop." sentence automatically.
 
 **Sample messages** (use 3 to 5; each must match the description):
 
