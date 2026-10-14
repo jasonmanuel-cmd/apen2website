@@ -1,5 +1,7 @@
 # Google Voice auto-reply (no Twilio)
 
+> Stopgap. For a number you own, use `docs/telnyx-setup.md` instead; both share the same assistant and safety rules (`lib/sms-core.js`).
+
 When someone texts the Google Voice number, the same AI assistant as the website chat answers, collects their
 name and a message for the team, and logs everything in HQ.
 
