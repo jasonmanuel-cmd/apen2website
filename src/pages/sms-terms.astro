@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
+// Text-messaging terms. Carriers ask for a public page that states how people opt in, what we send, how often, and how to stop.
+// Plain-language draft; owner and attorney review pending. Keep it true: update it if the texting program changes.
+---
+<Layout title={`Text Messaging Terms | ${site.name}`} description={`How text messaging works with ${site.name}: how you start it, what we send, how often, and how to stop.`}>
+  <section class="section wrap prose">
+    <p class="eyebrow">Text messaging terms</p>
+    <h1>Texting <em>{site.name}</em></h1>
+    <p class="mono updated">Last updated: October 15, 2026</p>
+
+    <h2>What this is</h2>
+    <p><strong>Program name:</strong> {site.name} text assistant. <strong>Operator:</strong> {site.currentEntity}, a licensed California home builder ({site.license}).</p>
+    <p>You can text our number to ask about our homes, floor plans, financing programs and tours. An automated assistant (an AI, not a person) answers your texts, can take your name and a message for our team, and our staff follow up by phone, text or email. This page explains how that works. See also our <a href="/privacy/">privacy notice</a>.</p>
+
+    <h2>How you start</h2>
+    <p>You start by texting us first, for example the word <strong>HOMES</strong>, or any question. We only reply to texts you send. We do not text you first, and we do not sign you up for a list. Filling in a form on our website does not sign you up for text messages. Agreeing to text with us is not a condition of buying a home or of any service.</p>
+
+    <h2>What we send and how often</h2>
+    <p>Our texts are replies to the messages you send us: answers to your questions, confirmation that your message or tour request reached our team, and follow-up from our staff about what you asked. We do not send marketing or promotional texts through this program. <strong>Message frequency varies:</strong> it depends on how many texts you send us, and the assistant stops after a short conversation and hands you to our team.</p>
+
+    <h2>Cost</h2>
+    <p>Message and data rates may apply, according to your mobile carrier plan. We do not charge for texting.</p>
+
+    <h2>How to stop or get help</h2>
+    <ul>
+      <li>Reply <strong>STOP</strong> (or UNSUBSCRIBE, CANCEL, END or QUIT) at any time. We confirm once and then send nothing more. Reply <strong>START</strong> to turn texts back on.</li>
+      <li>Reply <strong>HELP</strong> for help. We answer with our company name, license number, phone number and hours, or call {site.phone}. We are open {site.hours.replace('Open daily, ', 'daily, ')}.</li>
+    </ul>
+
+    <h2>Your information</h2>
+    <p>Your phone number and what you text us are used to answer you and to follow up. We do not sell your information, and we do not share mobile information, including phone numbers and text-messaging consent, with third parties for their marketing or promotional purposes. We do use service providers to run the program: our text-message carrier, the database that stores your conversation, our email service, and the AI service that writes the assistant's replies. Do not text us Social Security, bank or card numbers.</p>
+
+    <h2>Carriers</h2>
+    <p>Mobile carriers are not liable for delayed or undelivered messages. Texting works only where your carrier supports it, and only for U.S. numbers.</p>
+
+    <h2>Contact</h2>
+    <p>{site.currentEntity} ({site.license}), {site.address}. Phone {site.phone}. Email <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+  </section>
+</Layout>
+
+<style>
+  .prose { max-width: 760px; }
+  .updated { font-size: .75rem; color: var(--muted); margin: 0 0 1.5rem; }
+  .prose h2 { font-size: 1.6rem; margin-top: 2.2rem; }
+  .prose ul { padding-left: 1.2rem; }
+</style>

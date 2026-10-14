@@ -10,12 +10,13 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "node tests/lead.test.mjs && node tests/keepalive.test.mjs && node tests/staff.test.mjs && node tests/track.test.mjs && node tests/hq-analytics.test.mjs && node tests/chat.test.mjs && node tests/spam.test.mjs && node tests/sms.test.mjs && node tests/gv-bridge.test.mjs && node tests/hq-ui.test.mjs"
+    "test": "node tests/lead.test.mjs && node tests/keepalive.test.mjs && node tests/staff.test.mjs && node tests/track.test.mjs && node tests/hq-analytics.test.mjs && node tests/chat.test.mjs && node tests/spam.test.mjs && node tests/sms.test.mjs && node tests/telnyx.test.mjs && node tests/gv-bridge.test.mjs && node tests/hq-ui.test.mjs"
   },
   "dependencies": {
     "@fontsource/gloock": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/source-serif-4": "^5.3.0",
+    "@vercel/functions": "^3.10.1",
     "@vercel/speed-insights": "^2.0.0",
     "astro": "^7.3.5"
   },

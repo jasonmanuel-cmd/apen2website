@@ -2,7 +2,7 @@
 -- Aspen II Homes — website chat and appointments schema
 -- =============================================================================
 -- Safe to re-run (everything is `if not exists`). Run in the Supabase SQL editor, in the SAME project that holds `leads`.
--- Adds five tables next to `leads`; it does not change the leads table.
+-- Adds six tables next to `leads`; it does not change the leads table.
 --
 -- Security posture, same as leads / sessions / visits:
 --   * RLS is ENABLED and NO policies exist, so the anon key can read and write
@@ -76,8 +76,15 @@ create table if not exists public.sms_optouts (
   created_at  timestamptz not null default now()
 );
 
+-- Telnyx message ids already answered, so a retried webhook is not answered twice.
+create table if not exists public.sms_seen (
+  message_id  text primary key,
+  created_at  timestamptz not null default now()
+);
+
 alter table public.conversations enable row level security;
 alter table public.messages      enable row level security;
 alter table public.appointments  enable row level security;
 alter table public.callbacks     enable row level security;
 alter table public.sms_optouts   enable row level security;
+alter table public.sms_seen      enable row level security;

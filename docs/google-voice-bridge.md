@@ -1,5 +1,7 @@
 # Google Voice auto-reply (no Twilio)
 
+> Stopgap. For a number you own, use `docs/telnyx-setup.md` instead; both share the same assistant and safety rules (`lib/sms-core.js`).
+
 When someone texts the Google Voice number, the same AI assistant as the website chat answers, collects their
 name and a message for the team, and logs everything in HQ.
 
@@ -30,7 +32,7 @@ person texts the Google Voice number
    You should see `"ok": true`, the sender's number and the text. If it says `ok: false`, the `why` line tells you what
    did not match (the Google Voice email format is the one thing I could not verify from here). Send me that log, with the
    phone numbers blanked out, and I will adjust the parser.
-6. **Turn it on:** run `setup` once (it asks for Gmail and external-request permission). Text HOMES from another phone and
+6. **Turn it on:** run `setup` once (it asks for Gmail and external-request permission). It records the moment it was switched on, so texts that arrived earlier are never answered. Run `status` any time to see whether it is on. Text HOMES from another phone and
    expect an answer in one to two minutes.
 7. **Kill switch:** run `teardown`, or remove `SMS_BRIDGE_SECRET` in Vercel (the endpoint then refuses everything).
 
@@ -50,6 +52,7 @@ person texts the Google Voice number
 - **Volume:** a free Gmail account may send about 100 emails a day through Apps Script (Workspace accounts about 1,500). Each reply is one email.
 - **Google's rules:** Google's Voice terms restrict automated and bulk messaging. I have not checked the current wording, so read it. This bridge is one-to-one and only answers inbound texts, but Google could still restrict the number. Keep the number you give out on a line you can afford to lose, or move to a carrier you own.
 - **Legal:** I am not a lawyer. Replying to a text someone just sent is the lowest-risk kind of automated text, but have a California attorney review the wording and the privacy notice.
+- **Per message, not per thread:** several texts from one person land in one Gmail thread; the script answers each new message and remembers which it has handled, so it does not matter whether you open or read the emails.
 - **Format risk:** if Google changes its notification emails, the parser stops matching and the bridge goes quiet (it skips, it does not guess). Run `preview` to see why.
 
 ## Updating the facts the assistant knows
