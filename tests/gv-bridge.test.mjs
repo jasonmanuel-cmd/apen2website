@@ -53,4 +53,21 @@ no({ ...base, subject: 'New text message from Pat', replyTo: 'abc@txt.voice.goog
 no({ ...base, replyTo: '16612410306.16612410306.x@txt.voice.google.com', subject: 'New text message from Pat' }, /sender number|our own/);
 no({ ...base, body: '\n\nTo respond to this text message, reply.' }, /no message text/);
 
+// ---- which messages get answered --------------------------------------------------------------------------------
+const pick = (...a) => vm.runInContext('pickNewMessages_', ctx)(...a);
+const T0 = 1_000_000;
+const items = [
+  { id: 'old', dateMs: T0 - 5000 },       // arrived before the bot was switched on: never answered
+  { id: 'a', dateMs: T0 + 1000 },         // two texts from the same person (same Gmail thread)
+  { id: 'b', dateMs: T0 + 3000 },
+  { id: 'c', dateMs: T0 + 2000 },
+];
+assert.deepEqual(pick(items, [], T0, 10).map((i) => i.id), ['a', 'c', 'b'], 'oldest first, nothing from before switch-on');
+assert.deepEqual(pick(items, ['a'], T0, 10).map((i) => i.id), ['c', 'b'], 'an answered message is not answered again, but the next text in its thread is');
+assert.deepEqual(pick(items, ['a', 'b', 'c'], T0, 10), [], 'all done');
+assert.deepEqual(pick(items, [], T0, 2).map((i) => i.id), ['a', 'c'], 'at most max per run');
+assert.deepEqual(pick([], [], T0, 10), []);
+assert.deepEqual(pick(items, [], T0 + 10_000, 10), [], 'switched on after all of them');
+assert.ok(!/isUnread|addLabel|-label:/.test(code), 'does not depend on read/unread state or Gmail labels');
+
 console.log('gv-bridge: ok');
