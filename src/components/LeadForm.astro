@@ -98,6 +98,8 @@ const interests = [
   });
   // Progressive enhancement: without JS the form still posts to /api/lead.
   document.querySelectorAll<HTMLFormElement>('form[data-lead]').forEach((form) => {
+    // How long the form has been open. A script posting in under a second is a bot; the server weighs it with other signals.
+    const openedAt = Date.now();
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = form.querySelector('button')!;
@@ -106,7 +108,7 @@ const interests = [
       try {
         const res = await fetch(form.action, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+          body: JSON.stringify({ ...Object.fromEntries(new FormData(form)), elapsedMs: Date.now() - openedAt }),
         });
         if (res.status === 400) {
           // Validation problem (e.g. a malformed email): show the server's plain message instead of the generic failure.

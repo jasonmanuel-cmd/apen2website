@@ -2,7 +2,7 @@
 -- Aspen II Homes — website chat and appointments schema
 -- =============================================================================
 -- Safe to re-run (everything is `if not exists`). Run in the Supabase SQL editor, in the SAME project that holds `leads`.
--- Adds four tables next to `leads`; it does not change the leads table.
+-- Adds five tables next to `leads`; it does not change the leads table.
 --
 -- Security posture, same as leads / sessions / visits:
 --   * RLS is ENABLED and NO policies exist, so the anon key can read and write
@@ -70,7 +70,14 @@ create table if not exists public.callbacks (
 );
 create index if not exists callbacks_status_idx on public.callbacks (status, created_at desc);
 
+-- People who texted STOP. The text assistant never replies to a number listed here (until it texts START).
+create table if not exists public.sms_optouts (
+  phone       text primary key,                 -- 10 digits, US
+  created_at  timestamptz not null default now()
+);
+
 alter table public.conversations enable row level security;
 alter table public.messages      enable row level security;
 alter table public.appointments  enable row level security;
 alter table public.callbacks     enable row level security;
+alter table public.sms_optouts   enable row level security;

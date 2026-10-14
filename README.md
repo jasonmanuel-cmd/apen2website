@@ -131,4 +131,5 @@ Built pages say only what the data file can support. These items stay unpublishe
 - Staff: `/hq/` has Chats, Callbacks and Appointments tabs (`api/hq/chat.js`, same STAFF_TOKEN). Appointments are requests until staff confirm them.
 - Env: `ANTHROPIC_API_KEY` (required), `CHAT_MODEL` (optional). Without the key the widget tells visitors to call the office.
 - Google Voice: it has no API, so it cannot be automated. Staff emails and the Callbacks tab carry tap-to-call and tap-to-text links; on a phone where Google Voice is the default calling/texting app they open there. Real two-way texting needs the number moved to Twilio.
-- Texting (Twilio) is not built yet; `lib/chat-brain.js` is written so an SMS webhook can reuse it.
+- Texting without Twilio: `api/sms.js` answers texts sent to the Google Voice number through a small Apps Script bridge (`scripts/google-voice-bridge.gs`). Setup, limits and the kill switch: `docs/google-voice-bridge.md`. Env: `SMS_BRIDGE_SECRET`.
+- Form spam: `lib/spam.js` scores every submission (links, sales-pitch wording, gibberish names, non-Latin filler, bot-speed, same-message-twice). Suspected spam is stored with status `spam` (review it in HQ > Leads > Spam), never emailed. Also 8 submissions per 10 minutes per address.
