@@ -24,7 +24,7 @@ import { plans, usd, offer } from '../data/site';
     <!-- Step 1 -->
     <div class="matcher-step" data-step="1">
       <p class="matcher-step-tag mono">Step 1 of 3 · Lifestyle</p>
-      <h3 id="matcher-title">What best describes your move to Tehachapi?</h3>
+      <h2 id="matcher-title">What best describes your move to Tehachapi?</h2>
       <p class="matcher-sub">We’ll tailor your floor plan recommendations to your exact stage of life.</p>
       <div class="matcher-options">
         <button type="button" class="matcher-opt" data-select="first-time">
@@ -61,7 +61,7 @@ import { plans, usd, offer } from '../data/site';
     <!-- Step 2 -->
     <div class="matcher-step" data-step="2" hidden>
       <p class="matcher-step-tag mono">Step 2 of 3 · Layout Priorities</p>
-      <h3>What are your top layout preferences?</h3>
+      <h2>What are your top layout preferences?</h2>
       <p class="matcher-sub">Choose your preferred architectural format.</p>
       <div class="matcher-options">
         <button type="button" class="matcher-opt" data-select="single-story">
@@ -91,7 +91,7 @@ import { plans, usd, offer } from '../data/site';
     <!-- Step 3 -->
     <div class="matcher-step" data-step="3" hidden>
       <p class="matcher-step-tag mono">Step 3 of 3 · Budget &amp; Financing</p>
-      <h3>What price or financing range suits you?</h3>
+      <h2>What price or financing range suits you?</h2>
       <p class="matcher-sub">This helps us calculate your early-buyer savings and financing eligibility.</p>
       <div class="matcher-options">
         <button type="button" class="matcher-opt" data-select="budget-starter">
@@ -124,7 +124,7 @@ import { plans, usd, offer } from '../data/site';
         <span class="result-match-pill mono">98% Match for You</span>
         <span class="result-incentive mono">Up to $15,000 Credit Eligible</span>
       </div>
-      <h3 class="result-model-name" data-result-name>Sunset Retreat Model</h3>
+      <h2 class="result-model-name" data-result-name>Sunset Retreat Model</h2>
       <p class="result-tagline muted" data-result-tagline>Single-story mountain craftsman with chef's island kitchen and 3 bedrooms.</p>
 
       <div class="result-specs-box">
@@ -239,7 +239,7 @@ import { plans, usd, offer } from '../data/site';
   }
 
   .matcher-step-tag { font-size: .72rem; color: var(--rust); text-transform: uppercase; letter-spacing: .1em; margin: 0 0 .4rem; }
-  .matcher-step h3 { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 1.85rem); color: var(--ink); margin: 0 0 .5rem; line-height: 1.2; }
+  .matcher-step h2, .matcher-step h3 { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 1.85rem); color: var(--ink); margin: 0 0 .5rem; line-height: 1.2; }
   .matcher-sub { font-size: .88rem; color: var(--muted); margin: 0 0 1.5rem; }
 
   .matcher-options { display: flex; flex-direction: column; gap: .75rem; }

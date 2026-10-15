@@ -43,6 +43,7 @@ const trust = [
 const steps = buyingSteps;
 const title = `Tehachapi Home Builder: Sunset Retreat from ${fromShort} | ${site.name}`;
 const description = `Sunset Retreat homes in Tehachapi from ${usd(offer.from)}. Six models, ${sqftRange()} sq ft. 0% down options for eligible first-time buyers. Terms apply.`;
+const heroPreload = (await getImage({ src: hero, width: 800, format: 'webp' })).src;
 const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(og.src, site.url).href } }), faqPage(faq)];
 ---
 <Layout
@@ -50,6 +51,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   description={description}
   image={og.src}
   schema={schema}
+  preloadImage={heroPreload}
 >
   <section class="hero">
     <Image src={hero} alt="Sunset Retreat model exterior with the Tehachapi mountains behind it" class="hero-img" loading="eager" fetchpriority="high" widths={[800, 1280, 1600]} sizes="100vw" />

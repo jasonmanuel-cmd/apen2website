@@ -11,11 +11,11 @@ const lots = [
 ];
 ---
 
-<div class="plat-map-section" data-plat-map>
+<div class="plat-map-section" data-plat-map data-lots={JSON.stringify(lots)}>
   <div class="plat-head">
     <div>
       <p class="plat-kicker mono">Phase 1 &amp; 2 Release Map</p>
-      <h3>{offer.community} Interactive Homesite Plat</h3>
+      <h2>{offer.community} Interactive Homesite Plat</h2>
     </div>
     <div class="plat-legend mono">
       <span class="legend-item"><span class="dot live"></span> Now Reserving (Phase 1)</span>
@@ -97,7 +97,7 @@ const lots = [
         <span class="plat-badge mono" data-card-status>Now Reserving</span>
         <span class="plat-phase mono">Sunset Retreat · Phase 1</span>
       </div>
-      <h4 class="plat-card-title" data-card-title>Homesite 01</h4>
+      <h3 class="plat-card-title" data-card-title>Homesite 01</h3>
       <p class="plat-card-model" data-card-model>Sunset Retreat Model</p>
       <p class="plat-card-notes muted" data-card-notes>Phase 1 · Facing Tehachapi Mountain Crest · Move-in ~3 mos</p>
 
@@ -136,7 +136,7 @@ const lots = [
     margin-bottom: 2rem;
   }
   .plat-kicker { font-size: .74rem; color: var(--rust); text-transform: uppercase; letter-spacing: .12em; margin: 0 0 .3rem; }
-  .plat-head h3 { font-family: var(--display); font-size: clamp(1.7rem, 3.2vw, 2.3rem); color: var(--ink); margin: 0; line-height: 1.15; }
+  .plat-head h2 { font-family: var(--display); font-size: clamp(1.7rem, 3.2vw, 2.3rem); color: var(--ink); margin: 0; line-height: 1.15; }
   .plat-legend { display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: .74rem; color: var(--muted); }
   .legend-item { display: inline-flex; align-items: center; gap: .5rem; }
   .dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -235,11 +235,16 @@ const lots = [
   }
 </style>
 
-<script define:vars={{ lots }}>
+<script>
   function initPlatMap() {
     const root = document.querySelector('[data-plat-map]');
     if (!root || root.__hasPlat) return;
     root.__hasPlat = true;
+
+    let lots = [];
+    try {
+      lots = JSON.parse(root.getAttribute('data-lots') || '[]');
+    } catch {}
 
     const nodes = root.querySelectorAll('[data-lot-id]');
     const statusEl = root.querySelector('[data-card-status]');
