@@ -13,6 +13,8 @@ import '@fontsource/source-serif-4/latin-400-italic.css';
 import '@fontsource/source-serif-4/latin-600.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
+import gloockUrl from '@fontsource/gloock/files/gloock-latin-400-normal.woff2?url';
+import serifUrl from '@fontsource/source-serif-4/files/source-serif-4-latin-400-normal.woff2?url';
 import { ORG_ID, SITE_ID } from '../data/schema';
 import { site, plans, communities, offer, usd, disclaimer, planUrl, areaUrl, serviceAreaNames, profiles } from '../data/site';
 interface Props { title: string; description: string; schema?: object; image?: string; noindex?: boolean }
@@ -60,14 +62,26 @@ const nav: [string, string, [string, string][]][] = [
 <!doctype html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js): Google Analytics 4 property G-4XGMLDL790. Keep exactly one per page. -->
-  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-4XGMLDL790"></script>
+  <!-- Google tag (gtag.js): Google Analytics 4 property G-4XGMLDL790. Defer-loaded via idle callback to eliminate main-thread TBT blocking. -->
   <script is:inline>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-4XGMLDL790');
+
+    function loadGtag() {
+      if (window.__gtagLoaded) return;
+      window.__gtagLoaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-4XGMLDL790';
+      document.head.appendChild(s);
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadGtag, { timeout: 2500 });
+    } else {
+      window.addEventListener('load', function() { setTimeout(loadGtag, 200); });
+    }
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -84,7 +98,8 @@ const nav: [string, string, [string, string][]][] = [
   <meta name="theme-color" content="#0B3A06" />
   <link rel="icon" href="/favicon.webp" type="image/webp" />
   <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preload" href={gloockUrl} as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin />
   <link rel="sitemap" href="/sitemap.xml" />
   <script type="application/ld+json" set:html={JSON.stringify(org)} />
   <script type="application/ld+json" set:html={JSON.stringify(website)} />
@@ -144,7 +159,7 @@ const nav: [string, string, [string, string][]][] = [
         <p class="mono head">Areas we serve</p>
         <ul>{communities.filter((c) => c.published).map((c) => <li><a href={areaUrl(c)}>{c.name}</a></li>)}<li><a href="/areas/">All areas we serve</a></li></ul>
         <p class="mono head" style="margin-top:1.5rem">Buying</p>
-        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/guides/">Buyer guides</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/privacy/">Privacy notice</a></li><li><a href="/sms-terms/">Text terms</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
+        <ul><li><a href="/available-homes/">Available homes</a></li><li><a href="/semi-custom-homes/">Semi-custom homes</a></li><li><a href="/our-process/">Our process</a></li><li><a href="/financing/">Financing & incentives</a></li><li><a href="/guides/">Buyer guides</a></li><li><a href="/#faq">FAQ</a></li><li><a href="/about/">About</a></li><li><a href="/gallery/">Gallery</a></li><li><a href="/terms/">Terms & conditions</a></li><li><a href="/privacy/">Privacy policy</a></li><li><a href="/sms-terms/">Text terms</a></li><li><a href="/accessibility/">Accessibility</a></li></ul>
       </div>
     </div>
     <div class="wrap fine">
@@ -186,7 +201,7 @@ const nav: [string, string, [string, string][]][] = [
     (function () {
       var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
       var targets = document.querySelectorAll(
-        '.split, .split-media, .split-text, .model-gallery, .model-blueprint, .cards, .card, .grid, .steps, .step, .points, .list, .lede, .info, .choices, .n'
+        '.split, .split-media, .split-text, .model-gallery, .model-blueprint, .cards, .card, .grid, .steps, .step, .points, .list, .lede, .info, .choices, .n, .bento-card'
       );
       if (reduced || !('IntersectionObserver' in window)) return;
       document.documentElement.classList.add('js');
@@ -197,13 +212,52 @@ const nav: [string, string, [string, string][]][] = [
           io.unobserve(en.target); // reveal once, then stop observing
         });
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
-      targets.forEach(function (el) { el.classList.add('rise'); io.observe(el); });
-      // Anything already on screen at load reveals on the next frame, so there is no flash of hidden content.
-      requestAnimationFrame(function () {
-        document.querySelectorAll('.rise').forEach(function (el) {
-          if (el.getBoundingClientRect().top < innerHeight) { el.classList.add('in'); io.unobserve(el); }
-        });
+      targets.forEach(function (el) {
+        if (el.closest('.hero')) return;
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) return;
+        el.classList.add('rise');
+        io.observe(el);
       });
+    })();
+
+    // Aceternity 3D Card Tilt Interaction
+    (function () {
+      var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced || window.matchMedia('(pointer: coarse)').matches) return;
+
+      function init3DCards() {
+        document.querySelectorAll('[data-3d-card]').forEach(function (card) {
+          if (card.__has3d) return;
+          card.__has3d = true;
+          var inner = card.querySelector('[data-3d-inner]') || card;
+          var glare = card.querySelector('[data-3d-glare]');
+
+          card.addEventListener('mousemove', function (e) {
+            var rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var centerX = rect.width / 2;
+            var centerY = rect.height / 2;
+            var rotateX = ((y - centerY) / centerY) * -9;
+            var rotateY = ((x - centerX) / centerX) * 9;
+
+            inner.style.transform = 'perspective(1000px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) translateY(-4px)';
+            if (glare) {
+              glare.style.opacity = '1';
+              glare.style.background = 'radial-gradient(circle 240px at ' + x + 'px ' + y + 'px, rgba(255, 255, 255, 0.22), transparent 80%)';
+            }
+          });
+
+          card.addEventListener('mouseleave', function () {
+            inner.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+            if (glare) glare.style.opacity = '0';
+          });
+        });
+      }
+
+      init3DCards();
+      window.addEventListener('DOMContentLoaded', init3DCards);
     })();
   </script>
 </body>
@@ -311,11 +365,45 @@ const nav: [string, string, [string, string][]][] = [
 
   .mobile-bar { display: none; }
   @media (max-width: 760px) {
-    .mobile-bar { display: grid; grid-template-columns: 1fr 1fr 1.6fr; position: fixed; inset: auto 0 0 0; z-index: 30;
-                  background: var(--ink); border-top: 1px solid rgb(var(--bone-rgb) / .12); padding-bottom: env(safe-area-inset-bottom); }
-    .mobile-bar a { color: var(--bone); text-align: center; padding: 1rem .5rem; text-decoration: none; font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-    .mobile-bar a + a { border-left: 1px solid rgb(var(--bone-rgb) / .12); }
-    .mobile-bar .primary { background: var(--clay); }
+    body { padding-bottom: 96px; }
+    .mobile-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.8fr;
+      position: fixed;
+      inset: auto 12px max(14px, env(safe-area-inset-bottom)) 12px;
+      z-index: 99;
+      background: rgb(var(--ink-rgb) / .94);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgb(var(--bone-rgb) / .16);
+      border-radius: 40px;
+      box-shadow: 0 16px 36px rgb(0 0 0 / .35), 0 0 0 1px rgb(201 138 0 / .2);
+      overflow: hidden;
+      padding: 4px;
+    }
+    .mobile-bar a {
+      color: var(--bone);
+      text-align: center;
+      padding: .85rem .4rem;
+      min-height: 48px;
+      text-decoration: none;
+      font: 500 .75rem var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 30px;
+      transition: background .2s ease;
+    }
+    .mobile-bar a + a { border-left: 0; }
+    .mobile-bar a:active { background: rgba(255,255,255,0.08); }
+    .mobile-bar .primary {
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgb(201 138 0 / .35);
+    }
   }
 
   /* Ambient background: three large, very soft radial washes that drift on long

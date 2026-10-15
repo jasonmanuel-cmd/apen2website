@@ -1,51 +1,100 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { site } from '../data/site';
-// Plain-language notice describing what the site actually does. Owner review pending (see README).
+import { breadcrumb, webPage } from '../data/schema';
+
+const path = '/privacy/';
+const title = `Privacy Policy | ${site.name}`;
+const description = `Privacy Policy and Mobile Text Messaging Privacy Notice for ${site.name}. How we collect, protect, and handle your information.`;
 ---
-<Layout title={`Privacy Notice | ${site.name}`} description={`How ${site.name} collects and uses the information you send through this website.`}>
+<Layout title={title} description={description} schema={[webPage(path, title, description), breadcrumb([['Home', '/'], ['Privacy Policy', path]])]}>
   <section class="section wrap prose">
-    <p class="eyebrow">Privacy notice</p>
-    <h1>Your information, <em>plainly.</em></h1>
+    <p class="eyebrow">Privacy policy</p>
+    <h1>Your information, <em>plainly protected.</em></h1>
     <p class="mono updated">Last updated: October 15, 2026</p>
 
-    <h2>What we collect</h2>
-    <p>When you send a request through our forms, we receive what you type: your name, phone number, email address, what you’re interested in, the model and community you pick, and any notes.</p>
-    <p>If you open "Tell us more" on a form, we also receive the optional details you choose to give: how you would like us to reach you, where you are in the process, your timeline, a budget range, and whether you tick the first-time buyer or VA / military boxes. We also record which form and which of our websites the request came from.</p>
-    <p>We count page visits three ways. Our own traffic analytics uses no cookies and sets no identifiers on your device. It records which pages you viewed, how long you spent on each, the site you arrived from, and your browser and device type. It does not record your IP address: our server counts unique visitors using a scrambled value that changes every day, so no one can be tracked from one visit to the next, and we keep the region you visited from, not a precise location. If your browser sends a “Do Not Track” or “Global Privacy Control” signal, our analytics is switched off for that visit. Vercel Web Analytics does not use cookies and does not identify you personally. Google Analytics uses cookies to measure how visitors find and use the site (pages viewed, approximate location, device and how you arrived). We use it to improve the site and do not use it to run our own advertising. You can block it with your browser’s cookie settings or the <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener" target="_blank">Google Analytics opt-out add-on<span class="sr-only"> (opens in a new tab)</span></a>.</p>
+    <p>{site.currentEntity} (doing business as "{site.name}", {site.license}, "we", "us", or "our") respects your personal privacy. This Privacy Policy outlines what information we collect, how we use it, how we safeguard it, and your rights under applicable privacy laws, including the California Consumer Privacy Act (CCPA) and federal telecommunications regulations (TCPA / CTIA).</p>
 
-    <p>If you use the chat assistant on this site, we keep the messages you type and the assistant’s replies, and if you give your name, phone number or email there, we save them as a request just like a form. The assistant is an AI, not a person. Please don’t type Social Security, bank or card numbers into the chat. If you ask for a tour or call, we save the date and time you ask for. Our team reads chats to follow up with you.</p>
-
-    <h2>Why we use it</h2>
-    <p>Only to answer your request: to call or email you about homes, financing and tours you asked about, and to reply to texts you send us. We don’t sell your information.</p>
-
-    <h2>Who handles it</h2>
+    <h2>1. Strict Mobile Information &amp; SMS Privacy (A2P 10DLC Compliance)</h2>
+    <div class="callout-box">
+      <p><strong>Mobile Information Sharing Protection:</strong></p>
+      <p><strong>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. All the above categories exclude text messaging originator opt-in data and consent; this information will not be shared with any third parties under any circumstances.</strong></p>
+    </div>
+    <p>When you provide your mobile phone number to {site.name} through any website form, tour booking, or inbound text:</p>
     <ul>
-      <li>The {site.name} team, who receive your request by email.</li>
-      <li>Vercel, which hosts this website and keeps standard server logs that can include your IP address and browser type.</li>
-      <li>Google, which provides Google Analytics and the Gmail inbox where our team reads form emails.</li>
-      <li>BuildZoom, whose badge in our footer loads from their servers and counts how often it is shown.</li>
-      <li>Resend, which delivers the form email to our team.</li>
-      <li>Supabase, which stores a copy of your request in our private database so it isn’t lost if an email fails.</li>
-      <li>Anthropic, whose AI model writes the chat assistant’s replies. The messages you type in the chat are sent to it for that purpose.</li>
+      <li><strong>Inbound &amp; Conversational Texting:</strong> Giving us your phone number on a form lets us call or email you about your request. It does not sign you up for marketing text messages. We text only people who text us first, and we do not send marketing or promotional texts. If you text our number, an automated assistant (an AI, not a person) replies, and we keep the conversation so our team can follow up.</li>
+      <li><strong>Consent Not Required for Purchase:</strong> Agreeing to text with us is completely voluntary and is not a condition of purchasing any property, goods, or services from us.</li>
+      <li><strong>Message Frequency:</strong> Message frequency varies based on how many texts you send us and the status of your inquiry.</li>
+      <li><strong>Message &amp; Data Rates:</strong> Standard message and data rates may apply as determined by your mobile carrier plan.</li>
+      <li><strong>How to Opt-Out:</strong> You can opt out of text messages at any time by replying <strong>STOP</strong>, <strong>CANCEL</strong>, <strong>END</strong>, <strong>QUIT</strong>, or <strong>UNSUBSCRIBE</strong> to any message, or by texting <strong>STOP</strong> to <a href={site.phoneHref}>{site.phone}</a>. We will confirm once and send nothing more. Reply <strong>START</strong> to turn texts back on.</li>
+      <li><strong>Support &amp; Help:</strong> For assistance, reply <strong>HELP</strong> to any message, call <a href={site.phoneHref}>{site.phone}</a>, or email <a href={`mailto:${site.email}`}>{site.email}</a>. Full text terms are available at <a href="/sms-terms/">/sms-terms/</a>.</li>
+      <li><strong>Carriers:</strong> Mobile carriers are not liable for delayed or undelivered messages.</li>
     </ul>
-    <p>If you ask about financing, we may pass your contact details to the lender you choose to work with, with your permission.</p>
 
-    <h2>How long we keep it</h2>
-    <p>We keep your request for at least one month after you send it, and longer while we are working with you or need it to answer your follow-up questions. You can ask us to delete it at any time (see Your choices below).</p>
+    <h2>2. What We Collect</h2>
+    <p>We only collect information necessary to respond to your home building or purchasing inquiry:</p>
+    <ul>
+      <li><strong>Contact Information:</strong> Your name, email address, and telephone number when you submit an inquiry, tour request, or chat message.</li>
+      <li><strong>Home Preferences:</strong> Selected floor plans, community preferences, desired timeline, budget ranges, and any specific questions or notes you provide.</li>
+      <li><strong>Chat Messages:</strong> If you use the chat assistant on this site, we keep the messages you type and the assistant’s replies. The assistant is an AI, not a person. Please do not type Social Security, bank or card numbers into the chat. If you ask for a tour or call, we save the date and time requested.</li>
+      <li><strong>Optional Questionnaire Details:</strong> Details you choose to provide in our "Tell us more" section, such as contact preference, whether you are a first-time homebuyer, or military/VA eligibility.</li>
+    </ul>
 
-    <h2>Texts</h2>
-    <p>Giving us your phone number on a form lets us call you about your request. It does not sign you up for text messages. We text only people who text us first, and we do not send marketing or promotional texts. If you text our number, an automated assistant (an AI, not a person) replies, and we keep the conversation so our team can follow up. Message frequency varies, and message and data rates may apply. Reply STOP at any time and we will not text you again. Reply HELP for help. The full text-messaging terms are at <a href="/sms-terms/">/sms-terms/</a>. We do not share mobile information, including phone numbers and texting consent, with third parties for their marketing or promotional purposes.</p>
+    <h2>3. How We Use Your Information</h2>
+    <p>We use the information you provide solely to:</p>
+    <ul>
+      <li>Answer your questions and follow up on your requested home models or community availability.</li>
+      <li>Schedule, confirm, and coordinate on-site model home and homesite tours.</li>
+      <li>Provide preliminary financing program information and architectural plan details.</li>
+      <li>Deliver prompt customer service ({site.followUp}).</li>
+    </ul>
+    <p><strong>We do not sell, rent, lease, or monetize your personal information to third parties.</strong></p>
 
-    <h2>Your choices</h2>
-    <p>Some browsers send a "Do Not Track" or "Global Privacy Control" signal. Our own traffic analytics respects those signals and is switched off when it receives them. Google Analytics and the BuildZoom badge may still collect information about your visits across different websites over time, and you can turn Google Analytics off with the opt-out add-on above.</p>
-    <p>To see, correct or delete what you’ve sent us, email <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.</p>
+    <h2>4. Who Handles Your Data</h2>
+    <p>We work with trusted infrastructure service providers to operate our business and website securely:</p>
+    <ul>
+      <li><strong>Our Internal Team:</strong> Aspen II Homes staff members who review and reply to your inquiries.</li>
+      <li><strong>Vercel:</strong> Our web hosting infrastructure provider, maintaining secure server logs and standard connection telemetry.</li>
+      <li><strong>Google Workspace:</strong> Our secure email platform where form submissions and Google Voice messages are received and managed.</li>
+      <li><strong>Resend:</strong> Secure transactional email delivery service used to route website inquiries to our team.</li>
+      <li><strong>Supabase:</strong> Encrypted, private database storage used so customer inquiries and chat records are never lost.</li>
+      <li><strong>Anthropic:</strong> The AI provider powering the website chat assistant's responses. Messages typed into the chat are processed to generate answers.</li>
+      <li><strong>BuildZoom:</strong> An informational credential badge in our website footer that counts display impressions.</li>
+    </ul>
+    <p>If you specifically request financing assistance, we may connect you with a vetted preferred lender only with your explicit permission. Even in this case, text messaging opt-in data and SMS consent remain strictly internal and are never transferred.</p>
 
-    <h2>Children</h2>
-    <p>This website is not meant for children under 16, and we do not knowingly collect their information.</p>
+    <h2>5. Website Analytics &amp; Cookies</h2>
+    <p>We believe in transparent, privacy-respecting analytics:</p>
+    <ul>
+      <li><strong>First-Party Traffic Analytics:</strong> Our primary traffic analytics sets zero cookies, stores no persistent tracking identifiers on your device, and does not record personal IP addresses. Unique daily visitors are estimated using daily rotating cryptographic hashes. If your browser sends a "Do Not Track" (DNT) or "Global Privacy Control" (GPC) signal, analytics is disabled immediately.</li>
+      <li><strong>Google Analytics 4:</strong> Measures aggregated site metrics (pages viewed, device type, approximate geographic region). We do not use Google Analytics to serve retargeting ads. You can disable this tracking via browser settings or the <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener" target="_blank">Google Analytics Opt-Out Add-on<span class="sr-only"> (opens in a new tab)</span></a>.</li>
+    </ul>
 
-    <h2>Contact</h2>
-    <p>{site.currentEntity} (doing business as {site.name}, {site.license}), {site.address}. Phone <a href={site.phoneHref}>{site.phone}</a>. Email <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+    <h2>6. California Privacy Rights (CCPA / CPRA)</h2>
+    <p>If you are a California resident, the California Consumer Privacy Act gives you specific rights regarding your personal information:</p>
+    <ul>
+      <li><strong>Right to Know:</strong> You may request disclosure of the categories and specific pieces of personal information we have collected about you over the past 12 months.</li>
+      <li><strong>Right to Delete:</strong> You have the right to request deletion of personal information we have collected from you, subject to legal recordkeeping exemptions.</li>
+      <li><strong>Right to Correct:</strong> You have the right to request correction of inaccurate personal information.</li>
+      <li><strong>Right to Non-Discrimination:</strong> We will not discriminate against you in pricing, service, or quality for exercising any of your CCPA rights.</li>
+      <li><strong>No Sale or Sharing of Personal Data:</strong> We do not sell personal information or share personal information for cross-context behavioral advertising.</li>
+    </ul>
+    <p>To exercise any of these rights, contact us at <a href={`mailto:${site.email}`}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>. We will verify and process your request within 45 days.</p>
+
+    <h2>7. Data Retention &amp; Security</h2>
+    <p>We maintain appropriate technical and administrative safeguards to protect your personal data from unauthorized access, loss, or disclosure. We retain customer inquiries only for as long as reasonably necessary to fulfill your real estate requests, maintain transaction records, and comply with California legal and contractor licensing requirements.</p>
+
+    <h2>8. Children's Privacy</h2>
+    <p>Our website and services are intended solely for individuals aged 18 and older. We do not knowingly collect or solicit personal information from children under 16.</p>
+
+    <h2>9. Contact Information</h2>
+    <p>If you have any questions or concerns regarding this Privacy Policy or your personal information, please reach out:</p>
+    <p class="mono contact-block">
+      {site.currentEntity} (doing business as {site.name}, {site.license})<br />
+      {site.address}<br />
+      Phone: <a href={site.phoneHref}>{site.phone}</a><br />
+      Email: <a href={`mailto:${site.email}`}>{site.email}</a>
+    </p>
   </section>
 </Layout>
 
@@ -53,5 +102,11 @@ import { site } from '../data/site';
   .prose { max-width: 760px; }
   .updated { font-size: .75rem; color: var(--muted); margin: 0 0 1.5rem; }
   .prose h2 { font-size: 1.6rem; margin-top: 2.2rem; }
-  .prose ul { padding-left: 1.2rem; }
+  .prose ul { padding-left: 1.2rem; line-height: 1.7; }
+  .prose li { margin-bottom: .6rem; }
+  .prose a { color: var(--clay); }
+  .callout-box { background: var(--bone); border-left: 4px solid var(--clay); padding: 1.2rem 1.5rem; margin: 1.25rem 0 1.75rem; border-radius: 0 4px 4px 0; border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .callout-box p { margin: 0 0 .5rem; line-height: 1.6; }
+  .callout-box p:last-child { margin-bottom: 0; }
+  .contact-block { background: var(--bone); border: 1px solid var(--line); padding: 1.2rem 1.5rem; border-radius: 4px; line-height: 1.8; margin-top: 1rem; }
 </style>

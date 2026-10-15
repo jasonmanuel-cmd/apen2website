@@ -51,12 +51,19 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
     <Image src={hero} alt="Sunset Retreat model exterior with the Tehachapi mountains behind it" class="hero-img" loading="eager" fetchpriority="high" widths={[800, 1280, 1600]} sizes="100vw" />
     <div class="shade"></div>
     <div class="wrap hero-grid">
-      <div class="copy">
-        <p class="eyebrow reveal">Now reserving · {offer.community}, {offer.city}</p>
+      <div class="copy reveal">
+        <div class="hero-live-pill mono"><span class="pulse-dot" aria-hidden="true"></span> Now reserving phase 1 · {offer.community}, {offer.city}</div>
         <h1>{offer.community} homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
-        <p class="lede">Reserve a home at {offer.community}, or ask about our other floor plans in Tehachapi and eastern Kern County.</p>
-        <p class="asof mono reveal" style="animation-delay:.25s">Pricing and availability change. Contact us to confirm what is available today. <a href="/available-homes/#availability">Current release details <span aria-hidden="true">→</span></a></p>
-        <div class="ctas reveal" style="animation-delay:.3s">
+        <p class="lede">Reserve an upcoming new home at {offer.community}, or choose from our six semi-custom floor plans engineered for Tehachapi mountain living.</p>
+        <div class="hero-trust-chips mono">
+          <span>30+ Years Local Builder</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span>CSLB #1004058</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span>0% Down Eligible</span>
+        </div>
+        <p class="asof mono">Pricing and availability change. Contact us to confirm what is available today. <a href="/available-homes/#availability">Current release details <span aria-hidden="true">→</span></a></p>
+        <div class="ctas">
           <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
           <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
         </div>
@@ -81,31 +88,111 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
     <div class="wrap stat-grid">{stats.map(([n, l]) => <div><p class="stat">{n}</p><p class="mono">{l}</p></div>)}</div>
   </section>
 
-  <section class="section">
+  <!-- Aceternity Bento Showcase -->
+  <section class="section bento-section" id="advantage">
     <div class="wrap">
       <div class="head">
         <div>
-          <p class="eyebrow">Two ways to own</p>
-          <h2>Reserve a home or <em>make a model yours.</em></h2>
+          <p class="eyebrow">The Aspen Advantage</p>
+          <h2>Luxury craftsmanship. <em>Engineered for Tehachapi.</em></h2>
         </div>
-        <p class="muted">Sunset Retreat first-release homes are estimated at roughly three months to move-in, subject to construction conditions. Sending a question commits you to nothing, so ask away.</p>
+        <p class="muted">
+          From 0% down first-time buyer financing to semi-custom architectural flexibility, discover why local families have trusted Aspen II Homes for more than three decades.
+        </p>
       </div>
-      <div class="paths">
-        {paths.map((p, i) => (
-          <article class:list={['path', { featured: i === 0 }]}>
-            {p.badge && <span class="badge mono">{p.badge}</span>}
-            <p class="mono n">Path {p.n} · {p.name}</p>
-            <h3>{p.title}</h3>
-            <p class="mono meta">{p.meta}</p>
-            <p>{p.text}</p>
-            <p class="p-price">{p.price}</p>
-            <a class="btn" href={p.cta[1]}>{p.cta[0]}</a>
-          </article>
-        ))}
+
+      <div class="bento-grid">
+        <!-- Bento 1: Featured 2-Col Sunset Retreat -->
+        <article class="bento-card bento-col-2 bento-hero bento-dark">
+          <Image src={kitchen} alt="Kitchen with island in the Sunset Retreat model" widths={[600, 1000]} sizes="(max-width: 900px) 100vw, 65vw" class="bento-bg-img" />
+          <div class="bento-shade" aria-hidden="true"></div>
+          <div class="bento-content">
+            <div class="bento-badge-row">
+              <span class="bento-pill mono"><span class="pulse-dot" aria-hidden="true"></span> Phase 1 · Two Homes Reserving</span>
+              <span class="bento-price mono">From {usd(offer.from)}</span>
+            </div>
+            <h3>Sunset Retreat First Release</h3>
+            <p class="bento-desc">
+              1,715 sq ft single-story living in Tehachapi. Reserve early to personalize your chef's kitchen, custom cabinetry, quartz countertops, and designer flooring before construction.
+            </p>
+            <div class="bento-specs mono">
+              <span>1,715 sq ft</span>
+              <span>·</span>
+              <span>3 Beds</span>
+              <span>·</span>
+              <span>2 Baths</span>
+              <span>·</span>
+              <span>~3 Months to Move-In</span>
+            </div>
+            <div class="bento-action">
+              <a class="btn" href="/available-homes/">See Sunset Retreat Availability →</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Bento 2: 0% Down Program -->
+        <article class="bento-card bento-accent">
+          <div class="bento-top-icon" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <p class="bento-kicker mono">Financing Advantage</p>
+          <p class="bento-stat">0% Down</p>
+          <h3 class="bento-card-title">Eligible First-Time Buyers</h3>
+          <p class="bento-sub">
+            Own your brand-new home with zero down payment through qualifying financing programs. We also partner with FHA, VA, and conventional lenders.
+          </p>
+          <div class="bento-tags mono">
+            <span>FHA Low Down</span>
+            <span>VA Veterans</span>
+            <span>Conventional</span>
+          </div>
+        </article>
+
+        <!-- Bento 3: Up to $15K Early-Buyer Savings -->
+        <article class="bento-card bento-highlight">
+          <p class="bento-kicker mono">Limited Phase Incentive</p>
+          <p class="bento-stat text-gold">Up to $15,000</p>
+          <h3 class="bento-card-title">Early-Buyer Savings Credit</h3>
+          <p class="bento-sub">
+            Reserve early in the phase and apply up to $15,000 directly toward floor plan personalization, interior selections, or financing rate buydowns.
+          </p>
+          <div class="bento-bottom-cta">
+            <a href="/financing/" class="bento-link mono">See Savings Details <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+
+        <!-- Bento 4: Six Semi-Custom Models -->
+        <article class="bento-card">
+          <p class="bento-kicker mono">Architectural Freedom</p>
+          <p class="bento-stat">6 Models</p>
+          <h3 class="bento-card-title">Proven Semi-Custom Layouts</h3>
+          <p class="bento-sub">
+            1,507 to 2,348 sq ft single- and two-story plans. Every layout includes architectural blueprints and options to tailor finishes to your exact lifestyle.
+          </p>
+          <div class="bento-bottom-cta">
+            <a href="/floor-plans/" class="bento-link mono">Browse All Plans <span aria-hidden="true">→</span></a>
+          </div>
+        </article>
+
+        <!-- Bento 5: Local Builder Heritage -->
+        <article class="bento-card bento-dark">
+          <p class="bento-kicker mono text-gold">Local Tehachapi Heritage</p>
+          <p class="bento-stat text-gold">30+ Years</p>
+          <h3 class="bento-card-title">Building in Tehachapi Since 1994</h3>
+          <p class="bento-sub">
+            Local family leadership for three decades. Licensed general contractor (CSLB #1004058) building to local mountain snow load and climate standards with trusted area craftsmen.
+          </p>
+          <div class="bento-tags mono bento-tags-dark">
+            <span>CSLB #1004058</span>
+            <span>BBB A+</span>
+            <span>Equal Housing</span>
+          </div>
+        </article>
       </div>
     </div>
   </section>
 
+  <!-- Floor Plans Section -->
   <section class="section plans-sec" id="plans">
     <div class="wrap">
       <div class="head">
@@ -117,32 +204,6 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       </div>
       <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
       <p class="compare-link"><a class="btn btn-ghost" href="/floor-plans/#compare"><span aria-hidden="true">⇄</span> Compare all six models side by side</a></p>
-    </div>
-  </section>
-
-  <section class="split">
-    <Image src={kitchen} alt="Kitchen in the Sunset Retreat model" widths={[600, 1000, 1536]} sizes="(max-width: 1000px) 100vw, 50vw" />
-    <div class="split-copy">
-      <p class="eyebrow">Your finishes</p>
-      <h2>Your model. <em>Finished to your taste.</em></h2>
-      <p>You don’t just buy a house, you help shape it. Choose your model, select your finishes and move into a home that’s truly yours from day one.</p>
-      <div class="why">{why.map(([t, d]) => <div><h3>{t}</h3><p class="muted">{d}</p></div>)}</div>
-    </div>
-  </section>
-
-  <section class="section incentives">
-    <div class="wrap inc-grid">
-      <div>
-        <p class="eyebrow">Buyer incentives</p>
-        <h2>Owning is closer <em>than you think.</em></h2>
-        <p>First-time buyer programs, an early-buyer credit you can put toward your floor plan, and buyer-friendly terms. We’ll help you find the path that makes owning work.</p>
-        <ul class="programs">{financing.programs.map((p) => <li class="mono">{p}</li>)}</ul>
-        <div class="ctas"><a class="btn" href="/financing/">See how it works</a><a class="btn btn-ghost" href={site.sms('FINANCING')}>Text FINANCING</a></div>
-      </div>
-      <div class="big-nums">
-        <div><p class="n">0%</p><p class="mono">Down option for eligible first-time buyers</p></div>
-        <div><p class="n"><span class="up">Up to</span> {usd(offer.earlyCredit)}</p><p class="mono">Early-buyer savings toward your plan</p></div>
-      </div>
     </div>
   </section>
 
@@ -201,10 +262,15 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   .hero :global(.hero-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: zoom 20s var(--ease) both; }
   @keyframes zoom { from { transform: scale(1.1); } }
   .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / .66), rgb(0 0 0 / .08) 70%), linear-gradient(180deg, transparent 45%, rgb(0 0 0 / .7)); }
-  .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.5fr minmax(280px, 360px); gap: 3rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
+  .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.4fr minmax(320px, 380px); gap: 3.5rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
+  .hero-live-pill { display: inline-flex; align-items: center; gap: .6rem; background: rgb(var(--ink-rgb) / .75); backdrop-filter: blur(12px); border: 1px solid rgb(var(--bone-rgb) / .2); color: var(--bone); padding: .45em 1em; border-radius: 30px; font-size: .74rem; margin-bottom: 1.2rem; }
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #62E755; box-shadow: 0 0 10px #62E755; animation: pulse 1.6s infinite; }
+  .hero-trust-chips { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-size: .74rem; color: var(--bone); opacity: .9; margin: 1.2rem 0; }
+  .hero-trust-chips span { background: rgb(0 0 0 / .35); backdrop-filter: blur(8px); padding: .3em .65em; border-radius: 2px; border: 1px solid rgb(255 255 255 / .12); }
+  .hero-trust-chips .sep { background: none; border: 0; padding: 0; opacity: .5; }
   .hero .eyebrow { color: var(--bone); }
   .hero em { color: var(--bone); }
-  .hero h1 { max-width: 15ch; font-size: clamp(2.6rem, 6.4vw, 5.6rem); }
+  .hero h1 { max-width: 15ch; font-size: clamp(2.4rem, 6.4vw, 5.4rem); line-height: 1.06; margin: 0 0 .8rem; }
   .asof { font-size: .75rem; opacity: .85; margin: .5rem 0 0; } .asof a { color: var(--bone); text-decoration: underline; text-underline-offset: 3px; }
   .trust { background: var(--paper); border-bottom: 1px solid var(--line); }
   .trust ul { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 2rem; padding-top: 1rem; padding-bottom: 1rem; margin: 0 auto; }
@@ -213,10 +279,10 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   .compare-link { margin-top: 2.5rem; }
   .faq .more { color: var(--clay); white-space: nowrap; }
   .hero h1 em { display: block; }
-  .lede { max-width: 50ch; font-size: 1.15rem; opacity: .92; }
+  .lede { max-width: 50ch; font-size: 1.15rem; line-height: 1.55; opacity: .92; margin: 0 0 1rem; }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
-  .release-card { display: block; background: rgb(var(--ink-rgb) / .96); border: 1px solid rgb(var(--bone-rgb) / .12); border-top: 3px solid var(--gold); box-shadow: 0 24px 60px rgb(0 0 0 / .3); text-decoration: none; transition: transform .35s var(--ease); }
-  .release-card:hover { transform: translateY(-4px); }
+  .release-card { display: block; background: rgb(var(--ink-rgb) / .92); backdrop-filter: blur(16px); border: 1px solid rgb(var(--bone-rgb) / .16); border-top: 3px solid var(--gold); box-shadow: 0 24px 60px rgb(0 0 0 / .35); text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s var(--ease); border-radius: 4px; overflow: hidden; }
+  .release-card:hover { transform: translateY(-4px); box-shadow: 0 30px 70px rgb(0 0 0 / .45); }
   .release-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
   .release-card > div { padding: 1.2rem 1.4rem 1.4rem; }
   .release-card .k { color: var(--gold); font-size: .75rem; margin: 0; }
@@ -227,62 +293,66 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   .release-card li { display: flex; justify-content: space-between; padding: .45rem 0; border-top: 1px solid rgb(var(--bone-rgb) / .12); font-size: .75rem; color: var(--bone); }
   .live { color: var(--gold); } .live::before { content: "● " / ""; animation: pulse 1.6s infinite; }
   @keyframes pulse { 50% { opacity: .3; } }
-  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .release-card { max-width: 420px; } }
 
   .stats { background: var(--ink-2); color: var(--sand); padding: 40px 0; }
   .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.5rem; }
   .stats .mono { color: var(--on-dark-muted); font-size: .75rem; margin: 0; }
   .stat { font-family: var(--display); font-size: clamp(1.6rem, 2.6vw, 2.4rem); line-height: 1; margin: 0 0 .5rem; color: var(--gold); white-space: nowrap; }
-  @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
 
   .head { display: flex; justify-content: space-between; align-items: end; gap: 2rem; margin-bottom: 3rem; }
   .head > .muted { max-width: 38ch; margin: 0; }
-  @media (max-width: 760px) { .head { flex-direction: column; align-items: start; } }
 
-  .paths { display: grid; grid-template-columns: repeat(2, 1fr); max-width: 900px; gap: 1.25rem; }
-  .path { position: relative; display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 10px 30px rgb(var(--ink-rgb) / .07); }
-  .path.featured { background: var(--ink); color: var(--bone); border-color: var(--ink); }
-  .path .n { color: var(--clay); font-size: .75rem; margin: 0 0 1.5rem; }
-  .path.featured .n { color: var(--gold); }
-  .path .meta { font-size: .75rem; color: var(--muted); margin: -.2rem 0 1rem; }
-  .path.featured .meta { color: var(--on-dark-muted); }
-  .p-price { font: 1.6rem var(--display); margin: auto 0 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
-  .path.featured .p-price { color: var(--gold); border-color: rgb(var(--bone-rgb) / .15); }
-  .path .btn { align-self: start; }
-  .path:not(.featured) .btn { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
-  .path:not(.featured) .btn:hover { background: var(--ink); color: var(--bone); }
-  .badge { position: absolute; top: -10px; right: 1.5rem; background: var(--gold); color: var(--ink); font-size: .75rem; padding: .35em .8em; }
-  @media (max-width: 900px) { .paths { grid-template-columns: 1fr; } }
+  /* Bento Grid Section */
+  .bento-section { background: var(--bg); }
+  .bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.35rem; }
+  .bento-card { position: relative; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: clamp(1.6rem, 3vw, 2.4rem); display: flex; flex-direction: column; overflow: hidden; transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s; }
+  .bento-card:hover { transform: translateY(-4px); border-color: var(--clay); box-shadow: 0 18px 40px rgb(var(--ink-rgb) / .12); }
+  .bento-col-2 { grid-column: span 2; }
+
+  /* Bento Hero Card */
+  .bento-hero { min-height: 400px; justify-content: flex-end; padding: clamp(2rem, 4vw, 3rem); }
+  .bento-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); z-index: 0; }
+  .bento-hero:hover .bento-bg-img { transform: scale(1.05); }
+  .bento-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgb(16 40 11 / .3) 0%, rgb(16 40 11 / .88) 60%, rgb(16 40 11 / .98) 100%); z-index: 1; }
+  .bento-content { position: relative; z-index: 2; color: var(--bone); display: flex; flex-direction: column; gap: .75rem; }
+  .bento-badge-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .25rem; }
+  .bento-pill { display: inline-flex; align-items: center; gap: .5rem; background: var(--clay); color: var(--bone); padding: .35em .8em; border-radius: 2px; font-size: .72rem; }
+  .bento-price { font-size: .85rem; color: var(--gold); }
+  .bento-hero h3 { font-size: clamp(1.8rem, 3.5vw, 2.4rem); margin: 0; color: var(--bone); line-height: 1.1; }
+  .bento-desc { font-size: 1rem; line-height: 1.55; color: var(--bone); opacity: .92; max-width: 58ch; margin: 0; }
+  .bento-specs { display: flex; flex-wrap: wrap; gap: .6rem; font-size: .74rem; color: var(--gold); }
+  .bento-action { margin-top: .5rem; }
+
+  /* Bento Variations */
+  .bento-dark { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--bone); border-color: rgb(var(--bone-rgb) / .15); }
+  .bento-dark:hover { border-color: var(--gold); }
+  .bento-dark .bento-card-title { color: var(--bone); }
+  .bento-dark .bento-sub { color: var(--on-dark-muted); }
+
+  .bento-accent { background: #fff; border-top: 3px solid var(--clay); }
+  .bento-highlight { background: var(--bone); border-top: 3px solid var(--gold); }
+
+  .bento-top-icon { color: var(--clay); margin-bottom: 1rem; }
+  .bento-kicker { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--rust); margin: 0 0 .5rem; }
+  .bento-stat { font-family: var(--display); font-size: clamp(2.4rem, 4vw, 3.2rem); line-height: 1; margin: 0 0 .6rem; color: var(--clay); font-weight: 400; }
+  .text-gold { color: var(--gold) !important; }
+  .bento-card .bento-card-title { font-family: var(--display); font-size: 1.45rem; line-height: 1.15; margin: 0 0 .6rem; color: var(--ink); }
+  .bento-sub { font-size: .92rem; line-height: 1.55; color: var(--muted); margin: 0; }
+  .bento-bottom-cta { margin-top: auto; padding-top: 1.5rem; }
+  .bento-link { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--clay); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; }
+  .bento-link:hover { color: var(--clay-hover); text-decoration: underline; text-underline-offset: 3px; }
+
+  .bento-tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: auto; padding-top: 1.25rem; }
+  .bento-tags span { font-size: .7rem; background: var(--sand-2); color: var(--ink); padding: .3em .6em; border-radius: 2px; }
+  .bento-tags-dark span { background: rgb(var(--bone-rgb) / .12); color: var(--bone); }
 
   .plans-sec { background: var(--sand-2); }
-  .plan-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1.25rem; }
-
-  .split { display: grid; grid-template-columns: 1fr 1fr; background: var(--sand); }
-  .split img { width: 100%; height: 100%; object-fit: cover; min-height: 420px; }
-  .split-copy { padding: clamp(40px, 6vw, 88px); align-self: center; }
-  .why { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2rem; margin-top: 2rem; }
-  .why h3 { font-size: 1.2rem; margin-bottom: .3rem; }
-  .why p { margin: 0; font-size: .98rem; }
-  @media (max-width: 1000px) { .split { grid-template-columns: 1fr; } }
-  @media (max-width: 520px) { .why { grid-template-columns: 1fr; } }
-
-  .incentives { background: var(--ink) var(--topo-light); background-size: 480px; color: var(--bone); }
-  .incentives em, .incentives .eyebrow { color: var(--gold); }
-  .inc-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
-  .programs { list-style: none; padding: 0; margin: 1.5rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .programs li { border: 1px solid rgb(var(--bone-rgb) / .25); padding: .45em .9em; font-size: .75rem; }
-  .big-nums > div { border-top: 1px solid rgb(var(--bone-rgb) / .15); padding: 1.3rem 0; }
-  .big-nums .n { font: clamp(2.6rem, 6vw, 4.4rem)/1 var(--display); color: var(--gold); margin: 0 0 .4rem; }
-  .big-nums .up { display: block; font: .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--on-dark-muted); margin-bottom: .3rem; }
-  .big-nums .mono { margin: 0; color: var(--on-dark-muted); font-size: .75rem; }
-  @media (max-width: 860px) { .inc-grid { grid-template-columns: 1fr; } }
+  .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 
   .steps { list-style: none; padding: 0; margin: 3rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
   .steps li { border-top: 2px solid var(--ink); padding-top: 1.25rem; }
   .steps .mono { color: var(--clay); }
   .steps h3 { margin: .6rem 0; }
-  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
 
   .communities { background: var(--sand-2); }
   .comm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 1.25rem; }
@@ -290,7 +360,6 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   .comm:hover { border-color: var(--clay); transform: translateY(-4px); }
   .comm h3 { font-size: 1.35rem; }
   .comm .mono { margin-top: auto; color: var(--clay); font-size: .75rem; }
-
 
   .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
   .faq-grid .muted a { color: var(--clay); }
@@ -301,11 +370,59 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   .faq summary::after { content: "+" / ""; position: absolute; right: .3rem; top: 1rem; font: 1.5rem var(--mono); color: var(--clay); transition: transform .3s var(--ease); }
   .faq details[open] summary::after { transform: rotate(45deg); }
   .faq details p { margin: 0 0 1.4rem; color: var(--muted); max-width: 60ch; }
-  @media (max-width: 860px) { .faq-grid { grid-template-columns: 1fr; } }
 
   .contact { background: var(--sand-2); }
   .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
   .direct { margin-top: 2rem; line-height: 2.2; }
   .direct a { text-decoration: none; color: var(--clay); }
-  @media (max-width: 860px) { .contact-grid { grid-template-columns: 1fr; } }
+
+  /* ========================================================
+     RESPONSIVE BREAKPOINTS (Desktop, Tablet, Mobile)
+     ======================================================== */
+
+  /* Tablet (768px – 1024px) */
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1.15fr 1fr; gap: 2rem; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .bento-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .bento-col-2 { grid-column: span 2; }
+    .plan-grid { grid-template-columns: repeat(2, 1fr); gap: 1.35rem; }
+  }
+
+  /* Medium Tablets & Large Phones (max-width: 860px) */
+  @media (max-width: 860px) {
+    .faq-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Tablets & Phablets Fold (max-width: 768px) */
+  @media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; padding-top: 4.5rem; gap: 2.5rem; }
+    .release-card { max-width: 100%; }
+    .head { flex-direction: column; align-items: start; gap: 1rem; }
+    .steps { grid-template-columns: 1fr; gap: 1.5rem; }
+  }
+
+  /* Mobile Devices (max-width: 680px) */
+  @media (max-width: 680px) {
+    .bento-grid { grid-template-columns: 1fr; gap: 1.15rem; }
+    .bento-col-2 { grid-column: span 1; }
+    .bento-hero { min-height: 330px; padding: 1.5rem 1.25rem; }
+    .bento-card { padding: 1.5rem 1.25rem; }
+    .plan-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+  }
+
+  /* Small Phones (max-width: 480px) */
+  @media (max-width: 480px) {
+    .hero-grid { padding-top: 3.5rem; padding-bottom: 2.5rem; }
+    .hero h1 { font-size: clamp(2.1rem, 8.5vw, 2.9rem); }
+    .hero-live-pill { font-size: .68rem; padding: .35em .8em; }
+    .hero-trust-chips { gap: .35rem; font-size: .68rem; }
+    .hero-trust-chips span { padding: .25em .5em; }
+    .ctas { flex-direction: column; width: 100%; gap: .75rem; }
+    .ctas .btn { width: 100%; justify-content: center; min-height: 48px; }
+    .stat-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .stat { font-size: 1.75rem; }
+    .trust ul { gap: .4rem 1rem; }
+  }
 </style>
