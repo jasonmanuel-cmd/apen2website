@@ -3,6 +3,10 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
+import HomeMatcherModal from '../components/HomeMatcherModal.astro';
+import InteractiveLotMap from '../components/InteractiveLotMap.astro';
+import BeforeAfterSlider from '../components/BeforeAfterSlider.astro';
+import TestimonialMarquee from '../components/TestimonialMarquee.astro';
 import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort, availability } from '../data/site';
 import { faqPage, webPage } from '../data/schema';
 
@@ -66,6 +70,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
         <div class="ctas">
           <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
           <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
+          <HomeMatcherModal />
         </div>
       </div>
       <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/" aria-label={`First release, ${availability.releaseCount.toLowerCase()} homes: ${offer.community}, from ${usd(offer.from)}`}>
@@ -207,6 +212,20 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
     </div>
   </section>
 
+  <!-- Interactive Lot & Homesite Plat Map -->
+  <section class="section plat-section" id="plat-map">
+    <div class="wrap">
+      <InteractiveLotMap />
+    </div>
+  </section>
+
+  <!-- Before & After Craftsmanship Slider -->
+  <section class="section craft-section" id="craftsmanship">
+    <div class="wrap">
+      <BeforeAfterSlider />
+    </div>
+  </section>
+
   <section class="section">
     <div class="wrap">
       <p class="eyebrow">Simple steps</p>
@@ -243,6 +262,9 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       </div>
     </div>
   </section>
+
+  <!-- Testimonials & Proof Marquee -->
+  <TestimonialMarquee />
 
   <section class="section contact" id="contact">
     <div class="wrap contact-grid">

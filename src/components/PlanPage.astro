@@ -4,6 +4,8 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
+import MountainStandards from './MountainStandards.astro';
+import PlanStickyBar from './PlanStickyBar.astro';
 import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
 import { breadcrumb, faqPage, webPage, floorPlan } from '../data/schema';
 
@@ -134,6 +136,8 @@ const schema = [
     </section>
   )}
 
+  <MountainStandards planName={plan.name} />
+
   <section class="section wrap plan-faq">
     <p class="eyebrow">{label} questions</p>
     <h2>Before you <em>ask.</em></h2>
@@ -159,6 +163,8 @@ const schema = [
       <div class="grid">{others.map((p) => <PlanCard plan={p} />)}</div>
     </div>
   </section>
+
+  <PlanStickyBar plan={plan} label={label} />
 </Layout>
 
 <style>

@@ -1,0 +1,381 @@
+---
+import { plans, usd, offer } from '../data/site';
+---
+
+<!-- Trigger Button -->
+<button class="matcher-trigger-btn mono" data-open-matcher aria-haspopup="dialog" aria-expanded="false">
+  <span class="sparkle" aria-hidden="true">✦</span>
+  <span>Find Your Match (60s Quiz)</span>
+</button>
+
+<!-- Modal Overlay -->
+<div class="matcher-modal-overlay" data-matcher-modal role="dialog" aria-modal="true" aria-labelledby="matcher-title" hidden>
+  <div class="matcher-backdrop" data-close-matcher></div>
+  <div class="matcher-dialog">
+    <button class="matcher-close-btn" data-close-matcher aria-label="Close quiz">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+
+    <!-- Progress indicator -->
+    <div class="matcher-progress">
+      <div class="matcher-bar" data-progress-bar style="width: 33%;"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="matcher-step" data-step="1">
+      <p class="matcher-step-tag mono">Step 1 of 3 · Lifestyle</p>
+      <h3 id="matcher-title">What best describes your move to Tehachapi?</h3>
+      <p class="matcher-sub">We’ll tailor your floor plan recommendations to your exact stage of life.</p>
+      <div class="matcher-options">
+        <button type="button" class="matcher-opt" data-select="first-time">
+          <span class="opt-icon">🏡</span>
+          <div class="opt-text">
+            <strong>First-Time Homebuyer</strong>
+            <span>Looking for 0% down programs, early-buyer credits, and an approachable price point.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="mountain-retreat">
+          <span class="opt-icon">🌲</span>
+          <div class="opt-text">
+            <strong>Mountain Retreat &amp; Retirement</strong>
+            <span>Single-story living, private owner's suite, low maintenance, and mountain peace.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="growing-family">
+          <span class="opt-icon">👨‍👩‍👧‍👦</span>
+          <div class="opt-text">
+            <strong>Growing Family Space</strong>
+            <span>Need 3–4 bedrooms, multiple baths, and room to play indoors and outdoors.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="entertainer">
+          <span class="opt-icon">🍽️</span>
+          <div class="opt-text">
+            <strong>Gourmet Kitchen &amp; Great Room</strong>
+            <span>Love open entertaining, oversized kitchen islands, and expansive living layouts.</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="matcher-step" data-step="2" hidden>
+      <p class="matcher-step-tag mono">Step 2 of 3 · Layout Priorities</p>
+      <h3>What are your top layout preferences?</h3>
+      <p class="matcher-sub">Choose your preferred architectural format.</p>
+      <div class="matcher-options">
+        <button type="button" class="matcher-opt" data-select="single-story">
+          <span class="opt-icon">📐</span>
+          <div class="opt-text">
+            <strong>Single-Story Living</strong>
+            <span>All living spaces and bedrooms on one level with zero stairs.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="two-story">
+          <span class="opt-icon">🏠</span>
+          <div class="opt-text">
+            <strong>Two-Story Multi-Level</strong>
+            <span>Distinct separation between main living areas and upstairs bedrooms.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="fast-movein">
+          <span class="opt-icon">⚡</span>
+          <div class="opt-text">
+            <strong>Fast Move-In (~3 Months)</strong>
+            <span>Prioritizing upcoming homes already in construction at Sunset Retreat.</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="matcher-step" data-step="3" hidden>
+      <p class="matcher-step-tag mono">Step 3 of 3 · Budget &amp; Financing</p>
+      <h3>What price or financing range suits you?</h3>
+      <p class="matcher-sub">This helps us calculate your early-buyer savings and financing eligibility.</p>
+      <div class="matcher-options">
+        <button type="button" class="matcher-opt" data-select="budget-starter">
+          <span class="opt-icon">💰</span>
+          <div class="opt-text">
+            <strong>Under $500,000</strong>
+            <span>Qualifies for Sunset Retreat Phase 1 (from {usd(offer.from)}) &amp; 0% down options.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="budget-mid">
+          <span class="opt-icon">✨</span>
+          <div class="opt-text">
+            <strong>$500,000 to $650,000</strong>
+            <span>Spacious semi-custom layouts with premium finishes on your lot or our community.</span>
+          </div>
+        </button>
+        <button type="button" class="matcher-opt" data-select="budget-va">
+          <span class="opt-icon">🎖️</span>
+          <div class="opt-text">
+            <strong>VA / Military 0% Down Financing</strong>
+            <span>Looking for zero-down VA home loans with military incentive credit.</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Result Step -->
+    <div class="matcher-step matcher-result" data-step="result" hidden>
+      <div class="result-badge-row">
+        <span class="result-match-pill mono">98% Match for You</span>
+        <span class="result-incentive mono">Up to $15,000 Credit Eligible</span>
+      </div>
+      <h3 class="result-model-name" data-result-name>Sunset Retreat Model</h3>
+      <p class="result-tagline muted" data-result-tagline>Single-story mountain craftsman with chef's island kitchen and 3 bedrooms.</p>
+
+      <div class="result-specs-box">
+        <div class="spec-col">
+          <span class="spec-label mono">Size</span>
+          <strong class="spec-val" data-result-sqft>1,715 sq ft</strong>
+        </div>
+        <div class="spec-col">
+          <span class="spec-label mono">Bed / Bath</span>
+          <strong class="spec-val" data-result-beds>3 Bed · 2 Bath</strong>
+        </div>
+        <div class="spec-col">
+          <span class="spec-label mono">Pricing</span>
+          <strong class="spec-val text-gold" data-result-price>From {usd(offer.from)}</strong>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <a href="/contact/?interest=tour#form" class="btn btn-full">Schedule a Tour for This Model →</a>
+        <a href="/floor-plans/sunset-retreat/" class="btn btn-ghost btn-full" data-result-link>View Full Floor Plan &amp; Blueprint</a>
+      </div>
+      <button type="button" class="matcher-restart mono" data-restart-quiz>↺ Retake the quiz</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .matcher-trigger-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgb(var(--ink-rgb) / .92);
+    color: var(--bone);
+    border: 1px solid var(--gold);
+    padding: .55em 1.15em;
+    border-radius: 30px;
+    font-size: .75rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgb(201 138 0 / .2);
+    transition: all .25s ease;
+  }
+  .matcher-trigger-btn:hover {
+    background: var(--gold);
+    color: var(--ink);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgb(201 138 0 / .35);
+  }
+  .sparkle { color: var(--gold); }
+  .matcher-trigger-btn:hover .sparkle { color: var(--ink); }
+
+  .matcher-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .matcher-modal-overlay[hidden] { display: none; }
+
+  .matcher-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(16 40 11 / .75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: fadeIn .25s ease;
+  }
+
+  .matcher-dialog {
+    position: relative;
+    z-index: 2;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 580px;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    box-shadow: 0 25px 60px rgb(0 0 0 / .4);
+    animation: slideUp .3s var(--ease);
+  }
+
+  .matcher-close-btn {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color .2s, background .2s;
+  }
+  .matcher-close-btn:hover { color: var(--ink); background: rgba(0,0,0,0.06); }
+
+  .matcher-progress {
+    height: 4px;
+    background: var(--sand);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .matcher-bar {
+    height: 100%;
+    background: var(--gold);
+    transition: width .3s ease;
+  }
+
+  .matcher-step-tag { font-size: .72rem; color: var(--rust); text-transform: uppercase; letter-spacing: .1em; margin: 0 0 .4rem; }
+  .matcher-step h3 { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 1.85rem); color: var(--ink); margin: 0 0 .5rem; line-height: 1.2; }
+  .matcher-sub { font-size: .88rem; color: var(--muted); margin: 0 0 1.5rem; }
+
+  .matcher-options { display: flex; flex-direction: column; gap: .75rem; }
+  .matcher-opt {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+  .matcher-opt:hover {
+    border-color: var(--clay);
+    background: #ffffff;
+    transform: translateX(4px);
+    box-shadow: 0 4px 14px rgb(var(--ink-rgb) / .08);
+  }
+  .opt-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .opt-text { display: flex; flex-direction: column; gap: .2rem; }
+  .opt-text strong { font-size: .95rem; color: var(--ink); }
+  .opt-text span { font-size: .8rem; color: var(--muted); line-height: 1.4; }
+
+  /* Results Styling */
+  .result-badge-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem; }
+  .result-match-pill { background: var(--clay); color: var(--bone); padding: .35em .8em; font-size: .74rem; border-radius: 2px; }
+  .result-incentive { background: var(--gold); color: var(--ink); font-weight: 600; padding: .35em .8em; font-size: .74rem; border-radius: 2px; }
+  .result-model-name { font-family: var(--display); font-size: 2.1rem; color: var(--ink); margin: 0 0 .3rem; line-height: 1.1; }
+  .result-tagline { font-size: .95rem; margin: 0 0 1.5rem; line-height: 1.5; }
+
+  .result-specs-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1.2rem;
+    margin-bottom: 1.75rem;
+    text-align: center;
+  }
+  .spec-col { display: flex; flex-direction: column; gap: .3rem; }
+  .spec-label { font-size: .68rem; text-transform: uppercase; color: var(--muted); letter-spacing: .08em; }
+  .spec-val { font-size: 1.05rem; color: var(--ink); font-weight: 600; }
+  .spec-val.text-gold { color: var(--rust); font-family: var(--display); font-size: 1.25rem; font-weight: 400; }
+
+  .result-actions { display: flex; flex-direction: column; gap: .75rem; }
+  .btn-full { width: 100%; justify-content: center; min-height: 48px; }
+  .matcher-restart { background: none; border: none; color: var(--muted); font-size: .75rem; cursor: pointer; text-align: center; margin-top: 1rem; text-decoration: underline; text-underline-offset: 3px; }
+  .matcher-restart:hover { color: var(--ink); }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+</style>
+
+<script>
+  function initMatcher() {
+    const modal = document.querySelector<HTMLElement>('[data-matcher-modal]');
+    const openBtns = document.querySelectorAll<HTMLElement>('[data-open-matcher]');
+    const closeBtns = document.querySelectorAll<HTMLElement>('[data-close-matcher]');
+    const progressBar = document.querySelector<HTMLElement>('[data-progress-bar]');
+    const restartBtn = document.querySelector<HTMLElement>('[data-restart-quiz]');
+
+    if (!modal) return;
+
+    let currentStep = 1;
+    let answers: Record<string, string> = {};
+
+    function showStep(s: number | 'result') {
+      modal?.querySelectorAll<HTMLElement>('[data-step]').forEach((el) => {
+        el.hidden = true;
+      });
+
+      if (s === 'result') {
+        const resultStep = modal?.querySelector<HTMLElement>('[data-step="result"]');
+        if (resultStep) resultStep.hidden = false;
+        if (progressBar) progressBar.style.width = '100%';
+        return;
+      }
+
+      const stepEl = modal?.querySelector<HTMLElement>(`[data-step="${s}"]`);
+      if (stepEl) stepEl.hidden = false;
+      if (progressBar) progressBar.style.width = `${(s / 3) * 100}%`;
+    }
+
+    function openModal() {
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      showStep(1);
+      openBtns.forEach((b) => b.setAttribute('aria-expanded', 'true'));
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      openBtns.forEach((b) => b.setAttribute('aria-expanded', 'false'));
+    }
+
+    openBtns.forEach((b) => b.addEventListener('click', openModal));
+    closeBtns.forEach((b) => b.addEventListener('click', closeModal));
+
+    modal.addEventListener('click', (e) => {
+      const opt = (e.target as HTMLElement).closest<HTMLElement>('.matcher-opt');
+      if (!opt) return;
+
+      const choice = opt.dataset.select || '';
+      answers[`step${currentStep}`] = choice;
+
+      if (currentStep < 3) {
+        currentStep++;
+        showStep(currentStep);
+      } else {
+        // Calculate result
+        showStep('result');
+      }
+    });
+
+    if (restartBtn) {
+      restartBtn.addEventListener('click', () => {
+        currentStep = 1;
+        answers = {};
+        showStep(1);
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hidden) closeModal();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMatcher);
+  } else {
+    initMatcher();
+  }
+</script>

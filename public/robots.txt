@@ -3,4 +3,20 @@ Allow: /
 Disallow: /staff/
 Disallow: /hq/
 
+# Generative AI & LLM Search Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
 Sitemap: https://aspen2homes.com/sitemap.xml

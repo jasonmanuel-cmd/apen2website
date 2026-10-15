@@ -1,0 +1,218 @@
+---
+import { Image } from 'astro:assets';
+import bpSunset from '../assets/blueprints/sunset-retreat.webp';
+import photoSunset from '../assets/photos/sunset-retreat/01.webp';
+
+interface Props {
+  beforeImg?: any;
+  afterImg?: any;
+  beforeLabel?: string;
+  afterLabel?: string;
+  title?: string;
+  caption?: string;
+}
+
+const {
+  beforeImg = bpSunset,
+  afterImg = photoSunset,
+  beforeLabel = 'Architectural Blueprint',
+  afterLabel = 'Completed Residence',
+  title = 'From Architectural Blueprint to Mountain Reality',
+  caption = 'Slide across to see how our engineering blueprints transform into finished semi-custom luxury homes in Tehachapi.'
+} = Astro.props;
+---
+
+<div class="ba-container">
+  <div class="ba-header">
+    <div class="ba-kicker mono">30+ Years Tehachapi Craftsmanship</div>
+    <h3>{title}</h3>
+    <p class="ba-caption muted">{caption}</p>
+  </div>
+
+  <div class="ba-slider-wrap" data-ba-slider aria-label="Interactive before and after comparison">
+    <!-- Bottom layer: Finished Photo -->
+    <div class="ba-layer ba-after">
+      <Image src={afterImg} alt={afterLabel} class="ba-img" widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 1100px" />
+      <span class="ba-badge mono ba-badge-right">{afterLabel}</span>
+    </div>
+
+    <!-- Top clipped layer: Blueprint -->
+    <div class="ba-layer ba-before" data-ba-before>
+      <div class="ba-before-inner">
+        <Image src={beforeImg} alt={beforeLabel} class="ba-img ba-img-bp" widths={[600, 1000, 1400]} sizes="(max-width: 900px) 100vw, 1100px" />
+        <span class="ba-badge mono ba-badge-left">{beforeLabel}</span>
+      </div>
+    </div>
+
+    <!-- Divider Line & Handle -->
+    <div class="ba-handle" data-ba-handle aria-hidden="true">
+      <div class="ba-handle-line"></div>
+      <div class="ba-handle-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+          <polyline points="9 18 3 12 9 6"></polyline>
+          <polyline points="9 18 15 12 9 6" transform="rotate(180 12 12)"></polyline>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Accessible range input -->
+    <input
+      type="range"
+      min="0"
+      max="100"
+      value="50"
+      class="ba-range-input"
+      aria-label="Adjust comparison between blueprint and finished home"
+      data-ba-range
+    />
+  </div>
+</div>
+
+<style>
+  .ba-container { margin: 3.5rem 0; }
+  .ba-header { text-align: center; max-width: 64ch; margin: 0 auto 2rem; }
+  .ba-kicker { color: var(--gold); font-size: .74rem; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .4rem; }
+  .ba-header h3 { font-family: var(--display); font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin: 0 0 .6rem; color: var(--ink); line-height: 1.15; }
+  .ba-caption { font-size: .95rem; margin: 0; line-height: 1.6; }
+
+  .ba-slider-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgb(var(--ink-rgb) / .16);
+    border: 1px solid var(--line);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+  }
+
+  .ba-layer { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .ba-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .ba-img-bp { object-fit: contain; background: #ffffff; padding: 20px; }
+
+  .ba-before {
+    position: absolute;
+    inset: 0;
+    width: 50%;
+    overflow: hidden;
+    z-index: 2;
+    border-right: 1px solid rgba(255, 255, 255, 0.4);
+  }
+  .ba-before-inner { position: absolute; inset: 0; width: 200%; height: 100%; }
+  .ba-slider-wrap:hover .ba-before-inner { width: calc(100% * (100 / var(--pos, 50))); }
+
+  .ba-badge {
+    position: absolute;
+    bottom: 16px;
+    padding: .4em .85em;
+    font-size: .72rem;
+    border-radius: 30px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 3;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .ba-badge-left { left: 16px; background: rgba(16, 40, 11, 0.85); color: var(--bone); border: 1px solid rgba(255,255,255,0.2); }
+  .ba-badge-right { right: 16px; background: rgba(201, 138, 0, 0.9); color: var(--ink); font-weight: 600; border: 1px solid rgba(0,0,0,0.15); }
+
+  .ba-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 44px;
+    margin-left: -22px;
+    z-index: 4;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .05s ease;
+  }
+  .ba-handle-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  .ba-handle-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bone);
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .2s ease;
+  }
+  .ba-slider-wrap:hover .ba-handle-btn { transform: scale(1.1); background: var(--clay); }
+
+  .ba-range-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: ew-resize;
+    z-index: 5;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (max-width: 640px) {
+    .ba-slider-wrap { aspect-ratio: 4 / 3; }
+    .ba-badge { font-size: .65rem; padding: .3em .6em; bottom: 10px; }
+    .ba-badge-left { left: 10px; }
+    .ba-badge-right { right: 10px; }
+    .ba-handle-btn { width: 34px; height: 34px; }
+  }
+</style>
+
+<script>
+  function initSliders() {
+    document.querySelectorAll<HTMLElement>('[data-ba-slider]').forEach((wrap) => {
+      if ((wrap as any).__hasBa) return;
+      (wrap as any).__hasBa = true;
+
+      const before = wrap.querySelector<HTMLElement>('[data-ba-before]');
+      const beforeInner = wrap.querySelector<HTMLElement>('.ba-before-inner');
+      const handle = wrap.querySelector<HTMLElement>('[data-ba-handle]');
+      const input = wrap.querySelector<HTMLInputElement>('[data-ba-range]');
+
+      if (!before || !handle || !input) return;
+
+      function update(val: number) {
+        before.style.width = `${val}%`;
+        handle.style.left = `${val}%`;
+        if (beforeInner) {
+          beforeInner.style.width = `${(100 / Math.max(val, 0.1)) * 100}%`;
+        }
+      }
+
+      input.addEventListener('input', (e) => {
+        const val = parseFloat((e.target as HTMLInputElement).value);
+        update(val);
+      });
+
+      update(50);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSliders);
+  } else {
+    initSliders();
+  }
+</script>
