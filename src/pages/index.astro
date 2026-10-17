@@ -287,10 +287,10 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   @keyframes zoom { from { transform: scale(1.1); } }
   .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / .66), rgb(0 0 0 / .08) 70%), linear-gradient(180deg, transparent 45%, rgb(0 0 0 / .7)); }
   .hero-grid { position: relative; width: 100%; display: grid; grid-template-columns: 1.4fr minmax(320px, 380px); gap: 3.5rem; align-items: end; padding-bottom: clamp(40px, 8vh, 90px); padding-top: 6rem; }
-  .hero-live-pill { display: inline-flex; align-items: center; gap: .6rem; background: rgb(var(--ink-rgb) / .75); backdrop-filter: blur(12px); border: 1px solid rgb(var(--bone-rgb) / .2); color: var(--bone); padding: .45em 1em; border-radius: 30px; font-size: .74rem; margin-bottom: 1.2rem; }
+  .hero-live-pill { display: inline-flex; align-items: center; gap: .6rem; background: rgb(var(--ink-rgb) / .75); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgb(var(--bone-rgb) / .2); color: var(--bone); padding: .45em 1em; border-radius: 30px; font-size: .74rem; margin-bottom: 1.2rem; }
   .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #62E755; box-shadow: 0 0 10px #62E755; animation: pulse 1.6s infinite; }
   .hero-trust-chips { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; font-size: .74rem; color: var(--bone); opacity: .9; margin: 1.2rem 0; }
-  .hero-trust-chips span { background: rgb(0 0 0 / .35); backdrop-filter: blur(8px); padding: .3em .65em; border-radius: 2px; border: 1px solid rgb(255 255 255 / .12); }
+  .hero-trust-chips span { background: rgb(0 0 0 / .35); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding: .3em .65em; border-radius: 2px; border: 1px solid rgb(255 255 255 / .12); }
   .hero-trust-chips .sep { background: none; border: 0; padding: 0; opacity: .5; }
   .hero .eyebrow { color: var(--bone); }
   .hero em { color: var(--bone); }
@@ -305,7 +305,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
   .hero h1 em { display: block; }
   .lede { max-width: 50ch; font-size: 1.15rem; line-height: 1.55; opacity: .92; margin: 0 0 1rem; }
   .ctas { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
-  .release-card { display: block; background: rgb(var(--ink-rgb) / .92); backdrop-filter: blur(16px); border: 1px solid rgb(var(--bone-rgb) / .16); border-top: 3px solid var(--gold); box-shadow: 0 24px 60px rgb(0 0 0 / .35); text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s var(--ease); border-radius: 4px; overflow: hidden; }
+  .release-card { display: block; background: rgb(var(--ink-rgb) / .92); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); border: 1px solid rgb(var(--bone-rgb) / .16); border-top: 3px solid var(--gold); box-shadow: 0 24px 60px rgb(0 0 0 / .35); text-decoration: none; transition: transform .35s var(--ease), box-shadow .35s var(--ease); border-radius: 4px; overflow: hidden; }
   .release-card:hover { transform: translateY(-4px); box-shadow: 0 30px 70px rgb(0 0 0 / .45); }
   .release-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
   .release-card > div { padding: 1.2rem 1.4rem 1.4rem; }
