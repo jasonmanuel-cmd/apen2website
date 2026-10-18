@@ -79,8 +79,9 @@ assert.equal(db.leads.length, 0, 'no duplicate lead'); assert.equal(db.callbacks
 world({ dupCallback: true }); r = await run({ body: good });
 assert.equal(r.body.ok, true); assert.equal(db.leads.length + db.callbacks.length + mails().length, 0, 'retry: nothing new');
 
-// ---- database trouble: honest answer, no email --------------------------------------------------------
+// ---- database trouble: the reply is still instant, and staff still get the message, flagged -------------
 world({ fail: true }); r = await run({ body: good });
-assert.equal(r.code, 502); assert.equal(r.body.ok, false); assert.equal(mails().length, 0, 'no email for something that was not saved');
+assert.equal(r.code, 200); assert.equal(r.body.ok, true); assert.equal(db.leads.length + db.callbacks.length, 0);
+assert.equal(mails().length, 3, 'staff are emailed even though the save failed'); assert.match(mails()[0].subject, /NOT SAVED/); assert.match(mails()[0].html, /Interested in a tour/);
 assert(!errs.some((e) => /sb_secret|re_test|voice-webhook-secret/.test(e)), 'no secrets in logs');
 console.log = process.stdout.write.bind(process.stdout); console.log('voice: ok');
