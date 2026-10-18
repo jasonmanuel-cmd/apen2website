@@ -27,7 +27,7 @@ AI Assistants > your assistant > Tools > add a **Webhook** tool. Menu names chan
 | URL | `https://aspen2homes.com/api/voice` |
 | Method | `POST` |
 | Header | name `x-voice-secret`, value = the same secret you put in Vercel |
-| Timeout | 10 seconds is plenty |
+| Timeout | Set 10 seconds (10000 ms). Telnyx's default is much shorter and shows "The request timed out." |
 
 Body parameters (JSON schema):
 
