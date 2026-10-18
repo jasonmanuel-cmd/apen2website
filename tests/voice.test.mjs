@@ -13,6 +13,7 @@ const run = async ({ method = 'POST', body, headers = { 'x-voice-secret': SECRET
   const out = { headers: {} };
   const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.code = c; return this; }, json(j) { out.body = j; return this; } };
   await handler({ method, body, headers, query }, res);
+  await new Promise((r) => setTimeout(r, 20)); // the staff email is sent after the reply
   return out;
 };
 

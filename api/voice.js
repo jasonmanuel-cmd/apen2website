@@ -11,6 +11,7 @@
 // Only Telnyx's tool can call it: VOICE_WEBHOOK_SECRET (20+ characters) in the x-voice-secret header.
 // The reply is short plain text on purpose: the assistant reads it, so a missing detail comes back as a question to ask.
 import { createHash, timingSafeEqual } from 'node:crypto';
+import { waitUntil } from '@vercel/functions';
 import { supabase, supabaseConfig } from '../lib/supabase-rest.js';
 import { notifyStaff, esc } from '../lib/notify.js';
 import { str, errTag } from '../lib/chat-core.js';
@@ -74,11 +75,14 @@ export default async function handler(req, res) {
   const digits = phone.replace(/\D/g, '');
   try {
     // A retry of the same message (Telnyx can retry) must not make a second record or a second email.
+    // The assistant's tool call times out after a second or two, so the two lookups run together.
     const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-    const dup = await (await supabase(db, `callbacks?phone=eq.${encodeURIComponent(phone)}&message=eq.${encodeURIComponent(message)}&created_at=gte.${encodeURIComponent(since)}&select=id&limit=1`, {}, DB_TIMEOUT_MS)).json();
+    const [dup, found] = await Promise.all([
+      supabase(db, `callbacks?phone=eq.${encodeURIComponent(phone)}&message=eq.${encodeURIComponent(message)}&created_at=gte.${encodeURIComponent(since)}&select=id&limit=1`, {}, DB_TIMEOUT_MS).then((r) => r.json()),
+      supabase(db, `leads?or=(phone_digits.eq.${digits.slice(-10)},phone_digits.eq.1${digits.slice(-10)})&select=id,name,email&limit=1`, {}, DB_TIMEOUT_MS).then((r) => r.json())
+    ]);
     if (dup.length) return out(res, 200, { ok: true, message: 'Already saved. The team will call back.' });
 
-    const found = await (await supabase(db, `leads?or=(phone_digits.eq.${digits.slice(-10)},phone_digits.eq.1${digits.slice(-10)})&select=id,name,email&limit=1`, {}, DB_TIMEOUT_MS)).json();
     let leadId = found[0]?.id || null;
     const leadName = name || found[0]?.name || 'Phone caller (name not captured)';
     if (!leadId) {
@@ -104,10 +108,12 @@ export default async function handler(req, res) {
   }
 
   const tel = `tel:${digits}`;
-  await notifyStaff({
+  // The email goes out after the reply: the message is already saved, and the assistant must not wait on Resend.
+  const mail = notifyStaff({
     subject: `[Phone Message] ${name || 'Caller'} - ${phone}`,
     replyTo: email || undefined,
     html: `<h2>A caller left a message with the phone assistant</h2><p><strong>${esc(name) || 'Name not given'}</strong> &middot; <a href="${esc(tel)}">Call ${esc(phone)}</a> &middot; <a href="${esc(`sms:${digits}`)}">Text</a></p><p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not given'}</p><p><strong>Best time:</strong> ${esc(bestTime) || 'Not given'}</p><p><strong>Message:</strong><br>${esc(message).replace(/\n/g, '<br>')}</p><hr><small>Saved to HQ &gt; Callbacks and Leads.</small>`
-  });
+  }).catch((err) => console.error('Voice messages: staff email failed:', errTag(err)));
+  try { waitUntil(mail); } catch { /* not on Vercel: the promise simply runs to completion */ }
   return out(res, 200, { ok: true, message: 'Saved. The team will call back. Do not promise a time.' });
 }
