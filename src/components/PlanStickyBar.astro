@@ -29,7 +29,7 @@ const priceText = plan.price ? usd(plan.price) : 'Call for Pricing';
     </div>
 
     <div class="bar-ctas">
-      <a class="btn-subtle mono" href={site.sms(`Please text me ${theName(plan.name)} price sheet`)}>Text Price Sheet</a>
+      <a class="btn-subtle mono" href={site.phoneHref}>Call {site.phone}</a>
       <a class="btn btn-sm" href="#inquire">{plan.firstRelease ? 'Reserve & Customize' : 'Schedule Private Tour'}</a>
     </div>
   </div>

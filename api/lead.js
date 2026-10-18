@@ -14,7 +14,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // A callable number: 10 to 15 digits once spaces, dashes, parentheses and a leading + are ignored.
 const validPhone = (p) => { const d = p.replace(/\D/g, ''); return d.length >= 10 && d.length <= 15; };
 
-const CALL = 'Please call (661) 241-0306.';
+const CALL = 'Please call (661) 776-8635.';
 
 // Supabase over its REST API (PostgREST), so no database driver is needed. The service-role key bypasses
 // row level security and must only ever live in server-side environment variables (see .env.example).
@@ -121,7 +121,7 @@ const reply = (req, res, code, body) => {
     `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request not sent | Aspen II Homes</title>` +
     `<body style="font:18px/1.6 Georgia,serif;max-width:36rem;margin:15vh auto;padding:0 20px;color:#15302A;background:#F7F2E8">` +
     `<h1>Your request didn't go through.</h1><p>${esc(body.error)}</p>` +
-    `<p><a href="tel:+16612410306">Call (661) 241-0306</a> or <a href="/contact/">go back to the form</a>.</p></body>`
+    `<p><a href="tel:+16617768635">Call (661) 776-8635</a> or <a href="/contact/">go back to the form</a>.</p></body>`
   );
 };
 

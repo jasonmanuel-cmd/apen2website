@@ -343,9 +343,6 @@
     "api/chat.js": {
       "maxDuration": 30
     },
-    "api/sms.js": {
-      "maxDuration": 30
-    },
     "api/telnyx.js": {
       "maxDuration": 30
     },

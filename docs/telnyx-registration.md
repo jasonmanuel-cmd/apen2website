@@ -62,8 +62,8 @@ Publish first: the page https://aspen2homes.com/sms-terms/ must be live (merge t
 **Messages the system sends for those keywords** (paste):
 
 - Opt-in / first reply: `Aspen II Homes automated assistant here. Happy to help. Are you looking for a tour, floor plans or financing info? Msg&data rates may apply. Reply STOP to stop, HELP for help.`
-- Opt-out: `You're unsubscribed and will get no more texts from this number. Call (661) 241-0306 any time.`
-- Help: `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 241-0306, 7am-7pm daily. Reply STOP to stop texts.`
+- Opt-out: `You're unsubscribed and will get no more texts from this number. Call (661) 776-8635 any time.`
+- Help: `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 776-8635, 7am-7pm daily. Reply STOP to stop texts.`
 
 The live first reply of every text thread ends with that "Msg&data rates may apply. Reply STOP to stop." sentence automatically.
 
@@ -71,9 +71,9 @@ The live first reply of every text thread ends with that "Msg&data rates may app
 
 1. `Aspen II Homes automated assistant here. Happy to help. Are you looking for a tour, floor plans or financing info?`
 2. `Sunset Retreat in Tehachapi starts at $459,000: 3 bed, 2 bath, 1,715 sq ft. Want me to take your name so our team can set up a tour?`
-3. `Thanks, Pat. I passed your message to our team and they will call you back. You can also call (661) 241-0306, 7am-7pm daily.`
-4. `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 241-0306, 7am-7pm daily. Reply STOP to stop texts.`
-5. `You're unsubscribed and will get no more texts from this number. Call (661) 241-0306 any time.`
+3. `Thanks, Pat. I passed your message to our team and they will call you back. You can also call (661) 776-8635, 7am-7pm daily.`
+4. `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 776-8635, 7am-7pm daily. Reply STOP to stop texts.`
+5. `You're unsubscribed and will get no more texts from this number. Call (661) 776-8635 any time.`
 
 ## Common reasons for rejection (and how this answer avoids them)
 

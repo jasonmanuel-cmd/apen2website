@@ -60,7 +60,7 @@ for (const needle of [
   'Reserve early and apply a credit of up to', 'Contact us and we will walk you through the reservation steps',
   'Aspen Homes, Inc.', 'CSLB #693832',
 ]) assert(site.includes(needle) || fs.readFileSync(new URL('../src/pages/available-homes.astro', import.meta.url), 'utf8').includes(needle), `source for "${needle}" is gone`);
-assert(kbText.includes('$459,000') && kbText.includes('$15,000') && kbText.includes('(661) 241-0306'));
+assert(kbText.includes('$459,000') && kbText.includes('$15,000') && kbText.includes('(661) 776-8635'));
 assert(!/\$\d{1,3},\d{3}/.test(kbText.replace(/\$459,000|\$15,000|\$7,000/g, '')), 'unexpected dollar figure in the knowledge base');
 assert(MAX_VISITOR_MESSAGES >= 6 && MAX_VISITOR_MESSAGES <= 7, 'chats stay short');
 
@@ -145,7 +145,7 @@ world(); r = await run(chat, { body: { sid: SID, message: '   ' } }); assert.equ
 world(); r = await run(chat, { body: '{not json' }); assert.equal(r.code, 400);
 world(); r = await send('hi', { honeypot: 'spam' }); assert.equal(r.code, 200); assert.equal(calls.length, 0, 'honeypot touches nothing');
 { const k = process.env.ANTHROPIC_API_KEY; delete process.env.ANTHROPIC_API_KEY; world(); r = await send('hi');
-  assert.equal(r.code, 503); assert.match(r.body.error, /661\) 241-0306/); process.env.ANTHROPIC_API_KEY = k; }
+  assert.equal(r.code, 503); assert.match(r.body.error, /661\) 776-8635/); process.env.ANTHROPIC_API_KEY = k; }
 
 // ---- plain answer, stored both ways -----------------------------------------------------------------
 world({ replies: [text('Hello! How can I help?')] }); r = await send('Hi there');
@@ -209,7 +209,7 @@ assert(calls.every((c) => c.method !== 'DELETE'), 'no deletes ever');
 world({ conv: { ...conv, message_count: 7 } }); r = await send('one more');
 assert.equal(r.body.done, true); assert.match(r.body.reply, /team has your details/); assert.equal(anthropicBodies.length, 0, 'capped chat never reaches the model');
 world({ conv: { id: SID, message_count: 7, lead_id: null, needs_human: false } }); r = await send('one more');
-assert.equal(r.body.done, true); assert.match(r.body.reply, /661\) 241-0306/); assert.equal(db.messages.length, 0, 'nothing stored after the cap');
+assert.equal(r.body.done, true); assert.match(r.body.reply, /661\) 776-8635/); assert.equal(db.messages.length, 0, 'nothing stored after the cap');
 // the 7th message is the last: it is told so, and the response says the chat is done
 world({ conv: { id: SID, message_count: 6, lead_id: null, needs_human: false }, replies: [text('Thanks, goodbye.')] }); r = await send('last one');
 assert.equal(r.body.done, true); assert.match(anthropicBodies[0].system[1].text, /LAST message/); assert.equal(db.conv.message_count, 7);
@@ -251,7 +251,7 @@ await send('also'); assert.equal(db.calls.length, 1); assert.equal(db.leads.leng
 const patched = calls.filter((c) => c.url.includes('leads?id=') && c.method === 'PATCH').map((c) => JSON.parse(c.body));
 assert(patched.every((b) => !('interest' in b) && !('notes' in b)), 'existing interest and notes untouched');
 world({ replies: [] }); globalThis.fetch = (f => async (u, o) => String(u).startsWith('https://api.anthropic.com') ? json({}, false, 529) : f(u, o))(globalThis.fetch);
-r = await send('hello'); assert.equal(r.code, 200); assert.match(r.body.reply, /661\) 241-0306/, 'model outage falls back to the phone number');
+r = await send('hello'); assert.equal(r.code, 200); assert.match(r.body.reply, /661\) 776-8635/, 'model outage falls back to the phone number');
 // outage safety net: contact details typed during a model failure still reach the CRM and the team
 const outage = () => { world({ replies: [] }); globalThis.fetch = (f => async (u, o) => String(u).startsWith('https://api.anthropic.com') ? json({}, false, 529) : f(u, o))(globalThis.fetch); };
 outage(); r = await send('Please call me at (661) 555-0123 or pat@example.com about a tour');
@@ -261,8 +261,8 @@ assert.equal(db.leads[0].phone, '(661) 555-0123'); assert.equal(db.leads[0].emai
 assert.equal(db.conv.needs_human, true, 'chat flagged for a person');
 assert(resendCount() >= 1 && calls.some((c) => c.url.startsWith('https://api.resend.com') && /Chat needs a person/.test(c.body)), 'team emailed');
 outage(); r = await send('hello there');
-assert.equal(db.leads.length, 0, 'no contact typed: no lead'); assert.equal(db.conv.needs_human, true, 'still flagged'); assert.match(r.body.reply, /661\) 241-0306/);
-world({ fail: true }); r = await send('hello'); assert.equal(r.code, 502); assert.match(r.body.error, /661\) 241-0306/);
+assert.equal(db.leads.length, 0, 'no contact typed: no lead'); assert.equal(db.conv.needs_human, true, 'still flagged'); assert.match(r.body.reply, /661\) 776-8635/);
+world({ fail: true }); r = await send('hello'); assert.equal(r.code, 502); assert.match(r.body.error, /661\) 776-8635/);
 assert(!errs.some((e) => /sk-ant|sb_secret|re_test/.test(e)), 'no secrets in logs');
 
 // rate limit: 20 / minute / address

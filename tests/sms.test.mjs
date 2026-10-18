@@ -1,22 +1,21 @@
-// Run: npm test. Checks the text-message intake (/api/sms) with Supabase, Resend and the Anthropic API mocked.
+// Run: npm test. Checks the shared text-message rules (lib/sms-core.js, used by the Telnyx webhook) with Supabase, Resend and the Anthropic API mocked.
 import assert from 'node:assert';
-import handler, { usDigits } from '../api/sms.js';
+import { answerText, usDigits } from '../lib/sms-core.js';
 
 const SB = 'https://abc123.supabase.co';
-const SECRET = 'bridge-secret-for-tests-0123456789';
+const SECRET = 'thread-secret-for-tests-0123456789';
+const CFG = { url: SB, key: 'sb_secret_test' };
 const errs = []; console.error = (...a) => errs.push(a.join(' ')); console.log = () => {};
 process.env.SUPABASE_URL = SB; process.env.SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_test';
-process.env.ANTHROPIC_API_KEY = 'sk-ant-test'; process.env.RESEND_API_KEY = 're_test'; process.env.SMS_BRIDGE_SECRET = SECRET;
+process.env.ANTHROPIC_API_KEY = 'sk-ant-test'; process.env.RESEND_API_KEY = 're_test';
 
-const run = async ({ method = 'POST', body, secret = SECRET } = {}) => {
-  const out = { headers: {} };
-  const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.code = c; return this; }, json(j) { out.body = j; return this; } };
-  await handler({ method, body, headers: secret === null ? {} : { 'x-bridge-secret': secret } }, res);
-  return out;
+const run = async ({ body }) => {
+  try { const result = await answerText(CFG, { from: body.from, text: String(body.text ?? '').slice(0, 600), secret: SECRET }); return { code: 200, body: { ok: true, ...result } }; }
+  catch { return { code: 502, body: { ok: false } }; }
 };
 
 const json = (j, ok = true, status = 200) => ({ ok, status, headers: new Headers(), json: async () => j });
-let db, script, anthropic, calls;
+let r, db, script, anthropic, calls;
 const world = ({ optedOut = false, replies = [], conv = null } = {}) => {
   calls = []; anthropic = []; script = [...replies];
   db = { optouts: optedOut ? ['6615550199'] : [], conv: conv ? { ...conv } : null, messages: [], leads: [], callbacks: [] };
@@ -49,16 +48,9 @@ const modelCalled = () => anthropic.length > 0;
 assert.equal(usDigits('+1 (661) 555-0100'), '6615550100'); assert.equal(usDigits('16615550100'), '6615550100'); assert.equal(usDigits('661.555.0100'), '6615550100');
 assert.equal(usDigits('12345'), ''); assert.equal(usDigits('+44 20 7946 0958'), ''); assert.equal(usDigits(''), ''); assert.equal(usDigits(null), '');
 
-// ---- access -----------------------------------------------------------------------------------------
-world(); let r = await run({ method: 'GET' }); assert.equal(r.code, 405);
-for (const bad of [null, '', 'wrong', SECRET.slice(0, -1)]) { world(); r = await run({ body: { from: fresh(), text: 'hi' }, secret: bad }); assert.equal(r.code, 401, `secret ${bad}`); assert.equal(calls.length, 0); }
-{ const k = process.env.SMS_BRIDGE_SECRET; process.env.SMS_BRIDGE_SECRET = 'short'; world(); r = await send('hi'); assert.equal(r.code, 503); assert.equal(calls.length, 0); process.env.SMS_BRIDGE_SECRET = k; }
-world(); r = await run({ body: '{not json' }); assert.equal(r.code, 400);
-{ const k = process.env.ANTHROPIC_API_KEY; delete process.env.ANTHROPIC_API_KEY; world(); r = await send('hi'); assert.equal(r.code, 503); process.env.ANTHROPIC_API_KEY = k; }
-
 // ---- who it will not answer -------------------------------------------------------------------------
 for (const [label, from, msg] of [
-  ['short code', '48271', 'Your order shipped'], ['non-US number', '+44 20 7946 0958', 'hello'], ['our own number', '(661) 241-0306', 'hello'],
+  ['short code', '48271', 'Your order shipped'], ['non-US number', '+44 20 7946 0958', 'hello'], ['our own number', '(661) 776-8635', 'hello'],
   ['empty text', fresh(), '   '], ['verification code', fresh(), 'Your verification code is 482913'], ['auto-reply', fresh(), 'This is an automated message. Do not reply.'],
   ['marketing footer', fresh(), 'Big sale! Reply STOP to end. Msg & data rates apply'],
 ]) { world(); r = await run({ body: { from, text: msg } }); assert.equal(r.code, 200, label); assert.equal(r.body.reply, '', label); assert.ok(r.body.skipped, label); assert.equal(modelCalled(), false, `${label}: no model call`); }
@@ -113,8 +105,8 @@ assert.equal(db.conv.message_count, 4);
 world(); let silent = 0; const spammer = '(661) 555-0180'; for (let i = 0; i < 14; i++) { const x = await send(`msg ${i}`, spammer); if (x.body.skipped === 'rate limited') silent++; }
 assert.ok(silent >= 3, 'rate limit applies');
 
-// failures: the bridge is told to retry, and no secret or text reaches the logs
+// failures: the caller is told to retry, and no secret or text reaches the logs
 world(); globalThis.fetch = async () => json({}, false, 503); r = await send('hello'); assert.equal(r.code, 502); assert.equal(r.body.reply, undefined);
-assert.ok(!errs.some((e) => /sk-ant|sb_secret|re_test|bridge-secret/.test(e)), 'no secrets in logs');
+assert.ok(!errs.some((e) => /sk-ant|sb_secret|re_test|thread-secret/.test(e)), 'no secrets in logs');
 
 console.log = process.stdout.write.bind(process.stdout); console.log('sms: ok');

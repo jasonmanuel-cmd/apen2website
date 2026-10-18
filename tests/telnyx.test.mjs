@@ -136,7 +136,7 @@ world(); { const from = { phone_number: '+16615551001' }; await run({ body: even
   await run({ body: event({ text: 'Are the homes still available?', from }) }); await settle(2, 120); assert.equal(sent.length, 1, 'no reply after STOP');
   await run({ body: event({ text: 'START', from }) }); await settle(2); assert.match(sent[1].text, /back on/); }
 // never answers: our own number, a short code, a non-US number, automated text
-for (const [label, ev] of [['our own number', event({ from: { phone_number: '+16612410306' } })], ['short code', event({ from: { phone_number: '48271' }, text: 'Your order shipped' })], ['non-US', event({ from: { phone_number: '+442079460958' } })], ['automated', event({ text: 'This is an automated message. Do not reply.' })]]) {
+for (const [label, ev] of [['our own number', event({ from: { phone_number: '+16617768635' } })], ['short code', event({ from: { phone_number: '48271' }, text: 'Your order shipped' })], ['non-US', event({ from: { phone_number: '+442079460958' } })], ['automated', event({ text: 'This is an automated message. Do not reply.' })]]) {
   world(); await run({ body: ev }); await settle(1, 80); assert.equal(sent.length, 0, label); }
 
 // ---- the same message is answered once --------------------------------------------------------------------
