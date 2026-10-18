@@ -65,7 +65,7 @@ assert(!/\$\d{1,3},\d{3}/.test(kbText.replace(/\$459,000|\$15,000|\$7,000/g, '')
 assert(MAX_VISITOR_MESSAGES >= 6 && MAX_VISITOR_MESSAGES <= 7, 'chats stay short');
 
 // ---- pacing: the plan changes as the chat runs out ---------------------------------------------------
-assert.match(pacing(1), /message 1 of 7/); assert.match(pacing(3), /name and phone/);
+assert.match(pacing(1), /message 1 of 7/); assert.match(pacing(3), /first and last name, phone number and email/);
 assert.match(pacing(5), /Start wrapping up/); assert.match(pacing(6), /ends after the next one/);
 assert.match(pacing(7), /LAST message/); assert.match(pacing(7), /request_callback/);
 
@@ -223,14 +223,28 @@ world({ replies: [tool('request_callback', { name: 'Pat Lee', phone: '661-555-01
 await send('call me'); assert.equal(db.calls.length, 0, 'empty message rejected');
 world({ replies: [tool('request_callback', { name: 'Pat Lee', phone: '661-555-0100', email: 'bad', message: 'call me' }), text('x')] });
 await send('call me'); assert.equal(db.calls.length, 0, 'bad optional email rejected');
-world({ replies: [tool('request_callback', { name: 'Pat Lee', phone: '(661) 555-0100', message: 'Do the other plans fit a half-acre lot?', best_time: 'after 5pm' }), text('The team will call you back.')] });
+world({ replies: [tool('request_callback', { name: 'Pat Lee', phone: '(661) 555-0100', message: 'Do the other plans fit a half-acre lot?', best_time: 'after 5pm', email_declined: true }), text('The team will call you back.')] });
 r = await send('Can someone call me about lot sizes?');
 assert.equal(r.body.reply, 'The team will call you back.');
 assert.equal(db.calls.length, 1); assert.equal(db.calls[0].phone, '(661) 555-0100'); assert.equal(db.calls[0].best_time, 'after 5pm');
-assert.equal(db.calls[0].email, null); assert.equal(db.leads.length, 1, 'lead created without needing an email');
+assert.equal(db.calls[0].email, null); assert.equal(db.leads.length, 1, 'a visitor who declines the email still gets a callback');
 assert.equal(db.leads[0].email, null); assert.equal(db.conv.needs_human, true); assert.equal(resendCount(), 1);
 const mail = JSON.parse(calls.find((c) => c.url.startsWith('https://api.resend.com')).body);
 assert.match(mail.subject, /\[Callback Request\]/); assert(mail.html.includes('tel:6615550100') && mail.html.includes('sms:6615550100'), 'tap to call / text links');
+// first AND last name and an email are asked for; the assistant is sent back to ask when they are missing
+world({ replies: [tool('save_contact', { name: 'Pat', phone: '(661) 555-0100', email: 'pat@example.com' }), text('x')] });
+await send('hi'); assert.equal(db.leads.length, 0, 'first name alone is not enough for a saved contact');
+assert.match(JSON.stringify(anthropicBodies[1].messages.at(-1)), /first AND last name/);
+world({ replies: [tool('request_callback', { name: 'Pat', phone: '(661) 555-0100', email: 'pat@example.com', message: 'call me' }), text('x')] });
+await send('call me'); assert.equal(db.calls.length, 0, 'callback needs a last name too');
+world({ replies: [tool('request_callback', { name: 'Pat Lee', phone: '(661) 555-0100', message: 'call me' }), text('x')] });
+await send('call me'); assert.equal(db.calls.length, 0, 'callback without an email is sent back until the visitor declines');
+assert.match(JSON.stringify(anthropicBodies[1].messages.at(-1)), /email_declined/);
+world({ replies: [tool('request_callback', { name: 'Pat Lee', phone: '(661) 555-0100', email: 'pat@example.com', message: 'call me' }), text('ok')] });
+await send('call me'); assert.equal(db.calls.length, 1); assert.equal(db.calls[0].email, 'pat@example.com'); assert.equal(db.leads[0].email, 'pat@example.com');
+// on the visitor's last message we keep whatever we have instead of losing the lead
+world({ conv: { id: SID, message_count: 6, lead_id: null, needs_human: false }, replies: [tool('request_callback', { name: 'Pat', phone: '(661) 555-0100', message: 'call me' }), text('Thanks.')] });
+await send('last'); assert.equal(db.calls.length, 1, 'last message: a first name and no email still saves the callback');
 // an existing lead keeps its interest and notes; a second callback is allowed, a third is not
 world({ conv: { ...conv, needs_human: true }, replies: [tool('request_callback', { name: 'Pat Lee', phone: '6615550100', message: 'one more thing' }), text('Noted.')] });
 await send('also'); assert.equal(db.calls.length, 1); assert.equal(db.leads.length, 0, 'no duplicate lead');

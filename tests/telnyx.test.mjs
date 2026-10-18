@@ -127,7 +127,7 @@ world(); { const ev = event({ text: 'HOMES', from: { phone_number: '+1 (661) 555
   assert.match(m.text, /automated assistant/); assert.ok(m.text.length <= 321);
   assert.equal(db.conv.channel, 'sms'); }
 // a callback needs only a name and a message; the number is the sender's
-world({ replies: [tool('request_callback', { name: 'Pat Lee', message: 'Can you call about lot sizes?' }), text('Got it, the team will call you back.')] });
+world({ replies: [tool('request_callback', { name: 'Pat Lee', message: 'Can you call about lot sizes?', email_declined: true }), text('Got it, the team will call you back.')] });
 r = await run({ body: event({ text: 'please call me, Pat Lee', from: { phone_number: '+16615550188' } }) }); await settle();
 assert.equal(db.callbacks.length, 1); assert.equal(db.callbacks[0].phone, '(661) 555-0188'); assert.equal(db.leads[0].source, 'Text message'); assert.equal(sent[0].text, 'Got it, the team will call you back. Msg&data rates may apply. Reply STOP to stop.');
 

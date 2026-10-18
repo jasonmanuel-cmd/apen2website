@@ -83,8 +83,8 @@ assert.ok(!db.conv.id.includes('6615550123'), 'the number is not the thread key'
 assert.ok(r.body.reply.endsWith('Msg&data rates may apply. Reply STOP to stop.'), 'first reply carries the rates / STOP line');
 assert.ok(r.body.reply.length <= 320, 'and still fits two segments');
 
-// phone number comes from the sender: a callback needs only a name and a message
-world({ replies: [tool('request_callback', { name: 'Pat Lee', message: 'Does the Grand Haven fit a half-acre lot?' }), text('Got it, the team will call you back.')] });
+// phone number comes from the sender: a callback needs a full name, a message and an email (or the visitor declining one)
+world({ replies: [tool('request_callback', { name: 'Pat Lee', message: 'Does the Grand Haven fit a half-acre lot?', email_declined: true }), text('Got it, the team will call you back.')] });
 r = await send('Can someone call me about lot sizes? Pat Lee', '(661) 555-0188');
 assert.equal(r.body.reply, 'Got it, the team will call you back. Msg&data rates may apply. Reply STOP to stop.', 'first reply: the answer plus the rates / STOP line');
 assert.equal(db.callbacks.length, 1); assert.equal(db.callbacks[0].phone, '(661) 555-0188');
