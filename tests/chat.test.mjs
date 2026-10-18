@@ -91,6 +91,15 @@ assert(prompt.stable.includes('request_callback') && prompt.stable.includes('KNO
 assert(prompt.dynamic.includes('2026-10-12') && prompt.dynamic.includes('PACING'));
 assert(!prompt.stable.includes('2026-10-12'), 'the cached part holds nothing per-request');
 
+// Company history comes from the site's own data, and competitor talk is opinion-only.
+const siteYear = (key) => (new RegExp(`${key}: (\\d{4})`).exec(site) || [])[1];
+assert(siteYear('since') && kbText.includes(siteYear('since')), 'knowledge base carries the founding year from site.ts');
+assert(siteYear('incorporated') && kbText.includes(siteYear('incorporated')), 'knowledge base carries the incorporation year from site.ts');
+assert(site.includes("originalEntity: 'Aspen Homes, Inc.'") && kbText.includes('Aspen Homes, Inc.') && kbText.includes('Aspen II Homes, Inc.'), 'knowledge base names both companies');
+for (const must of ['OTHER BUILDERS AND COMPETITORS', 'wisecrack', 'OPINION', 'Never say anything about another company', 'circle back'])
+  assert(prompt.stable.includes(must), `prompt lost the competitor rule "${must}"`);
+assert(!/other companies\): decline/.test(prompt.stable), 'old decline-other-companies rule is gone');
+
 // ---- world: fake Supabase + Resend + Anthropic ------------------------------------------------------
 const calls = [];
 let db, convRow, script, anthropicBodies;
