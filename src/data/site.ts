@@ -7,10 +7,8 @@ export const site = {
   tagline: 'A Local New Home Builder',
   // Canonical host (owner decision D2). Vercel serves the apex and 308-redirects www to it.
   url: 'https://aspen2homes.com',
-  phone: '(661) 241-0306',
-  phoneHref: 'tel:+16612410306',
-  // "?&body=" is the form iPhone Messages and Android both accept.
-  sms: (body = 'HOMES') => `sms:+16612410306?&body=${encodeURIComponent(body)}`,
+  phone: '(661) 776-8635',
+  phoneHref: 'tel:+16617768635',
   email: 'Aspen2homes@gmail.com',
   address: '785 Tucker Road G295, Tehachapi, CA 93561',
   followUp: 'within 30 minutes during business hours',

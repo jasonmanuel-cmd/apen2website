@@ -3,10 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
-import HomeMatcherModal from '../components/HomeMatcherModal.astro';
-import InteractiveLotMap from '../components/InteractiveLotMap.astro';
 import BeforeAfterSlider from '../components/BeforeAfterSlider.astro';
-import TestimonialMarquee from '../components/TestimonialMarquee.astro';
 import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort, availability } from '../data/site';
 import { faqPage, webPage } from '../data/schema';
 
@@ -60,9 +57,9 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       <div class="copy reveal">
         <div class="hero-live-pill mono"><span class="pulse-dot" aria-hidden="true"></span> Now reserving phase 1 · {offer.community}, {offer.city}</div>
         <h1>{offer.community} homes in Tehachapi <em>from {usd(offer.from)}.</em></h1>
-        <p class="lede">Reserve an upcoming new home at {offer.community}, or choose from our six semi-custom floor plans engineered for Tehachapi mountain living.</p>
+        <p class="lede">Reserve an upcoming new home at {offer.community}, or choose from our six semi-custom floor plans for Tehachapi mountain living.</p>
         <div class="hero-trust-chips mono">
-          <span>30+ Years Local Builder</span>
+          <span>Building in Tehachapi since 1994</span>
           <span class="sep" aria-hidden="true">·</span>
           <span>CSLB #1004058</span>
           <span class="sep" aria-hidden="true">·</span>
@@ -72,7 +69,6 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
         <div class="ctas">
           <a class="btn" href="/available-homes/">See Sunset Retreat availability</a>
           <a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a>
-          <HomeMatcherModal />
         </div>
       </div>
       <a class="release-card reveal" style="animation-delay:.4s" href="/available-homes/" aria-label={`First release, ${availability.releaseCount.toLowerCase()} homes: ${offer.community}, from ${usd(offer.from)}`}>
@@ -101,7 +97,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       <div class="head">
         <div>
           <p class="eyebrow">The Aspen Advantage</p>
-          <h2>Luxury craftsmanship. <em>Engineered for Tehachapi.</em></h2>
+          <h2>Semi-custom homes. <em>Built in Tehachapi.</em></h2>
         </div>
         <p class="muted">
           From 0% down first-time buyer financing to semi-custom architectural flexibility, discover why local families have trusted Aspen II Homes for more than three decades.
@@ -172,9 +168,9 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
         <article class="bento-card">
           <p class="bento-kicker mono">Architectural Freedom</p>
           <p class="bento-stat">6 Models</p>
-          <h3 class="bento-card-title">Proven Semi-Custom Layouts</h3>
+          <h3 class="bento-card-title">Semi-Custom Layouts</h3>
           <p class="bento-sub">
-            1,507 to 2,348 sq ft single- and two-story plans. Every layout includes architectural blueprints and options to tailor finishes to your exact lifestyle.
+            1,507 to 2,348 sq ft single- and two-story plans. Every model has a floor plan blueprint, and you choose your finishes.
           </p>
           <div class="bento-bottom-cta">
             <a href="/floor-plans/" class="bento-link mono">Browse All Plans <span aria-hidden="true">→</span></a>
@@ -184,14 +180,13 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
         <!-- Bento 5: Local Builder Heritage -->
         <article class="bento-card bento-dark">
           <p class="bento-kicker mono text-gold">Local Tehachapi Heritage</p>
-          <p class="bento-stat text-gold">30+ Years</p>
+          <p class="bento-stat text-gold">Since 1994</p>
           <h3 class="bento-card-title">Building in Tehachapi Since 1994</h3>
           <p class="bento-sub">
-            Local family leadership for three decades. Licensed general contractor (CSLB #1004058) building to local mountain snow load and climate standards with trusted area craftsmen.
+            Building homes in Tehachapi since 1994, first as Aspen Homes, Inc. and, since 2015, as Aspen II Homes, Inc. California licensed contractor, CSLB #1004058.
           </p>
           <div class="bento-tags mono bento-tags-dark">
             <span>CSLB #1004058</span>
-            <span>BBB A+</span>
             <span>Equal Housing</span>
           </div>
         </article>
@@ -211,13 +206,6 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       </div>
       <div class="plan-grid">{plans.map((plan) => <PlanCard plan={plan} />)}</div>
       <p class="compare-link"><a class="btn btn-ghost" href="/floor-plans/#compare"><span aria-hidden="true">⇄</span> Compare all six models side by side</a></p>
-    </div>
-  </section>
-
-  <!-- Interactive Lot & Homesite Plat Map -->
-  <section class="section plat-section" id="plat-map">
-    <div class="wrap">
-      <InteractiveLotMap />
     </div>
   </section>
 
@@ -257,7 +245,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
       <div>
         <p class="eyebrow">Your questions</p>
         <h2>Planning your <em>new home.</em></h2>
-        <p class="muted">Still curious? Call <a href={site.phoneHref}>{site.phone}</a> or text HOMES for instant answers.</p>
+        <p class="muted">Still curious? Call <a href={site.phoneHref}>{site.phone}</a> or send us a request and we will reply.</p>
       </div>
       <div class="faq">
         {faq.map(([q, a, href], i) => <details open={i === 0}><summary>{q}</summary><p>{a} <a href={href} class="more" aria-label={`Full answer: ${q}`}>Full answer <span aria-hidden="true">→</span></a></p></details>)}
@@ -265,16 +253,13 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
     </div>
   </section>
 
-  <!-- Testimonials & Proof Marquee -->
-  <TestimonialMarquee />
-
   <section class="section contact" id="contact">
     <div class="wrap contact-grid">
       <div>
         <p class="eyebrow">Talk to our team</p>
         <h2>Your brand-new home starts with <em>a conversation.</em></h2>
         <p class="muted">Reserve a {offer.community} home, or ask about our other floor plans. No pressure, just answers.</p>
-        <p class="direct mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={site.sms()}>Text HOMES</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
+        <p class="direct mono"><a href={site.phoneHref}>{site.phone}</a><br /><a href={`mailto:${site.email}`}>{site.email}</a></p>
       </div>
       <LeadForm source="Home page" compact />
     </div>

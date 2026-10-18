@@ -15,7 +15,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
 <Layout
   schema={crumbSchema}
   title={`Contact & Schedule a Tour | ${site.name}`}
-  description={`Reserve a ${offer.community} home, or pick a semi-custom model. Call or text HOMES to ${site.phone} for plans, pricing and tours.`}
+  description={`Reserve a ${offer.community} home, or pick a semi-custom model. Call ${site.phone} for plans, pricing and tours.`}
 >
   <section class="section">
     <div class="wrap grid">
@@ -23,7 +23,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
         <p class="eyebrow">Contact</p>
         <h1>Talk With Aspen II Homes About <em>Your New Home</em></h1>
         <p class="lede">Reserve a {offer.community} home, or ask about our other floor plans. Sending a question commits you to nothing. We explain any reservation terms before you commit.</p>
-        <p class="quick"><a class="btn" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES<span class="sr-only"> to {site.phone}</span></a></p>
+        <p class="quick"><a class="btn" href={site.phoneHref}>Call {site.phone}</a></p>
         <ul class="choices" role="list" aria-label="What can we help with?">
           {choices.map(([key, label]) => <li><a href={`?interest=${key}#form`} data-choice={key}>{label}</a></li>)}
         </ul>

@@ -4,7 +4,6 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
-import MountainStandards from './MountainStandards.astro';
 import PlanStickyBar from './PlanStickyBar.astro';
 import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
 import { breadcrumb, faqPage, webPage, floorPlan } from '../data/schema';
@@ -80,7 +79,7 @@ const schema = [
         )}
         <p class="mono status">{plan.status}</p>
         <a class="btn" href="#inquire">{plan.firstRelease ? 'Reserve & customize' : `Request pricing for ${theName(plan.name)}`}</a>
-        <a class="btn btn-ghost" href={site.sms(`Please text me ${theName(plan.name)} price sheet`)}>Text me the price sheet</a>
+        <a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a>
       </div>
     </div>
     <dl class="facts">
@@ -135,8 +134,6 @@ const schema = [
       </div>
     </section>
   )}
-
-  <MountainStandards planName={plan.name} />
 
   <section class="section wrap plan-faq">
     <p class="eyebrow">{label} questions</p>

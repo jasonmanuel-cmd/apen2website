@@ -51,7 +51,7 @@ const schema = [webPage(path, title, description), breadcrumb([['Home', '/'], ['
     <ol class="stages" role="list">
       {stages.map(([t, d, a], i) => <li><span class="mono">Stage 0{i + 1}</span><h3>{t}</h3><p>{d}</p><p class="mono applies">{a}</p></li>)}
     </ol>
-    <p class="ctas"><a class="btn" href="/contact/?interest=tour#form">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></p>
+    <p class="ctas"><a class="btn" href="/contact/?interest=tour#form">Schedule a 15-minute consultation</a><a class="btn btn-ghost" href="/floor-plans/">Compare floor plans</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a></p>
   </section>
 </Layout>
 

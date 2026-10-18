@@ -92,7 +92,7 @@ world(); r = await run({ ...good, honeypot: 'x' }); assert.equal(r.code, 200); a
 
 // per-address limit: 8 per 10 minutes, then 429 with the phone number; other addresses are unaffected
 world(); let last; for (let i = 0; i < 10; i++) last = await run({ ...good, name: `Person ${i}`, email: `p${i}@example.com`, notes: `note ${i}` }, '203.0.113.50');
-assert.equal(last.code, 429); assert.match(last.body.error, /661\) 241-0306/);
+assert.equal(last.code, 429); assert.match(last.body.error, /661\) 776-8635/);
 r = await run(good, '203.0.113.51'); assert.equal(r.code, 200);
 
 console.log = log; console.log('spam: ok');

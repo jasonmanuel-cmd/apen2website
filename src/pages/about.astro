@@ -48,7 +48,7 @@ const schema = [webPage(path, title, description, { '@type': 'AboutPage' }), bre
     </dl>
     <p class="mono eho">Equal Housing Opportunity</p>
     <p class="mono profiles">Find us on {profiles.map(([name, href], i) => <>{i > 0 && ' · '}<a href={href} target="_blank" rel="noopener">{name}<span class="sr-only"> (opens in a new tab)</span></a></>)}</p>
-    <div class="ctas"><a class="btn" href="/contact/">Talk with our team</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a><a class="btn btn-ghost" href={site.sms()}>Text HOMES</a></div>
+    <div class="ctas"><a class="btn" href="/contact/">Talk with our team</a><a class="btn btn-ghost" href={site.phoneHref}>Call {site.phone}</a></div>
   </section>
 
   <section class="section facts-sec" id="contact">
