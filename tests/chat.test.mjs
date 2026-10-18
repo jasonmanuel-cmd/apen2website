@@ -252,6 +252,16 @@ const patched = calls.filter((c) => c.url.includes('leads?id=') && c.method === 
 assert(patched.every((b) => !('interest' in b) && !('notes' in b)), 'existing interest and notes untouched');
 world({ replies: [] }); globalThis.fetch = (f => async (u, o) => String(u).startsWith('https://api.anthropic.com') ? json({}, false, 529) : f(u, o))(globalThis.fetch);
 r = await send('hello'); assert.equal(r.code, 200); assert.match(r.body.reply, /661\) 241-0306/, 'model outage falls back to the phone number');
+// outage safety net: contact details typed during a model failure still reach the CRM and the team
+const outage = () => { world({ replies: [] }); globalThis.fetch = (f => async (u, o) => String(u).startsWith('https://api.anthropic.com') ? json({}, false, 529) : f(u, o))(globalThis.fetch); };
+outage(); r = await send('Please call me at (661) 555-0123 or pat@example.com about a tour');
+assert.match(r.body.reply, /passed your message to our team/, 'visitor is told the team has it');
+assert.equal(db.leads.length, 1, 'lead saved even though the model failed');
+assert.equal(db.leads[0].phone, '(661) 555-0123'); assert.equal(db.leads[0].email, 'pat@example.com'); assert.equal(db.leads[0].source, 'Website chat');
+assert.equal(db.conv.needs_human, true, 'chat flagged for a person');
+assert(resendCount() >= 1 && calls.some((c) => c.url.startsWith('https://api.resend.com') && /Chat needs a person/.test(c.body)), 'team emailed');
+outage(); r = await send('hello there');
+assert.equal(db.leads.length, 0, 'no contact typed: no lead'); assert.equal(db.conv.needs_human, true, 'still flagged'); assert.match(r.body.reply, /661\) 241-0306/);
 world({ fail: true }); r = await send('hello'); assert.equal(r.code, 502); assert.match(r.body.error, /661\) 241-0306/);
 assert(!errs.some((e) => /sk-ant|sb_secret|re_test/.test(e)), 'no secrets in logs');
 
