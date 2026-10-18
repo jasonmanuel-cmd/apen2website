@@ -259,6 +259,10 @@ assert.match(r.body.reply, /passed your message to our team/, 'visitor is told t
 assert.equal(db.leads.length, 1, 'lead saved even though the model failed');
 assert.equal(db.leads[0].phone, '(661) 555-0123'); assert.equal(db.leads[0].email, 'pat@example.com'); assert.equal(db.leads[0].source, 'Website chat');
 assert.equal(db.conv.needs_human, true, 'chat flagged for a person');
+assert.match(db.conv.handoff_reason, /HTTP_529/, 'the reason the model failed is kept for HQ');
+// Anthropic's own explanation (for example billing) is kept, short and without secrets
+world({ replies: [] }); globalThis.fetch = (f => async (u, o) => String(u).startsWith('https://api.anthropic.com') ? json({ error: { type: 'invalid_request_error', message: 'Your credit balance is too low to access the API.' } }, false, 400) : f(u, o))(globalThis.fetch);
+await send('Please call me at (661) 555-0199'); assert.match(db.conv.handoff_reason, /HTTP_400 invalid_request_error: Your credit balance is too low/);
 assert(resendCount() >= 1 && calls.some((c) => c.url.startsWith('https://api.resend.com') && /Chat needs a person/.test(c.body)), 'team emailed');
 outage(); r = await send('hello there');
 assert.equal(db.leads.length, 0, 'no contact typed: no lead'); assert.equal(db.conv.needs_human, true, 'still flagged'); assert.match(r.body.reply, /661\) 776-8635/);
