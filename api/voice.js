@@ -73,15 +73,24 @@ export default async function handler(req, res) {
   if (!message) return ask(res, 'I need what the caller wants the team to know. Ask for their message, then save it again.');
 
   const digits = phone.replace(/\D/g, '');
+
+  // Telnyx's tool gives up after a second or two, so the reply goes out first and the saving runs after it (waitUntil
+  // keeps the function alive). Nothing is lost if the database fails: the staff email still carries the whole message.
+  const work = saveAndNotify({ db, name, phone, digits, email, message, bestTime });
+  try { waitUntil(work); } catch { /* not on Vercel: the promise simply runs to completion */ }
+  return out(res, 200, { ok: true, message: 'Saved. The team will call back. Do not promise a time.' });
+}
+
+async function saveAndNotify({ db, name, phone, digits, email, message, bestTime }) {
+  let saved = false;
   try {
     // A retry of the same message (Telnyx can retry) must not make a second record or a second email.
-    // The assistant's tool call times out after a second or two, so the two lookups run together.
     const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     const [dup, found] = await Promise.all([
       supabase(db, `callbacks?phone=eq.${encodeURIComponent(phone)}&message=eq.${encodeURIComponent(message)}&created_at=gte.${encodeURIComponent(since)}&select=id&limit=1`, {}, DB_TIMEOUT_MS).then((r) => r.json()),
       supabase(db, `leads?or=(phone_digits.eq.${digits.slice(-10)},phone_digits.eq.1${digits.slice(-10)})&select=id,name,email&limit=1`, {}, DB_TIMEOUT_MS).then((r) => r.json())
     ]);
-    if (dup.length) return out(res, 200, { ok: true, message: 'Already saved. The team will call back.' });
+    if (dup.length) return;
 
     let leadId = found[0]?.id || null;
     const leadName = name || found[0]?.name || 'Phone caller (name not captured)';
@@ -102,18 +111,22 @@ export default async function handler(req, res) {
       method: 'POST', headers: { Prefer: 'return=minimal' },
       body: JSON.stringify({ lead_id: leadId, name: leadName, phone, email: email || found[0]?.email || null, message, best_time: bestTime || null })
     }, DB_TIMEOUT_MS);
+    saved = true;
   } catch (err) {
     console.error('Voice messages: could not save:', errTag(err));
-    return out(res, 502, { ok: false, message: 'I could not save that just now. Tell the caller the team will not have the message and to call the office again.' });
   }
 
   const tel = `tel:${digits}`;
-  // The email goes out after the reply: the message is already saved, and the assistant must not wait on Resend.
-  const mail = notifyStaff({
-    subject: `[Phone Message] ${name || 'Caller'} - ${phone}`,
-    replyTo: email || undefined,
-    html: `<h2>A caller left a message with the phone assistant</h2><p><strong>${esc(name) || 'Name not given'}</strong> &middot; <a href="${esc(tel)}">Call ${esc(phone)}</a> &middot; <a href="${esc(`sms:${digits}`)}">Text</a></p><p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not given'}</p><p><strong>Best time:</strong> ${esc(bestTime) || 'Not given'}</p><p><strong>Message:</strong><br>${esc(message).replace(/\n/g, '<br>')}</p><hr><small>Saved to HQ &gt; Callbacks and Leads.</small>`
-  }).catch((err) => console.error('Voice messages: staff email failed:', errTag(err)));
-  try { waitUntil(mail); } catch { /* not on Vercel: the promise simply runs to completion */ }
-  return out(res, 200, { ok: true, message: 'Saved. The team will call back. Do not promise a time.' });
+  const footer = saved
+    ? '<small>Saved to HQ &gt; Callbacks and Leads.</small>'
+    : '<p><strong>This message could NOT be saved to HQ.</strong> Please add it by hand and call the person back.</p>';
+  try {
+    await notifyStaff({
+      subject: `[Phone Message${saved ? '' : ' - NOT SAVED to HQ'}] ${name || 'Caller'} - ${phone}`,
+      replyTo: email || undefined,
+      html: `<h2>A caller left a message with the phone assistant</h2><p><strong>${esc(name) || 'Name not given'}</strong> &middot; <a href="${esc(tel)}">Call ${esc(phone)}</a> &middot; <a href="${esc(`sms:${digits}`)}">Text</a></p><p><strong>Email:</strong> ${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : 'Not given'}</p><p><strong>Best time:</strong> ${esc(bestTime) || 'Not given'}</p><p><strong>Message:</strong><br>${esc(message).replace(/\n/g, '<br>')}</p><hr>${footer}`
+    });
+  } catch (err) {
+    console.error('Voice messages: staff email failed:', errTag(err));
+  }
 }
