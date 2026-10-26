@@ -49,7 +49,7 @@ Publish first: the page https://aspen2homes.com/sms-terms/ must be live (merge t
 
 **How people opt in / call to action** (paste):
 
-> The person starts the conversation by texting our number first, for example the keyword HOMES or any question. Our website (https://aspen2homes.com) invites visitors to "Text HOMES to [our number]" and describes the program at https://aspen2homes.com/sms-terms/ and in our privacy notice at https://aspen2homes.com/privacy/. We reply only to people who have texted us. Nobody is added to a list or sent promotional messages. Message and data rates may apply. Replying STOP ends the conversation and HELP returns our contact details.
+> The person starts the conversation by texting our number, (661) 776-8635, first: the keyword HOMES or any question. Our website publicly invites visitors to "Text HOMES to (661) 776-8635" at https://aspen2homes.com/contact/#text-us and https://aspen2homes.com/sms-terms/, with the program disclosures (message frequency varies, message and data rates may apply, reply STOP to cancel and HELP for help, consent is not a condition of purchase) and links to our Terms (https://aspen2homes.com/sms-terms/) and Privacy Policy (https://aspen2homes.com/privacy/). We reply only to people who have texted us. Nobody is added to a list or sent promotional messages. Replying STOP ends the conversation and HELP returns our contact details.
 
 **Keywords**
 
@@ -61,19 +61,19 @@ Publish first: the page https://aspen2homes.com/sms-terms/ must be live (merge t
 
 **Messages the system sends for those keywords** (paste):
 
-- Opt-in / first reply: `Aspen II Homes automated assistant here. Happy to help. Are you looking for a tour, floor plans or financing info? Msg&data rates may apply. Reply STOP to stop, HELP for help.`
-- Opt-out: `You're unsubscribed and will get no more texts from this number. Call (661) 776-8635 any time.`
-- Help: `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 776-8635, 7am-7pm daily. Reply STOP to stop texts.`
+- Opt-in / first reply: `Aspen II Homes automated assistant here. Happy to help. Are you looking for a tour, floor plans or financing info? Msg frequency varies. Msg&data rates may apply. Reply STOP to stop, HELP for help.`
+- Opt-out: `Aspen II Homes: You're unsubscribed and will get no more texts from this number. Call (661) 776-8635 any time.`
+- Help: `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 776-8635, 7am-7pm daily. Msg frequency varies. Reply STOP to stop texts.`
 
-The live first reply of every text thread ends with that "Msg&data rates may apply. Reply STOP to stop." sentence automatically.
+The live first reply of every text thread ends with "Msg frequency varies. Msg&data rates may apply. Reply STOP to stop, HELP for help." automatically. A person who texts START gets: `Aspen II Homes: you're back on. Msg frequency varies. Msg&data rates may apply. Text HOMES any time or call (661) 776-8635. Reply STOP to stop, HELP for help.`
 
 **Sample messages** (use 3 to 5; each must match the description):
 
 1. `Aspen II Homes automated assistant here. Happy to help. Are you looking for a tour, floor plans or financing info?`
 2. `Sunset Retreat in Tehachapi starts at $459,000: 3 bed, 2 bath, 1,715 sq ft. Want me to take your name so our team can set up a tour?`
 3. `Thanks, Pat. I passed your message to our team and they will call you back. You can also call (661) 776-8635, 7am-7pm daily.`
-4. `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 776-8635, 7am-7pm daily. Reply STOP to stop texts.`
-5. `You're unsubscribed and will get no more texts from this number. Call (661) 776-8635 any time.`
+4. `Aspen II Homes (CSLB #1004058), new homes in Tehachapi. Call (661) 776-8635, 7am-7pm daily. Msg frequency varies. Reply STOP to stop texts.`
+5. `Aspen II Homes: You're unsubscribed and will get no more texts from this number. Call (661) 776-8635 any time.`
 
 ## Common reasons for rejection (and how this answer avoids them)
 
@@ -89,3 +89,10 @@ The live first reply of every text thread ends with that "Msg&data rates may app
 - If the program changes (for example you want to send reminders), update the campaign first.
 - The website form says it may call or email you and that it does not sign you up for texts; the "Text" contact option was removed from the form. If you later want to text form leads, update the campaign (opt-in via web form) and this wording together.
 - The legal name on the site (Aspen II Homes, Inc.) must match the IRS letter exactly. If the letter differs, change `currentEntity` in `src/data/site.ts` before submitting.
+
+
+## Rejection on 2026-10-26: what Telnyx said and what changed
+
+- The campaign used the old Google Voice number (661) 241-0306, which is on no page of the site. **Every field must use (661) 776-8635.**
+- The message flow said "Text HOMES to [our number]" but the website showed no number or opt-in call to action. The site now publishes it on /contact/ (#text-us) and /sms-terms/.
+- The opt-in auto-response lacked message-frequency wording and the STOP auto-response lacked the brand name. Both fixed above and in `lib/sms-core.js` and `lib/chat-core.js`, so what the system sends matches what is registered.

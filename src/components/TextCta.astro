@@ -1,0 +1,19 @@
+---
+import { site } from '../data/site';
+// Public text-message opt-in notice. Carriers (10DLC review) check that the number, the keyword and the program
+// disclosures are visible on the website. Keep it in step with lib/sms-core.js and /sms-terms/.
+const sms = 'sms:+16617768635?&body=HOMES';
+---
+<aside class="text-cta" id="text-us" aria-labelledby="text-us-h">
+  <h2 id="text-us-h">Text us</h2>
+  <p class="big"><strong>Text <a href={sms}>HOMES</a> to <a href={sms}>{site.phone}</a></strong> to chat with our automated assistant about homes, floor plans, financing and tours.</p>
+  <p class="fine">By texting us you agree to receive text replies from {site.name} at this number. Message frequency varies. Message and data rates may apply. Reply <strong>STOP</strong> to cancel or <strong>HELP</strong> for help. We only reply to texts you send, and we send no marketing texts. Agreeing to text is not a condition of buying a home or any service. <a href="/sms-terms/">Text Messaging Terms</a> · <a href="/privacy/">Privacy Policy</a></p>
+</aside>
+
+<style>
+  .text-cta { border: 1px solid var(--ink); padding: 1.1rem 1.25rem; margin: 1.5rem 0; max-width: 62ch; }
+  .text-cta h2 { font-size: 1.1rem; margin: 0 0 .5rem; }
+  .big { margin: 0 0 .6rem; }
+  .fine { font-size: .82rem; color: var(--muted); margin: 0; }
+  .text-cta a { color: inherit; }
+</style>
