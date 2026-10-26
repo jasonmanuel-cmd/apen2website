@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import LeadForm from '../components/LeadForm.astro';
+import TextCta from '../components/TextCta.astro';
 import { site, communities, offer } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 const choices = [
@@ -40,6 +41,7 @@ const crumbSchema = [webPage('/contact/', `Contact ${site.name}`, `Contact ${sit
         <h2 class="sr-only">Send us a message</h2>
         <p class="mono k">Quick form · we reply {site.followUp}</p>
         <LeadForm source="Contact page" interest="tour" compact />
+        <TextCta />
       </div>
     </div>
   </section>

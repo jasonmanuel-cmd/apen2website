@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { site } from '../data/site';
+import TextCta from '../components/TextCta.astro';
 // Text-messaging terms. Carriers ask for a public page that states how people opt in, what we send, how often, and how to stop.
 // Plain-language draft; owner and attorney review pending. Keep it true: update it if the texting program changes.
 ---
@@ -8,16 +9,16 @@ import { site } from '../data/site';
   <section class="section wrap prose">
     <p class="eyebrow">Text messaging terms</p>
     <h1>Texting <em>{site.name}</em></h1>
-    <p class="mono updated">Last updated: October 15, 2026</p>
+    <p class="mono updated">Last updated: October 26, 2026</p>
 
-    <p><strong>Status:</strong> our text line is not live yet. It will start only after carrier registration is approved. Until then, please call {site.phone} or use the contact form.</p>
+    <TextCta />
 
     <h2>What this is</h2>
     <p><strong>Program name:</strong> {site.name} text assistant. <strong>Operator:</strong> {site.currentEntity}, a licensed California home builder ({site.license}).</p>
     <p>You can text our number to ask about our homes, floor plans, financing programs and tours. An automated assistant (an AI, not a person) answers your texts, can take your name and a message for our team, and our staff follow up by phone, text or email. This page explains how that works. See also our <a href="/privacy/">privacy notice</a>.</p>
 
     <h2>How you start</h2>
-    <p>You start by texting us first, for example the word <strong>HOMES</strong>, or any question. We only reply to texts you send. We do not text you first, and we do not sign you up for a list. Filling in a form on our website does not sign you up for text messages. Agreeing to text with us is not a condition of buying a home or of any service.</p>
+    <p>You start by texting us first: text the word <strong>HOMES</strong>, or any question, to <strong>{site.phone}</strong>. We only reply to texts you send. We do not text you first, and we do not sign you up for a list. Filling in a form on our website does not sign you up for text messages. Agreeing to text with us is not a condition of buying a home or of any service.</p>
 
     <h2>What we send and how often</h2>
     <p>Our texts are replies to the messages you send us: answers to your questions, confirmation that your message or tour request reached our team, and follow-up from our staff about what you asked. We do not send marketing or promotional texts through this program. <strong>Message frequency varies:</strong> it depends on how many texts you send us, and the assistant stops after a short conversation and hands you to our team.</p>

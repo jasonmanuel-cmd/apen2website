@@ -57,11 +57,11 @@ for (const [label, from, msg] of [
 
 // ---- STOP / START / HELP -----------------------------------------------------------------------------
 const stopper = '(661) 555-0199';
-world(); r = await send('STOP', stopper); assert.match(r.body.reply, /unsubscribed/); assert.equal(r.body.optedOut, true); assert.deepEqual(db.optouts, ['6615550199']); assert.equal(modelCalled(), false);
+world(); r = await send('STOP', stopper); assert.match(r.body.reply, /^Aspen II Homes: You're unsubscribed/, 'STOP confirmation names the brand'); assert.equal(r.body.optedOut, true); assert.deepEqual(db.optouts, ['6615550199']); assert.equal(modelCalled(), false);
 for (const word of ['stop', 'Unsubscribe', 'CANCEL', 'end', 'quit', 'Stop.']) { world(); r = await send(word, fresh()); assert.equal(r.body.optedOut, true, word); }
 world({ optedOut: true }); r = await send('STOP', stopper); assert.equal(r.body.reply, '', 'already opted out: silent'); assert.equal(modelCalled(), false);
 world({ optedOut: true }); r = await send('Hi, are the homes still available?', stopper); assert.equal(r.body.reply, ''); assert.equal(r.body.skipped, 'opted out'); assert.equal(modelCalled(), false, 'an opted-out number is never answered');
-world({ optedOut: true }); r = await send('START', stopper); assert.match(r.body.reply, /back on/); assert.deepEqual(db.optouts, []);
+world({ optedOut: true }); r = await send('START', stopper); assert.match(r.body.reply, /back on/); assert.match(r.body.reply, /Msg frequency varies/, 'START confirmation states message frequency'); assert.deepEqual(db.optouts, []);
 world(); r = await send('HELP'); assert.match(r.body.reply, /CSLB #1004058/); assert.match(r.body.reply, /STOP/); assert.equal(modelCalled(), false);
 
 // ---- a real conversation -------------------------------------------------------------------------------
@@ -72,13 +72,13 @@ const dyn = anthropic[0].system[1].text;
 assert.match(dyn, /TEXT MESSAGE/); assert.match(dyn, /\(661\) 555-0123/); assert.match(dyn, /automated assistant here/, 'first reply must identify itself');
 assert.equal(anthropic[0].max_tokens, 300); assert.equal(db.conv.channel, 'sms'); assert.equal(db.messages.length, 2);
 assert.ok(!db.conv.id.includes('6615550123'), 'the number is not the thread key');
-assert.ok(r.body.reply.endsWith('Msg&data rates may apply. Reply STOP to stop.'), 'first reply carries the rates / STOP line');
+assert.ok(r.body.reply.endsWith('Msg frequency varies. Msg&data rates may apply. Reply STOP to stop, HELP for help.'), 'first reply carries the rates / STOP line');
 assert.ok(r.body.reply.length <= 320, 'and still fits two segments');
 
 // phone number comes from the sender: a callback needs a full name, a message and an email (or the visitor declining one)
 world({ replies: [tool('request_callback', { name: 'Pat Lee', message: 'Does the Grand Haven fit a half-acre lot?', email_declined: true }), text('Got it, the team will call you back.')] });
 r = await send('Can someone call me about lot sizes? Pat Lee', '(661) 555-0188');
-assert.equal(r.body.reply, 'Got it, the team will call you back. Msg&data rates may apply. Reply STOP to stop.', 'first reply: the answer plus the rates / STOP line');
+assert.equal(r.body.reply, 'Got it, the team will call you back. Msg frequency varies. Msg&data rates may apply. Reply STOP to stop, HELP for help.', 'first reply: the answer plus the rates / STOP line');
 assert.equal(db.callbacks.length, 1); assert.equal(db.callbacks[0].phone, '(661) 555-0188');
 assert.equal(db.leads.length, 1); assert.equal(db.leads[0].source, 'Text message'); assert.equal(db.leads[0].raw.channel, 'sms'); assert.equal(db.leads[0].email, null);
 

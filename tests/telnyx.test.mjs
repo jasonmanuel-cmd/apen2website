@@ -129,7 +129,7 @@ world(); { const ev = event({ text: 'HOMES', from: { phone_number: '+1 (661) 555
 // a callback needs only a name and a message; the number is the sender's
 world({ replies: [tool('request_callback', { name: 'Pat Lee', message: 'Can you call about lot sizes?', email_declined: true }), text('Got it, the team will call you back.')] });
 r = await run({ body: event({ text: 'please call me, Pat Lee', from: { phone_number: '+16615550188' } }) }); await settle();
-assert.equal(db.callbacks.length, 1); assert.equal(db.callbacks[0].phone, '(661) 555-0188'); assert.equal(db.leads[0].source, 'Text message'); assert.equal(sent[0].text, 'Got it, the team will call you back. Msg&data rates may apply. Reply STOP to stop.');
+assert.equal(db.callbacks.length, 1); assert.equal(db.callbacks[0].phone, '(661) 555-0188'); assert.equal(db.leads[0].source, 'Text message'); assert.equal(sent[0].text, 'Got it, the team will call you back. Msg frequency varies. Msg&data rates may apply. Reply STOP to stop, HELP for help.');
 
 // STOP: a confirmation, then silence for that number, and START turns it back on
 world(); { const from = { phone_number: '+16615551001' }; await run({ body: event({ text: 'STOP', from }) }); await settle(); assert.match(sent[0].text, /unsubscribed/);
