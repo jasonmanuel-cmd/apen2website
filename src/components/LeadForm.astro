@@ -1,10 +1,10 @@
 ---
-import { site, plans, serviceAreaNames, offer, usd } from '../data/site';
+import { site, plans, serviceAreaNames, offer } from '../data/site';
 interface Props { plan?: string; community?: string; interest?: string; source?: string; dark?: boolean; compact?: boolean }
 // compact: for pages with no model/community context (the contact page); those two choices move into "Tell us more".
 const { plan = '', community = '', interest = '', source = 'Website', dark = false, compact = false } = Astro.props;
 const interests = [
-  ['reserve', `Reserve & customize a ${offer.community} home (from ${usd(offer.from)})`],
+  ['reserve', `Reserve a ${offer.community} home`],
   ['semi', 'Choose a model (semi-custom)'],
   ['financing', 'Financing & incentives'],
   ['tour', 'Schedule a tour'],

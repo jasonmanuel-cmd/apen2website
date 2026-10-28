@@ -16,6 +16,10 @@ const spam = [
   ['links', { name: 'Sam', notes: 'Check www.cheap-leads.biz or https://x.co/offer now' }],
   ['bot speed', { name: 'Pat Lee', notes: 'hello', elapsedMs: 300 }],
   ['same message again', { name: 'Pat Lee', notes: 'Hello there', duplicate: true }],
+  // These three reached the inbox in Oct 2026 before the Oct 28 patterns were added.
+  ['architect/engineering pitch', { name: 'Tom Dylan', notes: 'Hi,\n\nPlanning a New Build or Home Renovation? We’re Here to Support Your Project.\nOur architectural and engineering professionals combine modern design tools with technical expertise to prepare clear, detailed plans for the permitting process.\n\nWould you like to see the samples of our previous work?\n\nTom Dylan | Marketing Executive' }],
+  ['SEO follow-up pitch', { name: 'Emma Brown', notes: 'Hi,\n\nI emailed you earlier about our AI-driven SEO plan covering local and global rankings in one cost-effective package.\n\nAs I didn’t hear back, I connected via your website form as well.\n\nReply stop to unsubscribe' }],
+  ['print shop pitch', { name: 'Noah Thrall', notes: "Hi there,\r\n\r\nQuick question, who handles print orders for your business?\r\n\r\nI'm Noah from Printing Peach. We do everything from business cards to banners and signs, and every order ships free.\r\n\r\nPricing is all on the site:\r\nhttps://printingpeach.net/deals/\r\n\r\nGot an order coming up? Send me what you need and I'll quote it." }],
 ];
 const real = [
   ['lowest priced homes', { name: 'Chastidy', notes: 'Im wanting to inquire about the lowest priced homes you offer', elapsedMs: 41000 }],
@@ -31,6 +35,9 @@ const real = [
   ['accented Latin name', { name: 'José Núñez', notes: 'Estoy interesado en la casa de tres recámaras.' }],
   ['McDonald-style name', { name: 'McKenzie DeShawn', notes: 'Tour on Saturday?' }],
   ['fast autofill is not flagged', { name: 'Pat Lee', notes: 'Tour please', elapsedMs: 4500 }],
+  ['custom build request', { name: 'Robert Perera', notes: 'Custom home build Ridgecrest ca' }],
+  ['buyer following up', { name: 'Ana Ortiz', notes: 'I called earlier and didn’t hear back. Is Home 1 still available? We are first-time buyers.' }],
+  ['buyer with own team', { name: 'Ken Wu', notes: 'Our design team (my wife and I) want to change the kitchen layout. Can we see samples of finishes?' }],
 ];
 for (const [label, input] of spam) { const v = assessLead(input); assert(v.spam, `should be spam: ${label} (score ${v.score}: ${v.reasons})`); assert(v.reasons.length > 0); }
 for (const [label, input] of real) { const v = assessLead(input); assert(!v.spam, `real lead flagged: ${label} (score ${v.score}: ${v.reasons.join('; ')})`); }
