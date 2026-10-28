@@ -96,3 +96,7 @@ The live first reply of every text thread ends with "Msg frequency varies. Msg&d
 - The campaign used the old Google Voice number (661) 241-0306, which is on no page of the site. **Every field must use (661) 776-8635.**
 - The message flow said "Text HOMES to [our number]" but the website showed no number or opt-in call to action. The site now publishes it on /contact/ (#text-us) and /sms-terms/.
 - The opt-in auto-response lacked message-frequency wording and the STOP auto-response lacked the brand name. Both fixed above and in `lib/sms-core.js` and `lib/chat-core.js`, so what the system sends matches what is registered.
+
+## Paused (2026-10-28)
+
+The AI account has no credit, so the website chat and the public text-us notice are switched off in `src/data/site.ts` (`features.chat` and `features.text` are false). Do not resubmit the campaign while the text notice is hidden: reviewers need to see it. To resume: fund the AI account, set both flags to true, deploy to Production, then resubmit.

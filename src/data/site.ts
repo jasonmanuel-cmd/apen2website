@@ -2,6 +2,11 @@ import type { ImageMetadata } from 'astro';
 import captions from './captions.json';
 
 // Single source of truth. Facts come from aspen2homes.com and aspen2bakersfield.com (checked 2026-09-28).
+// Switches for the parts of the site that run on the paid AI service (Anthropic). Turned off while the account has no credit:
+// the website chat is hidden and the public text-us notice is not shown. Flip both to true once the AI account is funded,
+// and the Telnyx text campaign is approved. Forms, callbacks and the phone line work without them.
+export const features = { chat: false, text: false };
+
 export const site = {
   name: 'Aspen II Homes',
   tagline: 'A Local New Home Builder',

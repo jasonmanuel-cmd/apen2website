@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { site } from '../data/site';
+import { site, features } from '../data/site';
 import TextCta from '../components/TextCta.astro';
 // Text-messaging terms. Carriers ask for a public page that states how people opt in, what we send, how often, and how to stop.
 // Plain-language draft; owner and attorney review pending. Keep it true: update it if the texting program changes.
@@ -12,6 +12,7 @@ import TextCta from '../components/TextCta.astro';
     <p class="mono updated">Last updated: October 26, 2026</p>
 
     <TextCta />
+    {!features.text && <p><strong>Status:</strong> our text line is not live yet. Until it is, please call {site.phone} or use the contact form.</p>}
 
     <h2>What this is</h2>
     <p><strong>Program name:</strong> {site.name} text assistant. <strong>Operator:</strong> {site.currentEntity}, a licensed California home builder ({site.license}).</p>
