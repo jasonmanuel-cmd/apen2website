@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { site } from '../data/site';
+import { site, features } from '../data/site';
 import { breadcrumb, webPage } from '../data/schema';
 
 const path = '/terms/';
@@ -27,7 +27,7 @@ const description = `Terms and Conditions and SMS / Text Messaging Terms of Serv
     <h2>2. SMS &amp; Mobile Text Messaging Terms (TCPA / 10DLC Compliant)</h2>
     <p>These Mobile Messaging Terms govern text messages (SMS and MMS) sent by or on behalf of {site.name}.</p>
     <ul>
-      <li><strong>Program Purpose:</strong> {site.name} may reply by text to people who text our business number first. Replies answer questions about our homes, floor plans, financing programs and tours. We do not send marketing texts and we do not text people first. Text HOMES to {site.phone}. See the <a href="/sms-terms/">Text Messaging Terms</a> for how it works.</li>
+      <li><strong>Program Purpose:</strong> {site.name} may reply by text to people who text our business number first. Replies answer questions about our homes, floor plans, financing programs and tours. We do not send marketing texts and we do not text people first. {features.text ? `Text HOMES to ${site.phone}. ` : 'Our text line is not live yet. '}See the <a href="/sms-terms/">Text Messaging Terms</a> for how it works.</li>
       <li><strong>How It Starts:</strong> Texting starts only when you send a text to our business number. Giving us your phone number on a form or to our chat or phone assistant lets us call or email you about your request; it does not sign you up for text messages.</li>
       <li><strong>Consent Not a Condition of Purchase:</strong> Agreeing to text with us is <strong>not</strong> a condition of purchasing any property, home, goods, or services from {site.name}.</li>
       <li><strong>Message Frequency:</strong> We reply only to texts you send. Expect up to a few replies to each message you send.</li>
