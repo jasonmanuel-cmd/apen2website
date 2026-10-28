@@ -29,8 +29,8 @@ const priceText = plan.price ? usd(plan.price) : 'Call for Pricing';
     </div>
 
     <div class="bar-ctas">
-      <a class="btn-subtle mono" href={site.phoneHref}>Call {site.phone}</a>
-      <a class="btn btn-sm" href="#inquire">{plan.firstRelease ? 'Reserve & Customize' : 'Schedule Private Tour'}</a>
+      <a class="btn-subtle mono" href={site.phoneHref} aria-label={`Call ${site.phone}`}><span class="call-long">Call {site.phone}</span><span class="call-short" aria-hidden="true">Call</span></a>
+      <a class="btn btn-sm" href="#inquire" aria-label={plan.firstRelease ? 'Reserve & Customize' : 'Schedule Private Tour'}><span class="call-long">{plan.firstRelease ? 'Reserve & Customize' : 'Schedule Private Tour'}</span><span class="call-short" aria-hidden="true">{plan.firstRelease ? 'Reserve' : 'Book a Tour'}</span></a>
     </div>
   </div>
 </aside>
@@ -45,12 +45,19 @@ const priceText = plan.price ? usd(plan.price) : 'Call for Pricing';
     let inquireVisible = false;
 
     function update() {
-      if (heroPassed && !inquireVisible) {
-        bar.removeAttribute('hidden');
-        requestAnimationFrame(() => bar.classList.add('is-visible'));
+      const on = heroPassed && !inquireVisible;
+      const b = bar as HTMLElement;
+      if (on) {
+        b.removeAttribute('hidden');
+        requestAnimationFrame(() => {
+          b.classList.add('is-visible');
+          // Lets the chat button (and anything else floating) sit above the bar instead of under it.
+          document.documentElement.style.setProperty('--plan-bar-h', `${b.offsetHeight}px`);
+        });
       } else {
-        bar.classList.remove('is-visible');
+        b.classList.remove('is-visible');
       }
+      document.documentElement.classList.toggle('plan-bar-on', on);
     }
 
     // Scroll listener for hero threshold
@@ -195,6 +202,8 @@ const priceText = plan.price ? usd(plan.price) : 'Call for Pricing';
     white-space: nowrap;
   }
 
+  .call-short { display: none; }
+
   .btn-subtle:hover {
     color: var(--bone);
     border-color: var(--gold);
@@ -210,15 +219,33 @@ const priceText = plan.price ? usd(plan.price) : 'Call for Pricing';
     .bar-specs .sep {
       display: none;
     }
-    .btn-subtle {
+    /* One compact row on phones: name + price, then Call and Reserve. */
+    .bar-status {
       display: none;
+    }
+    .bar-inner {
+      gap: 0.6rem;
+    }
+    .btn-subtle {
+      padding: 0.55rem 0.8rem;
+    }
+    .call-long {
+      display: none;
+    }
+    .call-short {
+      display: inline;
     }
     .bar-name {
       font-size: 1rem;
+      white-space: nowrap;
     }
     .btn-sm {
       padding: 0.55rem 1rem;
       font-size: 0.78rem;
     }
+  }
+  @media (max-width: 360px) {
+    /* Smallest phones: the site's Call link stays in the header menu and footer. */
+    .btn-subtle { display: none; }
   }
 </style>

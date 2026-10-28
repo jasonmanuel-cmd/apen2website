@@ -127,11 +127,26 @@ import { site } from '../data/site';
     if (store.get(DONE_KEY) === '1') finish();
     root.hidden = false; // shown only when JavaScript is running
     if (store.get(OPEN_KEY) === '1') setOpen(true, false);
+
+    // On the homepage the button would sit on top of the hero's availability card, so it slides in
+    // once the visitor scrolls past the top of the page.
+    if (document.querySelector('.release-card')) {
+      const tuck = () => root.classList.toggle('is-tucked', window.scrollY < 240 && panel?.hidden === true);
+      window.addEventListener('scroll', tuck, { passive: true });
+      fab?.addEventListener('click', tuck);
+      tuck();
+    }
   }
 </script>
 
 <style is:global>
-  .chat { position: fixed; right: 1rem; bottom: 1rem; z-index: 40; font-family: var(--serif); }
+  .chat { position: fixed; right: 1rem; bottom: 1rem; z-index: 95; font-family: var(--serif); transition: bottom .35s cubic-bezier(.16, 1, .3, 1); }
+  .chat-fab { transition: opacity .25s ease, transform .25s ease; }
+  .chat.is-tucked .chat-fab { opacity: 0; transform: translateY(14px); pointer-events: none; }
+  /* Floor plan pages: sit above the plan's sticky action bar while it is showing. */
+  html.plan-bar-on .chat { bottom: calc(var(--plan-bar-h, 76px) + 1rem); }
+  /* The raised panel must still fit under the top of the screen (short landscape phones, small laptops). */
+  html.plan-bar-on .chat-panel { height: min(560px, calc(100dvh - var(--plan-bar-h, 76px) - 2.5rem)); }
   .chat[hidden], .chat [hidden] { display: none !important; }
   .chat-fab { display: inline-flex; align-items: center; gap: .6rem; min-height: 48px; padding: .7rem 1.2rem; border: 0; border-radius: 999px; background: var(--clay); color: var(--bone); font: 500 .8rem var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 20px rgb(var(--ink-rgb) / .28); }
   .chat-fab:hover { background: var(--clay-hover, var(--clay)); }
@@ -160,8 +175,10 @@ import { site } from '../data/site';
   .chat-note { margin: 0; padding: 0 1rem .8rem; font-size: .75rem; line-height: 1.4; color: var(--muted); }
   @media (max-width: 760px) {
     /* Clear the fixed Call / Contact / Schedule bar. */
-    .chat { right: .75rem; bottom: calc(3.9rem + env(safe-area-inset-bottom, 0px)); }
-    .chat-panel { height: min(560px, calc(100dvh - 5.5rem)); }
+    .chat { right: .75rem; bottom: calc(max(14px, env(safe-area-inset-bottom, 0px)) + 72px); }
+    html.plan-bar-on .chat { bottom: calc(var(--plan-bar-h, 76px) + .75rem); }
+    .chat-panel { height: min(560px, calc(100dvh - 7rem - env(safe-area-inset-bottom, 0px))); }
+    html.plan-bar-on .chat-panel { height: min(560px, calc(100dvh - var(--plan-bar-h, 76px) - 2rem)); }
   }
   @media (prefers-reduced-motion: no-preference) { .chat-panel { animation: chat-in .18s ease-out; } }
   @keyframes chat-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
