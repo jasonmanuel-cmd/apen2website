@@ -145,6 +145,8 @@ import { site } from '../data/site';
   .chat.is-tucked .chat-fab { opacity: 0; transform: translateY(14px); pointer-events: none; }
   /* Floor plan pages: sit above the plan's sticky action bar while it is showing. */
   html.plan-bar-on .chat { bottom: calc(var(--plan-bar-h, 76px) + 1rem); }
+  /* The raised panel must still fit under the top of the screen (short landscape phones, small laptops). */
+  html.plan-bar-on .chat-panel { height: min(560px, calc(100dvh - var(--plan-bar-h, 76px) - 2.5rem)); }
   .chat[hidden], .chat [hidden] { display: none !important; }
   .chat-fab { display: inline-flex; align-items: center; gap: .6rem; min-height: 48px; padding: .7rem 1.2rem; border: 0; border-radius: 999px; background: var(--clay); color: var(--bone); font: 500 .8rem var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 20px rgb(var(--ink-rgb) / .28); }
   .chat-fab:hover { background: var(--clay-hover, var(--clay)); }
@@ -175,7 +177,8 @@ import { site } from '../data/site';
     /* Clear the fixed Call / Contact / Schedule bar. */
     .chat { right: .75rem; bottom: calc(max(14px, env(safe-area-inset-bottom, 0px)) + 72px); }
     html.plan-bar-on .chat { bottom: calc(var(--plan-bar-h, 76px) + .75rem); }
-    .chat-panel { height: min(560px, calc(100dvh - 5.5rem)); }
+    .chat-panel { height: min(560px, calc(100dvh - 7rem - env(safe-area-inset-bottom, 0px))); }
+    html.plan-bar-on .chat-panel { height: min(560px, calc(100dvh - var(--plan-bar-h, 76px) - 2rem)); }
   }
   @media (prefers-reduced-motion: no-preference) { .chat-panel { animation: chat-in .18s ease-out; } }
   @keyframes chat-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

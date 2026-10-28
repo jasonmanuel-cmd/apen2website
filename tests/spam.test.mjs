@@ -37,6 +37,7 @@ const real = [
   ['fast autofill is not flagged', { name: 'Pat Lee', notes: 'Tour please', elapsedMs: 4500 }],
   ['custom build request', { name: 'Robert Perera', notes: 'Custom home build Ridgecrest ca' }],
   ['buyer following up', { name: 'Ana Ortiz', notes: 'I called earlier and didn’t hear back. Is Home 1 still available? We are first-time buyers.' }],
+  ['buyer follow-up, both phrases', { name: 'Gina Lopez', notes: 'I emailed you last week about Home 2 and didn’t hear back. Is it still available? We are pre-approved.' }],
   ['buyer with own team', { name: 'Ken Wu', notes: 'Our design team (my wife and I) want to change the kitchen layout. Can we see samples of finishes?' }],
 ];
 for (const [label, input] of spam) { const v = assessLead(input); assert(v.spam, `should be spam: ${label} (score ${v.score}: ${v.reasons})`); assert(v.reasons.length > 0); }
