@@ -36,10 +36,10 @@ export const site = {
 };
 
 // Third-party listings the owner has claimed (2026-10-05). Feeds schema sameAs and the footer "Find us on" links.
+// BBB removed 2026-10-30 at the owner's request.
 export const profiles: [string, string][] = [
   ['Google', 'https://www.google.com/search?kgmid=/g/11f3s7ndl4'],
   ['Houzz', 'https://www.houzz.com/pro/aspenii-homes'],
-  ['BBB', 'https://www.bbb.org/us/ca/tehachapi/profile/general-contractor/aspen-ii-homes-inc-1126-89062447'],
   ['Yelp', 'https://www.yelp.com/biz/aspen-homes-tehachapi'],
   ['BuildZoom', 'https://www.buildzoom.com/contractor/aspen-ii-homes-ca'],
 ];
