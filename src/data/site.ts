@@ -40,7 +40,8 @@ export const site = {
 export const profiles: [string, string][] = [
   ['Google', 'https://www.google.com/search?kgmid=/g/11f3s7ndl4'],
   ['Houzz', 'https://www.houzz.com/pro/aspenii-homes'],
-  ['Yelp', 'https://www.yelp.com/biz/aspen-homes-tehachapi'],
+  // Yelp removed 2026-10-31 until the new Yelp listing is approved. To restore, add back:
+  // ['Yelp', '<new Yelp listing URL>'],
   ['BuildZoom', 'https://www.buildzoom.com/contractor/aspen-ii-homes-ca'],
 ];
 
