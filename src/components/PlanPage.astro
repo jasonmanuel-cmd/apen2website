@@ -90,7 +90,7 @@ const schema = [
 
   {imgs.length > 0 && (
     <section class="wrap">
-      <p class="mono note">{plan.rendering ? 'Artist renderings. Final construction may differ.' : `Photography of the ${label} plan.`}</p>
+      <p class="mono note">{plan.rendering ? 'Artist renderings. Final construction may differ.' : `Photography of ${label}.`}</p>
       <Gallery images={imgs} name={plan.name} />
     </section>
   )}
