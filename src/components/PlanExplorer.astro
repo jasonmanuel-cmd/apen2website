@@ -56,7 +56,7 @@ const live = items.filter((t) => t.ready);
           <div class="pe-grid">
             <div class="pe-stage">
               {t.img ? (
-                <button class="pe-zoom" data-open aria-label={`Open the ${t.name} floor plan full screen`}>
+                <button class="pe-zoom" data-open aria-label={`Open the floor plan for ${t.name} full screen`}>
                   <img src={t.img} alt={`${t.name} floor plan`} loading="lazy" decoding="async" />
                   <span class="mono hint">{t.note ? `${t.note} Tap to enlarge.` : 'Tap to enlarge'}</span>
                 </button>
