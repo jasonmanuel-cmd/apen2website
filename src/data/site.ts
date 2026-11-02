@@ -38,7 +38,7 @@ export const site = {
 // Third-party listings the owner has claimed (2026-10-05). Feeds schema sameAs and the footer "Find us on" links.
 // BBB removed 2026-10-30 at the owner's request.
 export const profiles: [string, string][] = [
-  ['Google', 'https://www.google.com/search?kgmid=/g/11f3s7ndl4'],
+  ['Google', 'https://www.google.com/maps/search/?api=1&query=Aspen+II+Homes%2C+30330+Horsethief+Dr%2C+Tehachapi%2C+CA&query_place_id=ChIJb9O2iVtswYARqyJ0SolyLBg'],
   ['Houzz', 'https://www.houzz.com/pro/aspenii-homes'],
   // Yelp removed 2026-10-31 until the new Yelp listing is approved. To restore, add back:
   // ['Yelp', '<new Yelp listing URL>'],
