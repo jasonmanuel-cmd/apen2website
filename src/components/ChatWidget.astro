@@ -3,7 +3,7 @@
 // the visitor opens it. Everything the server sends is written with textContent, never as HTML.
 import { site } from '../data/site';
 ---
-<div id="chat" class="chat" data-phone={site.phone} hidden>
+<div id="chat" class="chat" data-phone={site.phone} data-phone-href={site.phoneHref} hidden>
   <button id="chat-open" class="chat-fab" type="button" aria-expanded="false" aria-controls="chat-panel">
     <span class="chat-fab-dot" aria-hidden="true"></span> Chat with us
   </button>
@@ -85,7 +85,7 @@ import { site } from '../data/site';
       form.hidden = true; chips.hidden = true;
       if (!$('chat-end')) {
         const end = document.createElement('p'); end.id = 'chat-end'; end.className = 'chat-end';
-        const call = document.createElement('a'); call.href = `tel:${phone.replace(/[^\d+]/g, '')}`; call.textContent = `Call ${phone}`;
+        const call = document.createElement('a'); call.href = root.dataset.phoneHref; call.textContent = `Call ${phone}`;
         const form2 = document.createElement('a'); form2.href = '/contact/'; form2.textContent = 'Use the contact form';
         end.append(call, ' · ', form2);
         log.after(end);
