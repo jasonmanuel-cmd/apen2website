@@ -73,6 +73,10 @@ const saveLead = async (db, l) => {
     })
   }, DB_TIMEOUT_MS);
   const rows = await res.json();
+  // Quarantined submissions have no email fallback: require the existing single-row
+  // insert representation with a nonblank string id. Do not impose a UUID format.
+  if (l.spam && (!Array.isArray(rows) || rows.length !== 1 ||
+    typeof rows[0]?.id !== 'string' || !rows[0].id.trim())) return null;
   return rows?.[0]?.id || null;
 };
 
@@ -110,7 +114,7 @@ const isDuplicate = async (db, { email, notes }) => {
 // A plain HTML form post (JavaScript off or blocked) gets a page back instead of raw JSON.
 const isFormPost = (req) => /application\/x-www-form-urlencoded|multipart\/form-data/i.test(req.headers?.['content-type'] || '');
 
-const reply = (req, res, code, body) => {
+const reply = (req, res, code, body, unconfirmed = false) => {
   if (!isFormPost(req)) return res.status(code).json(body);
   if (body.success) {
     res.setHeader('Location', '/thank-you/');
@@ -118,9 +122,9 @@ const reply = (req, res, code, body) => {
   }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   return res.status(code).end(
-    `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Request not sent | Aspen II Homes</title>` +
+    `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${unconfirmed ? 'Request not confirmed' : 'Request not sent'} | Aspen II Homes</title>` +
     `<body style="font:18px/1.6 Georgia,serif;max-width:36rem;margin:15vh auto;padding:0 20px;color:#15302A;background:#F7F2E8">` +
-    `<h1>Your request didn't go through.</h1><p>${esc(body.error)}</p>` +
+    `<h1>${unconfirmed ? "We couldn't confirm your request." : "Your request didn't go through."}</h1><p>${esc(body.error)}</p>` +
     `<p><a href="tel:+16617768635">Call (661) 776-8635</a> or <a href="/contact/">go back to the form</a>.</p></body>`
   );
 };
@@ -229,8 +233,13 @@ export default async function handler(req, res) {
       console.error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY not set; lead will not be stored.');
     }
 
-    // Spam is filed and stays quiet: no email, and the sender sees the same thank-you a real visitor would.
+    // Stay quiet, but only acknowledge a quarantined submission with a confirmed save receipt.
     if (spam) {
+      if (!leadId) {
+        // A timeout or malformed receipt may follow a committed write. Do not claim
+        // it was lost, retry automatically, or expose the internal classification.
+        return reply(req, res, 503, { success: false, error: `We couldn't confirm your request was saved. ${CALL}` }, true);
+      }
       return reply(req, res, 200, { success: true, message: 'Consultation request received successfully.', emailDispatched: false, saved: Boolean(leadId) });
     }
 

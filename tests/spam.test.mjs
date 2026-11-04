@@ -63,10 +63,10 @@ const world = (rows = []) => {
   };
 };
 let n = 0;
-const run = async (body, ip) => {
+const run = async (body, ip, headers = {}) => {
   const out = { headers: {} };
-  const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.code = c; return this; }, json(j) { out.body = j; return this; }, end() { return this; } };
-  await handler({ method: 'POST', body, headers: { host: 'aspen2homes.com', 'x-forwarded-for': ip || `198.51.100.${++n % 250}.${Math.floor(n / 250)}` } }, res);
+  const res = { setHeader(k, v) { out.headers[k] = v; }, status(c) { out.code = c; return this; }, json(j) { out.body = j; return this; }, end(b) { out.html = b; return this; } };
+  await handler({ method: 'POST', body, headers: { host: 'aspen2homes.com', 'x-forwarded-for': ip || `198.51.100.${++n % 250}.${Math.floor(n / 250)}`, ...headers } }, res);
   return out;
 };
 const good = { name: 'Pat Lee', phone: '(661) 555-0100', email: 'pat@example.com', notes: 'Is Home 2 still available?', timeline: 'Schedule a tour', source: 'Contact page', elapsedMs: 22000 };
@@ -103,4 +103,66 @@ world(); let last; for (let i = 0; i < 10; i++) last = await run({ ...good, name
 assert.equal(last.code, 429); assert.match(last.body.error, /661\) 776-8635/);
 r = await run(good, '203.0.113.51'); assert.equal(r.code, 200);
 
-console.log = log; console.log('spam: ok');
+// A quarantine save must be confirmed before acknowledging a suspected submission.
+// All responses here are fixtures; neither the database nor Resend is contacted.
+const suspect = { ...good, elapsedMs: 250 };
+const failures = [
+  ['HTTP error', () => ({ ok: false, status: 503 })],
+  ['timeout (commit outcome unknown)', () => { throw Object.assign(new Error('timeout'), { name: 'TimeoutError' }); }],
+  ['invalid JSON', () => ({ ok: true, json: async () => { throw new SyntaxError('invalid JSON'); } })],
+  ...[null, [], {}, { 0: { id: 'lead-1' } }, [{}], [{ id: '' }], [{ id: ' ' }],
+    [{ id: 1 }], [{ id: true }], [{ id: {} }], [{ id: 'a' }, { id: 'b' }]]
+    .map((rows) => [JSON.stringify(rows), () => ({ ok: true, json: async () => rows })]),
+];
+for (const [label, response] of failures) {
+  world(); const normal = globalThis.fetch; let attempts = 0;
+  globalThis.fetch = async (u, o) => {
+    if (o?.method === 'POST' && String(u).includes('/rest/v1/leads?select=id')) {
+      attempts++; return response();
+    }
+    return normal(u, o);
+  };
+  r = await run(suspect);
+  assert.equal(r.code, 503, label); assert.equal(r.body.success, false, label);
+  assert.match(r.body.error, /couldn't confirm/i);
+  assert.match(r.body.error, /Please call \(661\) 776-8635/);
+  assert.doesNotMatch(r.body.error, /spam|quarantine|retry|try again|not saved/i);
+  assert.equal(emails.length, 0, 'suspected submissions are never emailed');
+  assert.equal(attempts, 1, 'ambiguous saves are not automatically retried');
+}
+// Either missing database setting fails generically without contacting a provider.
+for (const key of ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']) {
+  world(); const value = process.env[key]; delete process.env[key];
+  try {
+    r = await run(suspect); assert.equal(r.code, 503); assert.equal(r.body.success, false);
+    assert.equal(stored.length, 0); assert.equal(emails.length, 0);
+  } finally { process.env[key] = value; }
+}
+// A later independent submission can succeed after recovery. This is not an automatic retry.
+world(); r = await run(suspect);
+assert.equal(r.code, 200); assert.equal(r.body.saved, true); assert.equal(r.body.success, true);
+assert.equal(stored.length, 1); assert.equal(stored[0].status, 'spam'); assert.equal(emails.length, 0);
+// An explicit failure to save a legitimate lead still permits the existing email fallback.
+world(); const normal = globalThis.fetch;
+globalThis.fetch = async (u, o) => o?.method === 'POST' && String(u).includes('/rest/v1/leads?select=id')
+  ? { ok: false, status: 503 } : normal(u, o);
+r = await run(good); assert.equal(r.code, 200); assert.equal(r.body.saved, false);
+assert.equal(r.body.emailDispatched, true); assert.equal(emails.length, 1);
+
+// Plain HTML posts also fail without a thank-you redirect; confirmed saves still redirect.
+const formHeaders = { 'content-type': 'application/x-www-form-urlencoded' };
+world(); const formFetch = globalThis.fetch;
+globalThis.fetch = async (u, o) => o?.method === 'POST' && String(u).includes('/rest/v1/leads?select=id')
+  ? { ok: true, json: async () => [] } : formFetch(u, o);
+r = await run(suspect, undefined, formHeaders);
+assert.equal(r.code, 503); assert.equal(r.headers.Location, undefined);
+assert.match(r.html, /couldn&#39;t confirm/); assert.equal(emails.length, 0);
+assert.match(r.html, /<title>Request not confirmed/);
+assert.match(r.html, /<h1>We couldn't confirm your request\.<\/h1>/);
+assert.doesNotMatch(r.html, /Request not sent|didn't go through|spam|quarantine|retry|try again/i);
+world(); r = await run(suspect, undefined, formHeaders);
+assert.equal(r.code, 303); assert.equal(r.headers.Location, '/thank-you/'); assert.equal(emails.length, 0);
+world(); r = await run({ ...suspect, honeypot: 'bot' }, undefined, formHeaders);
+assert.equal(r.code, 303); assert.equal(stored.length, 0); assert.equal(emails.length, 0);
+
+console.log = log; console.log('spam: ok (including quarantine receipt failures and recovery)');
