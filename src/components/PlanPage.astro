@@ -9,6 +9,13 @@ import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl
 import { breadcrumb, faqPage, webPage, floorPlan } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
+const bedroomNotes: Record<string, string> = {
+  'sunset-retreat': 'Ask about the optional four-bedroom layout.',
+  'the-tranquil-abode': 'Ask about the optional four-bedroom layout.',
+  'enchanted-haven': 'Ask about the optional four-bedroom layout.',
+  'sunrise-view-residence': 'Four bedrooms are shown in this plan. Ask about layout options.',
+  'the-grand-haven': 'Four bedrooms are shown in this plan. Ask about layout options.',
+};
 const imgs = photos(plan.folder);
 const bp = blueprint(plan.folder);
 const pdf = `/plans/${plan.slug}.pdf`;
@@ -85,6 +92,7 @@ const schema = [
     <dl class="facts">
       {facts.map(([k, v]) => <div><dt class="mono">{k}</dt><dd>{v}</dd></div>)}
     </dl>
+    {bedroomNotes[plan.slug] && <p class="muted small" data-bedroom-note>{bedroomNotes[plan.slug]}</p>}
     <p class="where mono">Where it’s available: {sr ? <><a href="/available-homes/">{offer.community}, Tehachapi</a> (first release)</> : <>ask us where it can be built next in <a href="/areas/">Tehachapi and eastern Kern County</a>.</>}</p>
   </section>
 
