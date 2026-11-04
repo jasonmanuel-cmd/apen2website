@@ -45,6 +45,7 @@ const listLeads = async (db, query) => {
 
   const p = new URLSearchParams({ select: COLUMNS, order: 'created_at.desc', limit: String(limit), offset: String(offset) });
   if (status !== 'all') p.append('status', `eq.${status}`);
+  else p.append('status', 'neq.test'); // Test records remain recoverable in the explicit Test view.
   if (str(query.unsent, 5) === '1') p.append('email_sent', 'eq.false');
   const q = cleanQuery(query.q);
   if (q) {

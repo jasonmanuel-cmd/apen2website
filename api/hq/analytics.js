@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     const [sessions, visits, leadCount] = await Promise.all([
       get(db, `sessions?select=session_id,created_at,visitor_hash,referrer_host,referrer_type,utm_source,utm_campaign,entry_path,exit_path,page_views,device_type,browser,os,country,region,city,duration_seconds&${filter}&order=created_at.desc&limit=20000`),
       get(db, `visits?select=path,duration_seconds&${filter.replace(/^device_type=neq\.bot&/, '')}&order=created_at.desc&limit=100000`),
-      supabase(db, 'leads?select=id&created_at=gte.' + encodeURIComponent(since), {
+      supabase(db, 'leads?select=id&status=neq.test&created_at=gte.' + encodeURIComponent(since), {
         headers: { Prefer: 'count=exact' }
       }).then((r) => {
         const n = Number(String(r.headers.get('content-range') || '').split('/')[1]);
