@@ -12,7 +12,7 @@ for (const p of plans) {
   need(/^[a-z0-9-]+$/.test(p.slug), `${id}: bad slug`);
   need(p.name && p.summary && p.headline && p.tagline && p.status, `${id}: missing text field`);
   need(Number.isInteger(p.sqft) && p.sqft > 300 && p.sqft < 10000, `${id}: implausible sqft ${p.sqft}`);
-  need(Number.isInteger(p.beds) && p.beds > 0, `${id}: bad beds`);
+  need(p.beds === 3 || p.beds === '3 or 4', `${id}: bad beds`);
   need(p.baths > 0 && (p.baths * 2) % 1 === 0, `${id}: bad baths`);
   need(p.stories === 1 || p.stories === 2, `${id}: stories must be 1 or 2`);
   need(p.price === undefined || (Number.isInteger(p.price) && p.price > 0), `${id}: price must be a whole positive number or absent`);

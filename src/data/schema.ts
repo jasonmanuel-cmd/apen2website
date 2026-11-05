@@ -1,4 +1,4 @@
-import { site } from './site';
+import { site, type Plan } from './site';
 
 // JSON-LD helpers. Keep every value identical to what the page shows.
 const abs = (path: string) => new URL(path, site.url).href;
@@ -31,7 +31,7 @@ export const webPage = (path: string, name: string, description: string, extra: 
 });
 
 // A home model as a schema.org FloorPlan. Bathroom counts are integers: 2.5 baths = 2 full + 1 half.
-export const floorPlan = (path: string, p: { name: string; summary: string; sqft: number; beds: number; baths: number }, image?: string, layoutImage?: string) => {
+export const floorPlan = (path: string, p: { name: string; summary: string; sqft: number; beds: Plan['beds']; baths: number }, image?: string, layoutImage?: string) => {
   const full = Math.floor(p.baths);
   const partial = p.baths % 1 ? 1 : 0;
   return {
@@ -44,7 +44,7 @@ export const floorPlan = (path: string, p: { name: string; summary: string; sqft
     ...(image && { image }),
     ...(layoutImage && { layoutImage }),
     floorSize: { '@type': 'QuantitativeValue', value: p.sqft, unitCode: 'FTK', unitText: 'sq ft' },
-    numberOfBedrooms: p.beds,
+    numberOfBedrooms: p.beds === '3 or 4' ? { '@type': 'QuantitativeValue', minValue: 3, maxValue: 4 } : p.beds,
     numberOfFullBathrooms: full,
     numberOfPartialBathrooms: partial,
     numberOfBathroomsTotal: full + partial,

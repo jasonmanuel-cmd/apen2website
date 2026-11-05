@@ -121,7 +121,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
             <div class="bento-specs mono">
               <span>1,715 sq ft</span>
               <span>·</span>
-              <span>3 Beds</span>
+              <span>{plans.find((p) => p.slug === 'sunset-retreat')!.beds} Beds</span>
               <span>·</span>
               <span>2 Baths</span>
               <span>·</span>

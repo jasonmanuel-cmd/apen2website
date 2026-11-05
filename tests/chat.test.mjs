@@ -32,7 +32,7 @@ assert(site.includes(`from: ${FACTS.fromPrice},`), 'starting price drifted');
 assert(site.includes(`earlyCredit: ${FACTS.earlyCredit},`), 'early credit drifted');
 assert(site.includes(`moveIn: '${FACTS.moveIn}'`), 'move-in drifted');
 for (const [name, sqft, beds, baths] of PLANS) {
-  const m = new RegExp(`name: '${name}', sqft: ${sqft}, beds: ${beds}, baths: ${baths},`).exec(site);
+  const m = new RegExp(`name: '${name}', sqft: ${sqft}, beds: ${typeof beds === 'string' ? `'${beds}'` : beds}, baths: ${baths},`).exec(site);
   assert(m, `plan ${name} drifted from site.ts`);
 }
 
@@ -43,7 +43,7 @@ for (const needle of [
   'Open living, dining & kitchen', 'Large windows throughout', 'Primary bedroom with private bath', 'Dedicated utility room',
   'Great room with breakfast nook', 'Kitchen with pantry', 'Primary suite with private bath', 'Rear patio',
   'Second-floor primary suite', 'Walk-in closets', 'Main-floor guest half bath', 'Kitchen open to living',
-  'Four bedrooms', 'Kitchen with ample storage', 'Adjacent dining area',
+  '3 or 4 bedrooms', 'Kitchen with ample storage', 'Adjacent dining area',
   'Semi-custom finish selections', 'Customizable kitchen',
   'Kitchen island & pantry', 'Bay-window dining room', 'Primary suite with walk-in closet', 'Covered patio',
 ]) {

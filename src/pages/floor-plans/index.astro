@@ -7,7 +7,7 @@ import { breadcrumb, webPage } from '../../data/schema';
 
 const path = '/floor-plans/';
 const title = `Six New Home Floor Plans, ${sqftRange()} Sq Ft | ${site.name}`;
-const description = `Compare all six ${site.name} floor plans, ${sqftRange()} sq ft, 3 to 4 bedrooms, single- and two-story. Sizes, bedrooms, bathrooms and floor plan PDFs.`;
+const description = `Compare all six ${site.name} floor plans, ${sqftRange()} sq ft, 3 or 4 bedrooms, single- and two-story. Sizes, bedrooms, bathrooms and floor plan PDFs.`;
 const name = (slug: string, n: string) => (slug === 'sunset-retreat' ? `${n} Model` : n);
 const schema = [
   webPage(path, title, description, {
@@ -35,7 +35,7 @@ const schema = [
     </div>
     <div class="grid" data-plans>
       {plans.map((p) => (
-        <div data-tags={`beds-${p.beds} stories-${p.stories} size-${p.sqft < 1800 ? 'small' : 'large'}`}><PlanCard plan={p} /></div>
+        <div data-tags={`${p.beds === '3 or 4' ? 'beds-3 beds-4' : 'beds-3'} stories-${p.stories} size-${p.sqft < 1800 ? 'small' : 'large'}`}><PlanCard plan={p} /></div>
       ))}
     </div>
     <p class="mono count" role="status" aria-live="polite">Showing all 6 plans</p>
