@@ -1,13 +1,13 @@
 ---
 import { Image } from 'astro:assets';
-import { type Plan, usd, photos, blueprint, planUrl } from '../data/site';
+import { bedroomLabel, type Plan, usd, photos, blueprint, planUrl } from '../data/site';
 const { plan } = Astro.props as { plan: Plan };
 const first = photos(plan.folder)[0];
 const cover = first?.src;
 const name = plan.slug === 'sunset-retreat' ? `${plan.name} Model` : plan.name;
 const bp = cover ? undefined : blueprint(plan.folder);
 ---
-<a class="card-3d-wrap" href={planUrl(plan)} data-3d-card aria-label={`${name}, ${plan.sqft} sq ft, ${plan.beds} beds, ${plan.baths} baths`}>
+<a class="card-3d-wrap" href={planUrl(plan)} data-3d-card aria-label={`${name}, ${plan.sqft} sq ft, ${bedroomLabel(plan)}, ${plan.baths} baths`}>
   <div class="card-3d-inner" data-3d-inner>
     <div class="card-glare" data-3d-glare aria-hidden="true"></div>
     <div class:list={['media', { plan: bp }]}>
@@ -26,7 +26,7 @@ const bp = cover ? undefined : blueprint(plan.folder);
       <div class="specs">
         <span class="spec-pill">{plan.sqft.toLocaleString('en-US')} sq ft</span>
         <span class="spec-sep" aria-hidden="true">·</span>
-        <span class="spec-pill">{plan.beds} bed</span>
+        <span class="spec-pill">{bedroomLabel(plan)}</span>
         <span class="spec-sep" aria-hidden="true">·</span>
         <span class="spec-pill">{plan.baths} bath</span>
       </div>
@@ -81,7 +81,7 @@ const bp = cover ? undefined : blueprint(plan.folder);
   .kicker { color: var(--rust); font-size: .74rem; margin: 0 0 .35rem; letter-spacing: .1em; }
   .name { font-size: 1.6rem; margin: 0 0 .5rem; line-height: 1.1; color: var(--ink); }
 
-  .specs { display: flex; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .76rem; color: var(--muted); margin: 0 0 1.3rem; }
+  .specs { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .76rem; color: var(--muted); margin: 0 0 1.3rem; }
   .spec-pill { background: rgb(var(--ink-rgb) / .05); padding: .25em .6em; border-radius: 2px; }
   .spec-sep { opacity: .4; }
 

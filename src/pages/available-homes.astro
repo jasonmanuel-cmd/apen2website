@@ -3,7 +3,7 @@ import { getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Gallery from '../components/Gallery.astro';
 import LeadForm from '../components/LeadForm.astro';
-import { site, offer, plans, photos, financing, usd, disclaimer, planUrl, availability } from '../data/site';
+import { bedroomLabel, site, offer, plans, photos, financing, usd, disclaimer, planUrl, availability } from '../data/site';
 import { breadcrumb, faqPage, webPage } from '../data/schema';
 
 // The community page. The 1,715 sq ft floor plan of the same name lives at /sunset-retreat/.
@@ -12,9 +12,9 @@ const imgs = photos(model.folder);
 const og = imgs[0] ? (await getImage({ src: imgs[0].src, width: 1200, format: 'jpg' })).src : undefined;
 const path = '/available-homes/';
 const title = `Sunset Retreat Homes for Sale in Tehachapi | ${site.name}`;
-const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bed, ${model.baths} bath single-story homes from ${usd(offer.from)}. ${availability.nowReserving}.`;
+const description = `Sunset Retreat in Tehachapi, CA: new ${model.sqft.toLocaleString('en-US')} sq ft, ${bedroomLabel(model)}, ${model.baths} bath single-story homes from ${usd(offer.from)}. ${availability.nowReserving}.`;
 const qa: [string, string][] = [
-  ['What is Sunset Retreat?', `Sunset Retreat is ${site.name}’ current new-home release in Tehachapi, California. The first release homes are the Sunset Retreat model: ${model.sqft.toLocaleString('en-US')} sq ft, ${model.beds} bedrooms, ${model.baths} bathrooms, single-story.`],
+  ['What is Sunset Retreat?', `Sunset Retreat is ${site.name}’ current new-home release in Tehachapi, California. The first release homes are the Sunset Retreat model: ${model.sqft.toLocaleString('en-US')} sq ft, ${bedroomLabel(model)}, ${model.baths} bathrooms, single-story.`],
   ['How much do Sunset Retreat homes cost?', `The first release starts at ${usd(offer.from)}. Ask us what the starting price includes. Pricing and availability are subject to change.`],
   ['How many homes are available?', `${availability.releaseCount} homes are in the first release: ${availability.reservingNow}.${availability.waitlistSentence}`],
   ['How long until move-in?', 'First-release homes are estimated at roughly three months to move-in, subject to construction conditions.'],
@@ -53,7 +53,7 @@ const schema = [
       <dl class="facts">
         <div><dt class="mono">Starting price</dt><dd>{usd(offer.from)}</dd></div>
         <div><dt class="mono">Model</dt><dd><a href={planUrl(model)}>Sunset Retreat model</a></dd></div>
-        <div><dt class="mono">Size</dt><dd>{model.sqft.toLocaleString('en-US')} sf · {model.beds} bd · {model.baths} ba</dd></div>
+        <div><dt class="mono">Size</dt><dd>{model.sqft.toLocaleString('en-US')} sf · {bedroomLabel(model)} · {model.baths} ba</dd></div>
         <div><dt class="mono">Stories</dt><dd>Single</dd></div>
         <div><dt class="mono">Est. move-in</dt><dd>{offer.moveIn}*</dd></div>
         <div><dt class="mono">Location</dt><dd>{offer.city}</dd></div>

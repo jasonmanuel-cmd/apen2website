@@ -44,7 +44,7 @@ export const floorPlan = (path: string, p: { name: string; summary: string; sqft
     ...(image && { image }),
     ...(layoutImage && { layoutImage }),
     floorSize: { '@type': 'QuantitativeValue', value: p.sqft, unitCode: 'FTK', unitText: 'sq ft' },
-    numberOfBedrooms: p.beds === '3 or 4' ? { '@type': 'QuantitativeValue', minValue: 3, maxValue: 4 } : p.beds,
+    numberOfBedrooms: p.beds,
     numberOfFullBathrooms: full,
     numberOfPartialBathrooms: partial,
     numberOfBathroomsTotal: full + partial,

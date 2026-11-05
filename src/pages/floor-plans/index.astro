@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PlanCard from '../../components/PlanCard.astro';
 import PlanExplorer from '../../components/PlanExplorer.astro';
-import { site, plans, offer, usd, sqftRange, disclaimer, planUrl } from '../../data/site';
+import { bedroomLabel, site, plans, offer, usd, sqftRange, disclaimer, planUrl } from '../../data/site';
 import { breadcrumb, webPage } from '../../data/schema';
 
 const path = '/floor-plans/';
@@ -33,9 +33,10 @@ const schema = [
       <button type="button" class="chip" aria-pressed="false" data-filter="size-small">Under 1,800 sf</button>
       <button type="button" class="chip" aria-pressed="false" data-filter="size-large">1,800 sf and up</button>
     </div>
+    <p class="muted small">Bedroom filters include available options: Sunset Retreat has 3 bedrooms with a 4-bedroom option.</p>
     <div class="grid" data-plans>
       {plans.map((p) => (
-        <div data-tags={`${p.beds === '3 or 4' ? 'beds-3 beds-4' : 'beds-3'} stories-${p.stories} size-${p.sqft < 1800 ? 'small' : 'large'}`}><PlanCard plan={p} /></div>
+        <div data-tags={`${p.optionalBeds ? `beds-${p.beds} beds-${p.optionalBeds}` : `beds-${p.beds}`} stories-${p.stories} size-${p.sqft < 1800 ? 'small' : 'large'}`}><PlanCard plan={p} /></div>
       ))}
     </div>
     <p class="mono count" role="status" aria-live="polite">Showing all 6 plans</p>
@@ -55,7 +56,7 @@ const schema = [
             {plans.map((p) => (
               <tr>
                 <th scope="row"><a href={planUrl(p)}>{name(p.slug, p.name)}</a></th>
-                <td>{p.sqft.toLocaleString('en-US')}</td><td>{p.beds}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
+                <td>{p.sqft.toLocaleString('en-US')}</td><td>{bedroomLabel(p)}</td><td>{p.baths}</td><td>{p.stories === 2 ? 'Two' : 'Single'}</td>
                 <td>{p.price ? `From ${usd(p.price)}` : 'Request current pricing'}</td>
                 <td class="st">{p.status}</td>
                 <td><a href={`/plans/${p.slug}.pdf`} target="_blank" rel="noopener">PDF<span class="sr-only">: {name(p.slug, p.name)} floor plan (scanned image, opens in a new tab)</span></a></td>

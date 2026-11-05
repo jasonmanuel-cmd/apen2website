@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import PlanCard from '../components/PlanCard.astro';
 import LeadForm from '../components/LeadForm.astro';
 import BeforeAfterSlider from '../components/BeforeAfterSlider.astro';
-import { site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort, availability } from '../data/site';
+import { bedroomLabel, site, plans, communities, offer, paths, financing, faq, photos, usd, sqftRange, areaUrl, serviceAreaNames, buyingSteps, fromShort, earlyShort, availability } from '../data/site';
 import { faqPage, webPage } from '../data/schema';
 
 // Each section uses a different photo; exteriors already appear on the model cards.
@@ -121,7 +121,7 @@ const schema = [webPage('/', title, description, { primaryImageOfPage: { '@type'
             <div class="bento-specs mono">
               <span>1,715 sq ft</span>
               <span>·</span>
-              <span>{plans.find((p) => p.slug === 'sunset-retreat')!.beds} Beds</span>
+              <span>{bedroomLabel(plans.find((p) => p.slug === 'sunset-retreat')!)}</span>
               <span>·</span>
               <span>2 Baths</span>
               <span>·</span>

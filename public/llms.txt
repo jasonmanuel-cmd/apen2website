@@ -16,7 +16,7 @@ Prices and availability were last confirmed September 2026 and change; confirm w
 ## Current release: Sunset Retreat, Tehachapi
 
 - From $459,000
-- 1,715 sq ft, 3 or 4 bedrooms, 2 bathrooms, single-story
+- 1,715 sq ft, 3 bedrooms with a 4-bedroom option, 2 bathrooms, single-story
 - Home 1 and Home 2 reserving; Phase 2 waitlist
 - Estimated move-in about 3 months
 - Details: https://aspen2homes.com/available-homes/
@@ -26,11 +26,11 @@ Prices and availability were last confirmed September 2026 and change; confirm w
 | Plan | Sq ft | Beds | Baths | Stories | Page |
 |---|---|---|---|---|---|
 | Tranquil Oasis | 1,507 | 3 | 2 | 1 | https://aspen2homes.com/floor-plans/tranquil-oasis/ |
-| Sunset Retreat | 1,715 | 3 or 4 | 2 | 1 | https://aspen2homes.com/floor-plans/sunset-retreat/ |
-| The Tranquil Abode | 1,736 | 3 or 4 | 2.5 | 2 | https://aspen2homes.com/floor-plans/the-tranquil-abode/ |
-| Sunrise View Residence | 1,848 | 3 or 4 | 2 | 1 | https://aspen2homes.com/floor-plans/sunrise-view-residence/ |
-| Enchanted Haven | 1,910 | 3 or 4 | 2 | 1 | https://aspen2homes.com/floor-plans/enchanted-haven/ |
-| The Grand Haven | 2,348 | 3 or 4 | 2.5 | 1 | https://aspen2homes.com/floor-plans/the-grand-haven/ |
+| Sunset Retreat | 1,715 | 3 bedrooms with a 4-bedroom option | 2 | 1 | https://aspen2homes.com/floor-plans/sunset-retreat/ |
+| The Tranquil Abode | 1,736 | 4 | 2.5 | 2 | https://aspen2homes.com/floor-plans/the-tranquil-abode/ |
+| Sunrise View Residence | 1,848 | 4 | 2 | 1 | https://aspen2homes.com/floor-plans/sunrise-view-residence/ |
+| Enchanted Haven | 1,910 | 4 | 2 | 1 | https://aspen2homes.com/floor-plans/enchanted-haven/ |
+| The Grand Haven | 2,348 | 4 | 2.5 | 1 | https://aspen2homes.com/floor-plans/the-grand-haven/ |
 
 Pricing for plans other than Sunset Retreat depends on the homesite, finishes and options.
 

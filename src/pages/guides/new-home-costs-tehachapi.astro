@@ -1,6 +1,6 @@
 ---
 import GuidePage from '../../components/GuidePage.astro';
-import { site, offer, plans, usd } from '../../data/site';
+import { bedroomLabel, site, offer, plans, usd } from '../../data/site';
 
 const path = '/guides/new-home-costs-tehachapi/';
 const model = plans.find((p) => p.slug === 'sunset-retreat')!;
@@ -37,7 +37,7 @@ const sources: [string, string][] = [
   h1="What to Budget for" em="a New Home in Tehachapi" reviewed={site.guidesReviewed} summary={summary} faq={faq} sources={sources}>
 
   <h2>The price</h2>
-  <p>Sunset Retreat is our current release in Tehachapi: {offer.sqft.toLocaleString('en-US')} sq ft, {model.beds} bedrooms, {model.baths} baths, {model.stories === 1 ? 'single-story' : 'two-story'}, from {usd(offer.from)}. That works out to about {perSqft} per square foot of the starting price. Ask what the price includes, such as the lot, upgrades and any HOA or special-tax charges. Prices for our other floor plans depend on the homesite, finishes and options. See <a href="/floor-plans/">all floor plans</a>.</p>
+  <p>Sunset Retreat is our current release in Tehachapi: {offer.sqft.toLocaleString('en-US')} sq ft, {bedroomLabel(model)}, {model.baths} baths, {model.stories === 1 ? 'single-story' : 'two-story'}, from {usd(offer.from)}. That works out to about {perSqft} per square foot of the starting price. Ask what the price includes, such as the lot, upgrades and any HOA or special-tax charges. Prices for our other floor plans depend on the homesite, finishes and options. See <a href="/floor-plans/">all floor plans</a>.</p>
 
   <h2>Costs beyond the price</h2>
   <table role="table" tabindex="0" aria-label="Costs beyond the price">

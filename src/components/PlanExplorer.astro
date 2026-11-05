@@ -15,7 +15,7 @@ const tours: { name: string; blueprint: string; note?: string }[] = [
 import fs from 'node:fs';
 import path from 'node:path';
 import { getImage } from 'astro:assets';
-import { plans, blueprint } from '../data/site';
+import { bedroomLabel, plans, blueprint } from '../data/site';
 
 const isImage = (p: string) => /\.(png|jpe?g|webp|svg)$/i.test(p);
 const exists = (p: string) => fs.existsSync(path.join(process.cwd(), 'public', p));
@@ -30,7 +30,7 @@ const items = await Promise.all(tours.map(async (t, i) => {
   const pdf = t.blueprint.endsWith('.pdf') && exists(t.blueprint) ? t.blueprint : plan ? `/plans/${plan.slug}.pdf` : undefined;
   const specs = plan && [
     ['Living area', `${plan.sqft.toLocaleString('en-US')} sq ft`],
-    ['Layout', `${plan.beds} bed · ${plan.baths} bath${plan.garage ? ` · ${plan.garage}` : ''}`],
+    ['Layout', `${bedroomLabel(plan)} · ${plan.baths} bath${plan.garage ? ` · ${plan.garage}` : ''}`],
     ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
   ];
   return { ...t, id: `pe-${i}`, ready, img, pdf, specs, href: plan && `/floor-plans/${plan.slug}/` };

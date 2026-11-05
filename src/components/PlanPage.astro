@@ -5,11 +5,11 @@ import PlanCard from './PlanCard.astro';
 import Gallery from './Gallery.astro';
 import LeadForm from './LeadForm.astro';
 import PlanStickyBar from './PlanStickyBar.astro';
-import { site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
+import { bedroomLabel, site, plans, photos, blueprint, offer, usd, type Plan, theName, planUrl, availability } from '../data/site';
 import { breadcrumb, faqPage, webPage, floorPlan } from '../data/schema';
 
 const { plan } = Astro.props as { plan: Plan };
-const bedroomNote = plan.beds === '3 or 4' ? 'Choose 3 or 4 bedrooms. Ask about layout options.' : undefined;
+const bedroomNote = plan.optionalBeds ? 'The illustrated layout shows the 3-bedroom base plan. Ask about the optional fourth bedroom.' : undefined;
 const imgs = photos(plan.folder);
 const bp = blueprint(plan.folder);
 const pdf = `/plans/${plan.slug}.pdf`;
@@ -22,13 +22,13 @@ const sr = plan.slug === 'sunset-retreat';
 // "Sunset Retreat" is both a community and a plan; the plan page always says "model".
 const label = sr ? `${plan.name} Model` : plan.name;
 const story = plan.stories === 2 ? 'two-story' : 'single-story';
-const spec = `${plan.sqft.toLocaleString('en-US')} Sq Ft, ${plan.beds} Bed, ${plan.baths} Bath`;
+const spec = `${plan.sqft.toLocaleString('en-US')} Sq Ft, ${bedroomLabel(plan)}, ${plan.baths} Bath`;
 const baseTitle = `${plan.name} Floor Plan | ${plan.sqft.toLocaleString('en-US')} Sq Ft`;
 const title = baseTitle.length + site.name.length + 3 <= 60 ? `${baseTitle} | ${site.name}` : baseTitle;
-const description = `${plan.name} floor plan: ${plan.sqft.toLocaleString('en-US')} sq ft, ${plan.beds} bed, ${plan.baths} bath ${story}${plan.price ? ` from ${usd(plan.price)}` : ''}. Built by ${site.name} in Tehachapi, CA. Photos, PDF and availability.`;
+const description = `${plan.name} floor plan: ${plan.sqft.toLocaleString('en-US')} sq ft, ${bedroomLabel(plan)}, ${plan.baths} bath ${story}${plan.price ? ` from ${usd(plan.price)}` : ''}. Built by ${site.name} in Tehachapi, CA. Photos, PDF and availability.`;
 const facts = [
   ['Living area', `${plan.sqft.toLocaleString('en-US')} sf`],
-  ['Bedrooms', plan.beds],
+  ['Bedrooms', bedroomLabel(plan)],
   ['Bathrooms', plan.baths],
   ['Stories', plan.stories === 2 ? 'Two' : 'Single'],
   ...(plan.garage ? [['Garage', plan.garage]] : []),

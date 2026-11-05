@@ -1,5 +1,5 @@
 ---
-import { site, usd, type Plan, theName } from '../data/site';
+import { bedroomLabel, site, usd, type Plan, theName } from '../data/site';
 
 interface Props {
   plan: Plan;
@@ -20,7 +20,7 @@ const priceText = plan.price ? usd(plan.price) : 'Call for Pricing';
       <div class="bar-specs mono">
         <span>{plan.sqft.toLocaleString('en-US')} sf</span>
         <span class="sep">/</span>
-        <span>{plan.beds} Bed</span>
+        <span>{bedroomLabel(plan)}</span>
         <span class="sep">/</span>
         <span>{plan.baths} Bath</span>
         <span class="sep">/</span>

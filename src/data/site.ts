@@ -123,7 +123,8 @@ export type Plan = {
   folder: string;      // photos + blueprint folder name
   name: string;
   sqft: number;
-  beds: 3 | '3 or 4';
+  beds: 3 | 4;
+  optionalBeds?: 4;
   baths: number;
   stories: 1 | 2;
   price?: number;
@@ -141,6 +142,9 @@ export type Plan = {
   layout?: { text: string; rooms: string[] }; // room-by-room text of the blueprint; owner-approved only
 };
 
+export const bedroomLabel = (p: Pick<Plan, 'beds' | 'optionalBeds'>): string =>
+  `${p.beds} bedrooms${p.optionalBeds ? ` with a ${p.optionalBeds}-bedroom option` : ''}`;
+
 export const plans: Plan[] = [
   {
     slug: 'tranquil-oasis', folder: 'tranquil-oasis', name: 'Tranquil Oasis', sqft: 1507, beds: 3, baths: 2, stories: 1, tagline: 'Open-concept living',
@@ -151,35 +155,35 @@ export const plans: Plan[] = [
     highlights: ['Open living, dining & kitchen', 'Large windows throughout', 'Primary bedroom with private bath', 'Dedicated utility room'],
   },
   {
-    slug: 'sunset-retreat', folder: 'sunset-retreat', name: 'Sunset Retreat', sqft: 1715, beds: '3 or 4', baths: 2, stories: 1, price: 459000, firstRelease: true, tagline: 'Everyday comfort',
+    slug: 'sunset-retreat', folder: 'sunset-retreat', name: 'Sunset Retreat', sqft: 1715, beds: 3, optionalBeds: 4, baths: 2, stories: 1, price: 459000, firstRelease: true, tagline: 'Everyday comfort',
     garage: '2-car garage', dimensions: '52′ × 58′ overall', specSource: 'Sunset Retreat blueprint; layout text approved by owner', specReviewedAt: '2026-10-08',
     status: 'Now reserving in the Sunset Retreat first release',
     headline: 'Now reserving in Tehachapi.',
-    summary: 'A welcoming open-concept layout connects the great room, dining area and kitchen, with a breakfast nook opening to a covered patio. The primary suite is a quiet retreat with its own bath and wardrobe.',
+    summary: '3 bedrooms with a 4-bedroom option. A welcoming open-concept layout connects the great room, dining area and kitchen, with a breakfast nook opening to a covered patio. The primary suite is a quiet retreat with its own bath and wardrobe.',
     highlights: ['Great room with breakfast nook', 'Kitchen with pantry', 'Primary suite with private bath', 'Rear patio', '2-car garage'],
     layout: {
-      text: 'Single-story plan with 3 or 4 bedrooms and two baths. The illustrated layout is a three-bedroom plan with a two-car garage. The overall footprint is about 52 feet wide by 58 feet deep. You enter through a covered porch into the entry. The great room opens to the dining area and the kitchen, which has a pantry and a breakfast nook. The nook opens to a rear patio. The primary bedroom sits at one end of the house with its own bath and walk-in wardrobe. Bedrooms 2 and 3 share a hall bath on the opposite side. The laundry is off the garage entry. The garage fits two cars, has a 16-foot sectional door, and houses the tankless water heater. The home is fire-sprinklered.',
+      text: 'Single-story plan with 3 bedrooms with a 4-bedroom option and two baths. The illustrated layout is a three-bedroom plan with a two-car garage. The overall footprint is about 52 feet wide by 58 feet deep. You enter through a covered porch into the entry. The great room opens to the dining area and the kitchen, which has a pantry and a breakfast nook. The nook opens to a rear patio. The primary bedroom sits at one end of the house with its own bath and walk-in wardrobe. Bedrooms 2 and 3 share a hall bath on the opposite side. The laundry is off the garage entry. The garage fits two cars, has a 16-foot sectional door, and houses the tankless water heater. The home is fire-sprinklered.',
       rooms: ['Entry with covered porch', 'Great room, open to dining and kitchen', 'Kitchen with pantry and breakfast nook, patio access', 'Primary bedroom with private bath and walk-in wardrobe', 'Bedrooms 2 and 3 sharing a hall bath', 'Laundry', '2-car garage, 16′ sectional door, tankless water heater'],
     },
   },
   {
-    slug: 'the-tranquil-abode', folder: 'tranquil-abode', name: 'The Tranquil Abode', sqft: 1736, beds: '3 or 4', baths: 2.5, stories: 2, tagline: 'Two-story living',
+    slug: 'the-tranquil-abode', folder: 'tranquil-abode', name: 'The Tranquil Abode', sqft: 1736, beds: 4, baths: 2.5, stories: 2, tagline: 'Two-story living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Contact us for availability and pricing',
     headline: 'Two stories. All the calm.',
-    summary: '3 or 4 bedrooms, with living on the main floor and sleeping upstairs. The second-floor primary suite includes a walk-in closet, alongside additional bedrooms and a full bath, with a half bath downstairs for guests.',
+    summary: '4 bedrooms, with living on the main floor and sleeping upstairs. The second-floor primary suite includes a walk-in closet, alongside additional bedrooms and a full bath, with a half bath downstairs for guests.',
     highlights: ['Second-floor primary suite', 'Walk-in closets', 'Main-floor guest half bath', 'Kitchen open to living'],
   },
   {
-    slug: 'sunrise-view-residence', folder: 'sunrise-view', name: 'Sunrise View Residence', sqft: 1848, beds: '3 or 4', baths: 2, stories: 1, rendering: true, tagline: 'Room to grow',
+    slug: 'sunrise-view-residence', folder: 'sunrise-view', name: 'Sunrise View Residence', sqft: 1848, beds: 4, baths: 2, stories: 1, rendering: true, tagline: 'Room to grow',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Contact us for availability and pricing',
-    headline: '3 or 4 bedrooms, room to grow.',
-    summary: 'Connected living and dining spaces, a spacious kitchen with ample storage, and 3 or 4 bedrooms that flex as guest rooms, a home office or hobby space. The primary bath is designed for a spa-like start to the day.',
-    highlights: ['3 or 4 bedrooms', 'Primary suite with private bath', 'Kitchen with ample storage', 'Adjacent dining area'],
+    headline: '4 bedrooms, room to grow.',
+    summary: 'Connected living and dining spaces, a spacious kitchen with ample storage, and 4 bedrooms that flex as guest rooms, a home office or hobby space. The primary bath is designed for a spa-like start to the day.',
+    highlights: ['4 bedrooms', 'Primary suite with private bath', 'Kitchen with ample storage', 'Adjacent dining area'],
   },
   {
-    slug: 'enchanted-haven', folder: 'enchanted-haven', name: 'Enchanted Haven', sqft: 1910, beds: '3 or 4', baths: 2, stories: 1, tagline: 'Semi-custom living',
+    slug: 'enchanted-haven', folder: 'enchanted-haven', name: 'Enchanted Haven', sqft: 1910, beds: 4, baths: 2, stories: 1, tagline: 'Semi-custom living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Contact us for availability and pricing',
     headline: 'Made yours, down to the cabinetry.',
@@ -187,12 +191,12 @@ export const plans: Plan[] = [
     highlights: ['Semi-custom finish selections', 'Customizable kitchen', 'Primary suite with private bath', 'Dedicated utility room'],
   },
   {
-    slug: 'the-grand-haven', folder: 'grand-haven', name: 'The Grand Haven', sqft: 2348, beds: '3 or 4', baths: 2.5, stories: 1, tagline: 'Spacious semi-custom living',
+    slug: 'the-grand-haven', folder: 'grand-haven', name: 'The Grand Haven', sqft: 2348, beds: 4, baths: 2.5, stories: 1, tagline: 'Spacious semi-custom living',
     garage: null, dimensions: null, specSource: 'Prior aspen2homes.com listing; no approved spec sheet on file', specReviewedAt: null,
     status: 'Contact us for availability and pricing',
     headline: 'Our largest plan. Built to host.',
-    summary: 'An open-concept great room flows into a modern kitchen with a generous island, pantry and a bay-windowed dining room opening to the patio. 3 or 4 bedrooms provide flexibility, with opportunities to personalize finishes.',
-    highlights: ['Kitchen island & pantry', 'Bay-window dining room', 'Primary suite with walk-in closet', '3 or 4 bedrooms', 'Covered patio'],
+    summary: 'An open-concept great room flows into a modern kitchen with a generous island, pantry and a bay-windowed dining room opening to the patio. 4 bedrooms provide flexibility, with opportunities to personalize finishes.',
+    highlights: ['Kitchen island & pantry', 'Bay-window dining room', 'Primary suite with walk-in closet', '4 bedrooms', 'Covered patio'],
   },
 ];
 
@@ -221,7 +225,7 @@ export const communities: Community[] = [
     points: ['Sunset Retreat first release reserving', 'Six floor plans to ask about', reservingHomesPoint],
     faq: [
       ['Are new homes available in Tehachapi now?', 'Yes. Sunset Retreat is our current release in Tehachapi. ' + areaAvailability + ' Sunset Retreat starts at $459,000; pricing and availability are subject to change.'],
-      ['Which models can I build in Tehachapi?', 'The Sunset Retreat release uses the Sunset Retreat model (1,715 sq ft, 3 or 4 bed, 2 bath). Ask us where the other five models can be built next.'],
+      ['Which models can I build in Tehachapi?', 'The Sunset Retreat release uses the Sunset Retreat model (1,715 sq ft, 3 bedrooms with a 4-bedroom option, 2 bath). Ask us where the other five models can be built next.'],
     ],
   },
   {
